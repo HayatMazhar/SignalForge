@@ -1,0 +1,149 @@
+{
+  "AAPL": [
+    { "symbol": "AAPL", "strike": 240.0, "expiry": "2026-04-17", "type": "Call", "volume": 12000, "openInterest": 18000, "impliedVolatility": 0.28, "premium": 380000, "isUnusual": true, "detectedAt": "2026-03-02T15:42:00Z" },
+    { "symbol": "AAPL", "strike": 235.0, "expiry": "2026-03-21", "type": "Put", "volume": 1200, "openInterest": 8500, "impliedVolatility": 0.22, "premium": 95000, "isUnusual": false, "detectedAt": "2026-03-02T14:15:00Z" },
+    { "symbol": "AAPL", "strike": 245.0, "expiry": "2026-05-15", "type": "Call", "volume": 4500, "openInterest": 12000, "impliedVolatility": 0.31, "premium": 225000, "isUnusual": false, "detectedAt": "2026-03-02T13:28:00Z" },
+    { "symbol": "AAPL", "strike": 238.0, "expiry": "2026-03-28", "type": "Call", "volume": 18500, "openInterest": 22000, "impliedVolatility": 0.26, "premium": 520000, "isUnusual": true, "detectedAt": "2026-03-02T16:05:00Z" },
+    { "symbol": "AAPL", "strike": 232.0, "expiry": "2026-04-17", "type": "Put", "volume": 3500, "openInterest": 15000, "impliedVolatility": 0.24, "premium": 125000, "isUnusual": false, "detectedAt": "2026-03-02T12:50:00Z" },
+    { "symbol": "AAPL", "strike": 242.0, "expiry": "2026-03-14", "type": "Call", "volume": 22000, "openInterest": 12000, "impliedVolatility": 0.35, "premium": 680000, "isUnusual": true, "detectedAt": "2026-03-02T11:22:00Z" }
+  ],
+  "MSFT": [
+    { "symbol": "MSFT", "strike": 445.0, "expiry": "2026-04-18", "type": "Call", "volume": 8500, "openInterest": 25000, "impliedVolatility": 0.25, "premium": 425000, "isUnusual": false, "detectedAt": "2026-03-02T15:55:00Z" },
+    { "symbol": "MSFT", "strike": 450.0, "expiry": "2026-03-21", "type": "Call", "volume": 18000, "openInterest": 15000, "impliedVolatility": 0.28, "premium": 720000, "isUnusual": true, "detectedAt": "2026-03-02T14:40:00Z" },
+    { "symbol": "MSFT", "strike": 440.0, "expiry": "2026-05-16", "type": "Put", "volume": 2100, "openInterest": 12000, "impliedVolatility": 0.23, "premium": 168000, "isUnusual": false, "detectedAt": "2026-03-02T13:18:00Z" },
+    { "symbol": "MSFT", "strike": 452.0, "expiry": "2026-03-28", "type": "Call", "volume": 28000, "openInterest": 18000, "impliedVolatility": 0.30, "premium": 1200000, "isUnusual": true, "detectedAt": "2026-03-02T16:20:00Z" },
+    { "symbol": "MSFT", "strike": 438.0, "expiry": "2026-04-18", "type": "Put", "volume": 4200, "openInterest": 22000, "impliedVolatility": 0.22, "premium": 210000, "isUnusual": false, "detectedAt": "2026-03-02T12:35:00Z" },
+    { "symbol": "MSFT", "strike": 448.0, "expiry": "2026-03-14", "type": "Call", "volume": 15000, "openInterest": 8000, "impliedVolatility": 0.32, "premium": 550000, "isUnusual": true, "detectedAt": "2026-03-02T11:05:00Z" },
+    { "symbol": "MSFT", "strike": 442.0, "expiry": "2026-05-16", "type": "Call", "volume": 650, "openInterest": 9500, "impliedVolatility": 0.26, "premium": 52000, "isUnusual": false, "detectedAt": "2026-03-02T10:15:00Z" }
+  ],
+  "GOOGL": [
+    { "symbol": "GOOGL", "strike": 192.0, "expiry": "2026-04-17", "type": "Call", "volume": 12000, "openInterest": 18000, "impliedVolatility": 0.24, "premium": 310000, "isUnusual": true, "detectedAt": "2026-03-02T15:30:00Z" },
+    { "symbol": "GOOGL", "strike": 190.0, "expiry": "2026-03-21", "type": "Put", "volume": 1800, "openInterest": 12000, "impliedVolatility": 0.20, "premium": 72000, "isUnusual": false, "detectedAt": "2026-03-02T14:22:00Z" },
+    { "symbol": "GOOGL", "strike": 195.0, "expiry": "2026-05-15", "type": "Call", "volume": 25000, "openInterest": 15000, "impliedVolatility": 0.27, "premium": 625000, "isUnusual": true, "detectedAt": "2026-03-02T16:45:00Z" },
+    { "symbol": "GOOGL", "strike": 188.0, "expiry": "2026-03-28", "type": "Put", "volume": 3200, "openInterest": 9000, "impliedVolatility": 0.23, "premium": 128000, "isUnusual": false, "detectedAt": "2026-03-02T13:10:00Z" },
+    { "symbol": "GOOGL", "strike": 194.0, "expiry": "2026-04-17", "type": "Call", "volume": 850, "openInterest": 7500, "impliedVolatility": 0.25, "premium": 42000, "isUnusual": false, "detectedAt": "2026-03-02T12:00:00Z" },
+    { "symbol": "GOOGL", "strike": 191.0, "expiry": "2026-03-14", "type": "Call", "volume": 18500, "openInterest": 10000, "impliedVolatility": 0.29, "premium": 450000, "isUnusual": true, "detectedAt": "2026-03-02T11:35:00Z" }
+  ],
+  "AMZN": [
+    { "symbol": "AMZN", "strike": 225.0, "expiry": "2026-04-18", "type": "Call", "volume": 15000, "openInterest": 22000, "impliedVolatility": 0.32, "premium": 450000, "isUnusual": true, "detectedAt": "2026-03-02T14:30:00Z" },
+    { "symbol": "AMZN", "strike": 222.0, "expiry": "2026-03-21", "type": "Put", "volume": 2400, "openInterest": 14000, "impliedVolatility": 0.26, "premium": 168000, "isUnusual": false, "detectedAt": "2026-03-02T15:12:00Z" },
+    { "symbol": "AMZN", "strike": 228.0, "expiry": "2026-05-16", "type": "Call", "volume": 8500, "openInterest": 18000, "impliedVolatility": 0.35, "premium": 380000, "isUnusual": false, "detectedAt": "2026-03-02T13:48:00Z" },
+    { "symbol": "AMZN", "strike": 224.0, "expiry": "2026-03-28", "type": "Call", "volume": 32000, "openInterest": 12000, "impliedVolatility": 0.38, "premium": 960000, "isUnusual": true, "detectedAt": "2026-03-02T16:28:00Z" },
+    { "symbol": "AMZN", "strike": 220.0, "expiry": "2026-04-18", "type": "Put", "volume": 1200, "openInterest": 11000, "impliedVolatility": 0.28, "premium": 95000, "isUnusual": false, "detectedAt": "2026-03-02T12:25:00Z" },
+    { "symbol": "AMZN", "strike": 226.0, "expiry": "2026-03-14", "type": "Call", "volume": 42000, "openInterest": 15000, "impliedVolatility": 0.42, "premium": 1250000, "isUnusual": true, "detectedAt": "2026-03-02T11:00:00Z" }
+  ],
+  "NVDA": [
+    { "symbol": "NVDA", "strike": 890.0, "expiry": "2026-04-17", "type": "Call", "volume": 8500, "openInterest": 25000, "impliedVolatility": 0.48, "premium": 680000, "isUnusual": false, "detectedAt": "2026-03-02T15:38:00Z" },
+    { "symbol": "NVDA", "strike": 900.0, "expiry": "2026-03-21", "type": "Call", "volume": 28000, "openInterest": 12000, "impliedVolatility": 0.52, "premium": 1680000, "isUnusual": true, "detectedAt": "2026-03-02T14:55:00Z" },
+    { "symbol": "NVDA", "strike": 885.0, "expiry": "2026-05-15", "type": "Put", "volume": 3200, "openInterest": 18000, "impliedVolatility": 0.45, "premium": 320000, "isUnusual": false, "detectedAt": "2026-03-02T13:20:00Z" },
+    { "symbol": "NVDA", "strike": 895.0, "expiry": "2026-03-28", "type": "Call", "volume": 42000, "openInterest": 15000, "impliedVolatility": 0.55, "premium": 2100000, "isUnusual": true, "detectedAt": "2026-03-02T16:12:00Z" },
+    { "symbol": "NVDA", "strike": 888.0, "expiry": "2026-04-17", "type": "Put", "volume": 1500, "openInterest": 8000, "impliedVolatility": 0.47, "premium": 120000, "isUnusual": false, "detectedAt": "2026-03-02T12:40:00Z" },
+    { "symbol": "NVDA", "strike": 902.0, "expiry": "2026-03-14", "type": "Call", "volume": 38000, "openInterest": 9500, "impliedVolatility": 0.58, "premium": 1900000, "isUnusual": true, "detectedAt": "2026-03-02T11:18:00Z" },
+    { "symbol": "NVDA", "strike": 892.0, "expiry": "2026-05-15", "type": "Call", "volume": 2100, "openInterest": 14000, "impliedVolatility": 0.50, "premium": 175000, "isUnusual": false, "detectedAt": "2026-03-02T10:30:00Z" }
+  ],
+  "TSLA": [
+    { "symbol": "TSLA", "strike": 248.0, "expiry": "2026-04-18", "type": "Call", "volume": 22000, "openInterest": 18000, "impliedVolatility": 0.55, "premium": 880000, "isUnusual": true, "detectedAt": "2026-03-02T15:25:00Z" },
+    { "symbol": "TSLA", "strike": 245.0, "expiry": "2026-03-21", "type": "Put", "volume": 4500, "openInterest": 22000, "impliedVolatility": 0.48, "premium": 225000, "isUnusual": false, "detectedAt": "2026-03-02T14:42:00Z" },
+    { "symbol": "TSLA", "strike": 250.0, "expiry": "2026-05-16", "type": "Call", "volume": 35000, "openInterest": 15000, "impliedVolatility": 0.62, "premium": 1400000, "isUnusual": true, "detectedAt": "2026-03-02T16:05:00Z" },
+    { "symbol": "TSLA", "strike": 242.0, "expiry": "2026-03-28", "type": "Put", "volume": 1800, "openInterest": 12000, "impliedVolatility": 0.52, "premium": 108000, "isUnusual": false, "detectedAt": "2026-03-02T13:15:00Z" },
+    { "symbol": "TSLA", "strike": 252.0, "expiry": "2026-04-18", "type": "Call", "volume": 45000, "openInterest": 10000, "impliedVolatility": 0.65, "premium": 1800000, "isUnusual": true, "detectedAt": "2026-03-02T12:50:00Z" },
+    { "symbol": "TSLA", "strike": 246.0, "expiry": "2026-03-14", "type": "Call", "volume": 2800, "openInterest": 9500, "impliedVolatility": 0.58, "premium": 168000, "isUnusual": false, "detectedAt": "2026-03-02T11:35:00Z" }
+  ],
+  "META": [
+    { "symbol": "META", "strike": 610.0, "expiry": "2026-04-17", "type": "Call", "volume": 12000, "openInterest": 20000, "impliedVolatility": 0.38, "premium": 720000, "isUnusual": true, "detectedAt": "2026-03-02T15:50:00Z" },
+    { "symbol": "META", "strike": 605.0, "expiry": "2026-03-21", "type": "Put", "volume": 2800, "openInterest": 15000, "impliedVolatility": 0.32, "premium": 196000, "isUnusual": false, "detectedAt": "2026-03-02T14:28:00Z" },
+    { "symbol": "META", "strike": 615.0, "expiry": "2026-05-15", "type": "Call", "volume": 8500, "openInterest": 18000, "impliedVolatility": 0.42, "premium": 425000, "isUnusual": false, "detectedAt": "2026-03-02T13:42:00Z" },
+    { "symbol": "META", "strike": 608.0, "expiry": "2026-03-28", "type": "Call", "volume": 25000, "openInterest": 12000, "impliedVolatility": 0.40, "premium": 1000000, "isUnusual": true, "detectedAt": "2026-03-02T16:18:00Z" },
+    { "symbol": "META", "strike": 602.0, "expiry": "2026-04-17", "type": "Put", "volume": 1500, "openInterest": 9500, "impliedVolatility": 0.35, "premium": 112500, "isUnusual": false, "detectedAt": "2026-03-02T12:10:00Z" },
+    { "symbol": "META", "strike": 612.0, "expiry": "2026-03-14", "type": "Call", "volume": 38000, "openInterest": 10000, "impliedVolatility": 0.45, "premium": 1520000, "isUnusual": true, "detectedAt": "2026-03-02T10:55:00Z" }
+  ],
+  "AMD": [
+    { "symbol": "AMD", "strike": 165.0, "expiry": "2026-04-18", "type": "Call", "volume": 28000, "openInterest": 22000, "impliedVolatility": 0.52, "premium": 560000, "isUnusual": true, "detectedAt": "2026-03-02T15:35:00Z" },
+    { "symbol": "AMD", "strike": 162.0, "expiry": "2026-03-21", "type": "Put", "volume": 3200, "openInterest": 14000, "impliedVolatility": 0.45, "premium": 128000, "isUnusual": false, "detectedAt": "2026-03-02T14:15:00Z" },
+    { "symbol": "AMD", "strike": 168.0, "expiry": "2026-05-16", "type": "Call", "volume": 18000, "openInterest": 12000, "impliedVolatility": 0.55, "premium": 450000, "isUnusual": true, "detectedAt": "2026-03-02T16:42:00Z" },
+    { "symbol": "AMD", "strike": 164.0, "expiry": "2026-03-28", "type": "Call", "volume": 1200, "openInterest": 18000, "impliedVolatility": 0.48, "premium": 72000, "isUnusual": false, "detectedAt": "2026-03-02T13:05:00Z" },
+    { "symbol": "AMD", "strike": 166.0, "expiry": "2026-04-18", "type": "Put", "volume": 42000, "openInterest": 8000, "impliedVolatility": 0.58, "premium": 840000, "isUnusual": true, "detectedAt": "2026-03-02T12:25:00Z" },
+    { "symbol": "AMD", "strike": 163.0, "expiry": "2026-03-14", "type": "Call", "volume": 5500, "openInterest": 16000, "impliedVolatility": 0.50, "premium": 220000, "isUnusual": false, "detectedAt": "2026-03-02T11:48:00Z" },
+    { "symbol": "AMD", "strike": 167.0, "expiry": "2026-05-16", "type": "Call", "volume": 35000, "openInterest": 9500, "impliedVolatility": 0.60, "premium": 700000, "isUnusual": true, "detectedAt": "2026-03-02T10:20:00Z" }
+  ],
+  "NFLX": [
+    { "symbol": "NFLX", "strike": 725.0, "expiry": "2026-04-17", "type": "Call", "volume": 15000, "openInterest": 20000, "impliedVolatility": 0.42, "premium": 750000, "isUnusual": true, "detectedAt": "2026-03-02T15:22:00Z" },
+    { "symbol": "NFLX", "strike": 720.0, "expiry": "2026-03-21", "type": "Put", "volume": 2500, "openInterest": 12000, "impliedVolatility": 0.38, "premium": 187500, "isUnusual": false, "detectedAt": "2026-03-02T14:38:00Z" },
+    { "symbol": "NFLX", "strike": 730.0, "expiry": "2026-05-15", "type": "Call", "volume": 32000, "openInterest": 15000, "impliedVolatility": 0.48, "premium": 1280000, "isUnusual": true, "detectedAt": "2026-03-02T16:55:00Z" },
+    { "symbol": "NFLX", "strike": 722.0, "expiry": "2026-03-28", "type": "Call", "volume": 1800, "openInterest": 10000, "impliedVolatility": 0.40, "premium": 108000, "isUnusual": false, "detectedAt": "2026-03-02T13:12:00Z" },
+    { "symbol": "NFLX", "strike": 718.0, "expiry": "2026-04-17", "type": "Put", "volume": 45000, "openInterest": 9000, "impliedVolatility": 0.45, "premium": 1350000, "isUnusual": true, "detectedAt": "2026-03-02T12:35:00Z" },
+    { "symbol": "NFLX", "strike": 728.0, "expiry": "2026-03-14", "type": "Call", "volume": 4200, "openInterest": 11000, "impliedVolatility": 0.44, "premium": 252000, "isUnusual": false, "detectedAt": "2026-03-02T11:05:00Z" }
+  ],
+  "JPM": [
+    { "symbol": "JPM", "strike": 215.0, "expiry": "2026-04-18", "type": "Call", "volume": 8500, "openInterest": 18000, "impliedVolatility": 0.22, "premium": 255000, "isUnusual": false, "detectedAt": "2026-03-02T15:45:00Z" },
+    { "symbol": "JPM", "strike": 212.0, "expiry": "2026-03-21", "type": "Put", "volume": 18000, "openInterest": 12000, "impliedVolatility": 0.20, "premium": 360000, "isUnusual": true, "detectedAt": "2026-03-02T14:20:00Z" },
+    { "symbol": "JPM", "strike": 218.0, "expiry": "2026-05-16", "type": "Call", "volume": 1200, "openInterest": 15000, "impliedVolatility": 0.24, "premium": 72000, "isUnusual": false, "detectedAt": "2026-03-02T13:35:00Z" },
+    { "symbol": "JPM", "strike": 214.0, "expiry": "2026-03-28", "type": "Call", "volume": 28000, "openInterest": 10000, "impliedVolatility": 0.25, "premium": 560000, "isUnusual": true, "detectedAt": "2026-03-02T16:08:00Z" },
+    { "symbol": "JPM", "strike": 210.0, "expiry": "2026-04-18", "type": "Put", "volume": 3200, "openInterest": 22000, "impliedVolatility": 0.21, "premium": 128000, "isUnusual": false, "detectedAt": "2026-03-02T12:50:00Z" },
+    { "symbol": "JPM", "strike": 216.0, "expiry": "2026-03-14", "type": "Call", "volume": 42000, "openInterest": 8000, "impliedVolatility": 0.28, "premium": 840000, "isUnusual": true, "detectedAt": "2026-03-02T11:18:00Z" }
+  ],
+  "CRM": [
+    { "symbol": "CRM", "strike": 330.0, "expiry": "2026-04-17", "type": "Call", "volume": 12000, "openInterest": 16000, "impliedVolatility": 0.35, "premium": 480000, "isUnusual": true, "detectedAt": "2026-03-02T15:18:00Z" },
+    { "symbol": "CRM", "strike": 325.0, "expiry": "2026-03-21", "type": "Put", "volume": 2200, "openInterest": 11000, "impliedVolatility": 0.30, "premium": 132000, "isUnusual": false, "detectedAt": "2026-03-02T14:42:00Z" },
+    { "symbol": "CRM", "strike": 335.0, "expiry": "2026-05-15", "type": "Call", "volume": 35000, "openInterest": 12000, "impliedVolatility": 0.40, "premium": 1050000, "isUnusual": true, "detectedAt": "2026-03-02T16:25:00Z" },
+    { "symbol": "CRM", "strike": 328.0, "expiry": "2026-03-28", "type": "Call", "volume": 1500, "openInterest": 9000, "impliedVolatility": 0.33, "premium": 90000, "isUnusual": false, "detectedAt": "2026-03-02T13:05:00Z" },
+    { "symbol": "CRM", "strike": 322.0, "expiry": "2026-04-17", "type": "Put", "volume": 38000, "openInterest": 7500, "impliedVolatility": 0.38, "premium": 760000, "isUnusual": true, "detectedAt": "2026-03-02T12:30:00Z" },
+    { "symbol": "CRM", "strike": 332.0, "expiry": "2026-03-14", "type": "Call", "volume": 4800, "openInterest": 14000, "impliedVolatility": 0.36, "premium": 240000, "isUnusual": false, "detectedAt": "2026-03-02T10:55:00Z" }
+  ],
+  "BA": [
+    { "symbol": "BA", "strike": 185.0, "expiry": "2026-04-18", "type": "Call", "volume": 22000, "openInterest": 18000, "impliedVolatility": 0.45, "premium": 440000, "isUnusual": true, "detectedAt": "2026-03-02T15:32:00Z" },
+    { "symbol": "BA", "strike": 182.0, "expiry": "2026-03-21", "type": "Put", "volume": 3800, "openInterest": 15000, "impliedVolatility": 0.42, "premium": 190000, "isUnusual": false, "detectedAt": "2026-03-02T14:15:00Z" },
+    { "symbol": "BA", "strike": 188.0, "expiry": "2026-05-16", "type": "Call", "volume": 15000, "openInterest": 12000, "impliedVolatility": 0.48, "premium": 450000, "isUnusual": true, "detectedAt": "2026-03-02T16:48:00Z" },
+    { "symbol": "BA", "strike": 184.0, "expiry": "2026-03-28", "type": "Put", "volume": 1200, "openInterest": 11000, "impliedVolatility": 0.44, "premium": 84000, "isUnusual": false, "detectedAt": "2026-03-02T13:22:00Z" },
+    { "symbol": "BA", "strike": 186.0, "expiry": "2026-04-18", "type": "Call", "volume": 45000, "openInterest": 8500, "impliedVolatility": 0.52, "premium": 900000, "isUnusual": true, "detectedAt": "2026-03-02T12:45:00Z" },
+    { "symbol": "BA", "strike": 180.0, "expiry": "2026-03-14", "type": "Put", "volume": 5500, "openInterest": 20000, "impliedVolatility": 0.50, "premium": 275000, "isUnusual": false, "detectedAt": "2026-03-02T11:10:00Z" },
+    { "symbol": "BA", "strike": 183.0, "expiry": "2026-05-16", "type": "Call", "volume": 3200, "openInterest": 9500, "impliedVolatility": 0.46, "premium": 128000, "isUnusual": false, "detectedAt": "2026-03-02T10:28:00Z" }
+  ],
+  "COIN": [
+    { "symbol": "COIN", "strike": 265.0, "expiry": "2026-04-17", "type": "Call", "volume": 25000, "openInterest": 15000, "impliedVolatility": 0.72, "premium": 625000, "isUnusual": true, "detectedAt": "2026-03-02T15:55:00Z" },
+    { "symbol": "COIN", "strike": 260.0, "expiry": "2026-03-21", "type": "Put", "volume": 4200, "openInterest": 12000, "impliedVolatility": 0.68, "premium": 252000, "isUnusual": false, "detectedAt": "2026-03-02T14:28:00Z" },
+    { "symbol": "COIN", "strike": 270.0, "expiry": "2026-05-15", "type": "Call", "volume": 38000, "openInterest": 10000, "impliedVolatility": 0.78, "premium": 950000, "isUnusual": true, "detectedAt": "2026-03-02T16:35:00Z" },
+    { "symbol": "COIN", "strike": 262.0, "expiry": "2026-03-28", "type": "Call", "volume": 1800, "openInterest": 8000, "impliedVolatility": 0.70, "premium": 126000, "isUnusual": false, "detectedAt": "2026-03-02T13:12:00Z" },
+    { "symbol": "COIN", "strike": 258.0, "expiry": "2026-04-17", "type": "Put", "volume": 42000, "openInterest": 7500, "impliedVolatility": 0.75, "premium": 840000, "isUnusual": true, "detectedAt": "2026-03-02T12:40:00Z" },
+    { "symbol": "COIN", "strike": 268.0, "expiry": "2026-03-14", "type": "Call", "volume": 52000, "openInterest": 6000, "impliedVolatility": 0.82, "premium": 1300000, "isUnusual": true, "detectedAt": "2026-03-02T11:05:00Z" }
+  ],
+  "XOM": [
+    { "symbol": "XOM", "strike": 110.0, "expiry": "2026-04-18", "type": "Call", "volume": 18000, "openInterest": 25000, "impliedVolatility": 0.28, "premium": 360000, "isUnusual": false, "detectedAt": "2026-03-02T15:40:00Z" },
+    { "symbol": "XOM", "strike": 108.0, "expiry": "2026-03-21", "type": "Put", "volume": 12000, "openInterest": 12000, "impliedVolatility": 0.25, "premium": 180000, "isUnusual": true, "detectedAt": "2026-03-02T14:22:00Z" },
+    { "symbol": "XOM", "strike": 112.0, "expiry": "2026-05-16", "type": "Call", "volume": 2800, "openInterest": 18000, "impliedVolatility": 0.30, "premium": 84000, "isUnusual": false, "detectedAt": "2026-03-02T13:48:00Z" },
+    { "symbol": "XOM", "strike": 109.0, "expiry": "2026-03-28", "type": "Call", "volume": 35000, "openInterest": 10000, "impliedVolatility": 0.32, "premium": 525000, "isUnusual": true, "detectedAt": "2026-03-02T16:15:00Z" },
+    { "symbol": "XOM", "strike": 107.0, "expiry": "2026-04-18", "type": "Put", "volume": 1500, "openInterest": 11000, "impliedVolatility": 0.26, "premium": 75000, "isUnusual": false, "detectedAt": "2026-03-02T12:35:00Z" },
+    { "symbol": "XOM", "strike": 111.0, "expiry": "2026-03-14", "type": "Call", "volume": 42000, "openInterest": 8500, "impliedVolatility": 0.35, "premium": 630000, "isUnusual": true, "detectedAt": "2026-03-02T11:18:00Z" }
+  ],
+  "LLY": [
+    { "symbol": "LLY", "strike": 820.0, "expiry": "2026-04-17", "type": "Call", "volume": 12000, "openInterest": 18000, "impliedVolatility": 0.38, "premium": 720000, "isUnusual": true, "detectedAt": "2026-03-02T15:28:00Z" },
+    { "symbol": "LLY", "strike": 815.0, "expiry": "2026-03-21", "type": "Put", "volume": 2800, "openInterest": 12000, "impliedVolatility": 0.34, "premium": 196000, "isUnusual": false, "detectedAt": "2026-03-02T14:45:00Z" },
+    { "symbol": "LLY", "strike": 825.0, "expiry": "2026-05-15", "type": "Call", "volume": 28000, "openInterest": 10000, "impliedVolatility": 0.42, "premium": 1120000, "isUnusual": true, "detectedAt": "2026-03-02T16:52:00Z" },
+    { "symbol": "LLY", "strike": 818.0, "expiry": "2026-03-28", "type": "Call", "volume": 1500, "openInterest": 9500, "impliedVolatility": 0.36, "premium": 105000, "isUnusual": false, "detectedAt": "2026-03-02T13:18:00Z" },
+    { "symbol": "LLY", "strike": 812.0, "expiry": "2026-04-17", "type": "Put", "volume": 38000, "openInterest": 8000, "impliedVolatility": 0.40, "premium": 760000, "isUnusual": true, "detectedAt": "2026-03-02T12:42:00Z" },
+    { "symbol": "LLY", "strike": 822.0, "expiry": "2026-03-14", "type": "Call", "volume": 45000, "openInterest": 7000, "impliedVolatility": 0.45, "premium": 1350000, "isUnusual": true, "detectedAt": "2026-03-02T11:05:00Z" },
+    { "symbol": "LLY", "strike": 816.0, "expiry": "2026-05-16", "type": "Put", "volume": 2200, "openInterest": 14000, "impliedVolatility": 0.37, "premium": 154000, "isUnusual": false, "detectedAt": "2026-03-02T10:25:00Z" }
+  ],
+  "UNUSUAL": [
+    { "symbol": "COIN", "strike": 268.0, "expiry": "2026-03-14", "type": "Call", "volume": 52000, "openInterest": 6000, "impliedVolatility": 0.82, "premium": 1300000, "isUnusual": true, "detectedAt": "2026-03-02T11:05:00Z" },
+    { "symbol": "AMD", "strike": 166.0, "expiry": "2026-04-18", "type": "Put", "volume": 42000, "openInterest": 8000, "impliedVolatility": 0.58, "premium": 840000, "isUnusual": true, "detectedAt": "2026-03-02T12:25:00Z" },
+    { "symbol": "LLY", "strike": 822.0, "expiry": "2026-03-14", "type": "Call", "volume": 45000, "openInterest": 7000, "impliedVolatility": 0.45, "premium": 1350000, "isUnusual": true, "detectedAt": "2026-03-02T11:05:00Z" },
+    { "symbol": "COIN", "strike": 258.0, "expiry": "2026-04-17", "type": "Put", "volume": 42000, "openInterest": 7500, "impliedVolatility": 0.75, "premium": 840000, "isUnusual": true, "detectedAt": "2026-03-02T12:40:00Z" },
+    { "symbol": "JPM", "strike": 216.0, "expiry": "2026-03-14", "type": "Call", "volume": 42000, "openInterest": 8000, "impliedVolatility": 0.28, "premium": 840000, "isUnusual": true, "detectedAt": "2026-03-02T11:18:00Z" },
+    { "symbol": "CRM", "strike": 322.0, "expiry": "2026-04-17", "type": "Put", "volume": 38000, "openInterest": 7500, "impliedVolatility": 0.38, "premium": 760000, "isUnusual": true, "detectedAt": "2026-03-02T12:30:00Z" },
+    { "symbol": "NFLX", "strike": 718.0, "expiry": "2026-04-17", "type": "Put", "volume": 45000, "openInterest": 9000, "impliedVolatility": 0.45, "premium": 1350000, "isUnusual": true, "detectedAt": "2026-03-02T12:35:00Z" },
+    { "symbol": "BA", "strike": 186.0, "expiry": "2026-04-18", "type": "Call", "volume": 45000, "openInterest": 8500, "impliedVolatility": 0.52, "premium": 900000, "isUnusual": true, "detectedAt": "2026-03-02T12:45:00Z" },
+    { "symbol": "AMD", "strike": 167.0, "expiry": "2026-05-16", "type": "Call", "volume": 35000, "openInterest": 9500, "impliedVolatility": 0.60, "premium": 700000, "isUnusual": true, "detectedAt": "2026-03-02T10:20:00Z" },
+    { "symbol": "TSLA", "strike": 252.0, "expiry": "2026-04-18", "type": "Call", "volume": 45000, "openInterest": 10000, "impliedVolatility": 0.65, "premium": 1800000, "isUnusual": true, "detectedAt": "2026-03-02T12:50:00Z" },
+    { "symbol": "NVDA", "strike": 902.0, "expiry": "2026-03-14", "type": "Call", "volume": 38000, "openInterest": 9500, "impliedVolatility": 0.58, "premium": 1900000, "isUnusual": true, "detectedAt": "2026-03-02T11:18:00Z" },
+    { "symbol": "META", "strike": 612.0, "expiry": "2026-03-14", "type": "Call", "volume": 38000, "openInterest": 10000, "impliedVolatility": 0.45, "premium": 1520000, "isUnusual": true, "detectedAt": "2026-03-02T10:55:00Z" },
+    { "symbol": "XOM", "strike": 111.0, "expiry": "2026-03-14", "type": "Call", "volume": 42000, "openInterest": 8500, "impliedVolatility": 0.35, "premium": 630000, "isUnusual": true, "detectedAt": "2026-03-02T11:18:00Z" },
+    { "symbol": "AMZN", "strike": 226.0, "expiry": "2026-03-14", "type": "Call", "volume": 42000, "openInterest": 15000, "impliedVolatility": 0.42, "premium": 1250000, "isUnusual": true, "detectedAt": "2026-03-02T11:00:00Z" },
+    { "symbol": "NVDA", "strike": 895.0, "expiry": "2026-03-28", "type": "Call", "volume": 42000, "openInterest": 15000, "impliedVolatility": 0.55, "premium": 2100000, "isUnusual": true, "detectedAt": "2026-03-02T16:12:00Z" },
+    { "symbol": "TSLA", "strike": 250.0, "expiry": "2026-05-16", "type": "Call", "volume": 35000, "openInterest": 15000, "impliedVolatility": 0.62, "premium": 1400000, "isUnusual": true, "detectedAt": "2026-03-02T16:05:00Z" },
+    { "symbol": "COIN", "strike": 270.0, "expiry": "2026-05-15", "type": "Call", "volume": 38000, "openInterest": 10000, "impliedVolatility": 0.78, "premium": 950000, "isUnusual": true, "detectedAt": "2026-03-02T16:35:00Z" },
+    { "symbol": "NFLX", "strike": 730.0, "expiry": "2026-05-15", "type": "Call", "volume": 32000, "openInterest": 15000, "impliedVolatility": 0.48, "premium": 1280000, "isUnusual": true, "detectedAt": "2026-03-02T16:55:00Z" },
+    { "symbol": "CRM", "strike": 335.0, "expiry": "2026-05-15", "type": "Call", "volume": 35000, "openInterest": 12000, "impliedVolatility": 0.40, "premium": 1050000, "isUnusual": true, "detectedAt": "2026-03-02T16:25:00Z" },
+    { "symbol": "LLY", "strike": 825.0, "expiry": "2026-05-15", "type": "Call", "volume": 28000, "openInterest": 10000, "impliedVolatility": 0.42, "premium": 1120000, "isUnusual": true, "detectedAt": "2026-03-02T16:52:00Z" }
+  ]
+}

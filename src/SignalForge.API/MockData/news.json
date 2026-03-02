@@ -1,0 +1,834 @@
+{
+  "AAPL": [
+    {
+      "title": "Apple Reports Record iPhone Services Revenue Despite Soft Q1 Hardware Sales",
+      "url": "https://www.bloomberg.com/news/articles/apple-iphone-services-record-q1",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T14:30:00Z",
+      "sentimentScore": 0.6,
+      "summary": "Apple beat Wall Street expectations on services revenue while iPhone unit sales came in slightly below estimates amid a challenging smartphone market."
+    },
+    {
+      "title": "Apple Vision Pro 2 Launch Delayed to Late 2026, Supply Chain Sources Say",
+      "url": "https://www.reuters.com/technology/apple-vision-pro-delay",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T09:15:00Z",
+      "sentimentScore": -0.4,
+      "summary": "Apple has pushed back the launch of its second-generation Vision Pro headset amid component sourcing challenges and slower-than-expected adoption of the first model."
+    },
+    {
+      "title": "Bernstein Upgrades Apple to Outperform, Sees AI Upgrade Cycle Driving Growth",
+      "url": "https://www.cnbc.com/analyst-apple-upgrade",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T16:45:00Z",
+      "sentimentScore": 0.8,
+      "summary": "Analysts at Bernstein upgraded Apple from market perform, citing the upcoming AI-powered iPhone cycle as a major catalyst for the next 12 months."
+    },
+    {
+      "title": "Apple Faces EU Antitrust Fine Over App Store Rules",
+      "url": "https://www.ft.com/content/apple-eu-fine",
+      "source": "Financial Times",
+      "publishedAt": "2026-02-27T11:00:00Z",
+      "sentimentScore": -0.6,
+      "summary": "The European Commission is preparing a significant fine against Apple for allegedly violating antitrust rules with its App Store policies."
+    },
+    {
+      "title": "Apple Announces Partnership With OpenAI for Siri Integration",
+      "url": "https://www.marketwatch.com/story/apple-openai-partnership",
+      "source": "MarketWatch",
+      "publishedAt": "2026-02-26T08:00:00Z",
+      "sentimentScore": 0.7,
+      "summary": "Apple and OpenAI have inked a deal to integrate ChatGPT technology into Siri, expected to roll out with the next iOS update."
+    },
+    {
+      "title": "Apple Stock Hits New 52-Week High on AI Optimism",
+      "url": "https://finance.yahoo.com/news/apple-52-week-high",
+      "source": "Yahoo Finance",
+      "publishedAt": "2026-02-25T13:20:00Z",
+      "sentimentScore": 0.85,
+      "summary": "Shares of Apple reached a new 52-week high as investors bet on the company's AI strategy ahead of its annual developer conference."
+    }
+  ],
+  "MSFT": [
+    {
+      "title": "Microsoft Azure Growth Accelerates in Q2, Beats Cloud Rivals",
+      "url": "https://www.bloomberg.com/news/azure-growth-q2",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T20:15:00Z",
+      "sentimentScore": 0.85,
+      "summary": "Microsoft's cloud division posted 29% revenue growth, outpacing Amazon AWS and Google Cloud as enterprises double down on AI infrastructure."
+    },
+    {
+      "title": "Microsoft Copilot Reaches 500 Enterprise Customers Milestone",
+      "url": "https://www.reuters.com/technology/microsoft-copilot-milestone",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T14:00:00Z",
+      "sentimentScore": 0.7,
+      "summary": "Microsoft's AI assistant Copilot has surpassed 500 enterprise customers since its rollout, with strong adoption in financial services and healthcare."
+    },
+    {
+      "title": "Microsoft to Invest $3.2B in AI Data Centers in Wisconsin",
+      "url": "https://www.cnbc.com/microsoft-wisconsin-investment",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T10:30:00Z",
+      "sentimentScore": 0.5,
+      "summary": "Microsoft announced a major investment in Wisconsin to build new AI data centers, creating thousands of jobs in the state."
+    },
+    {
+      "title": "OpenAI Board Dispute Raises Questions for Microsoft's AI Strategy",
+      "url": "https://www.wsj.com/tech/openai-microsoft-board",
+      "source": "The Wall Street Journal",
+      "publishedAt": "2026-02-27T18:45:00Z",
+      "sentimentScore": -0.3,
+      "summary": "Internal tensions at OpenAI have reignited concerns about Microsoft's $13 billion investment and governance structure in the AI startup."
+    },
+    {
+      "title": "Microsoft Xbox Game Pass Subscriptions Surge After Activision Deal",
+      "url": "https://www.marketwatch.com/story/xbox-game-pass-surge",
+      "source": "MarketWatch",
+      "publishedAt": "2026-02-26T12:00:00Z",
+      "sentimentScore": 0.65,
+      "summary": "Game Pass subscriptions jumped 15% quarter-over-quarter as Microsoft integrates Activision Blizzard titles into the service."
+    },
+    {
+      "title": "Microsoft Teams Gains Market Share Against Zoom, Slack",
+      "url": "https://www.barrons.com/articles/microsoft-teams-market-share",
+      "source": "Barron's",
+      "publishedAt": "2026-02-24T09:00:00Z",
+      "sentimentScore": 0.55,
+      "summary": "Microsoft Teams has captured 21% of the enterprise collaboration market, gaining ground on rivals as hybrid work becomes permanent."
+    }
+  ],
+  "GOOGL": [
+    {
+      "title": "Google Parent Alphabet Posts Strong Ad Revenue as Search Holds Up",
+      "url": "https://www.bloomberg.com/news/google-alphabet-earnings",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T21:00:00Z",
+      "sentimentScore": 0.75,
+      "summary": "Alphabet reported better-than-expected ad revenue, with Google Search showing resilience despite increased AI-driven competition."
+    },
+    {
+      "title": "Google DeepMind Gemini Model Surpasses GPT-4 in Benchmark Tests",
+      "url": "https://www.reuters.com/technology/google-gemini-benchmark",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T07:30:00Z",
+      "sentimentScore": 0.8,
+      "summary": "Google's latest Gemini AI model topped OpenAI's GPT-4 in several industry benchmark tests, according to independent evaluations."
+    },
+    {
+      "title": "Google Faces $2.7B EU Fine Over Digital Advertising Practices",
+      "url": "https://www.ft.com/content/google-eu-ad-fine",
+      "source": "Financial Times",
+      "publishedAt": "2026-02-28T15:20:00Z",
+      "sentimentScore": -0.7,
+      "summary": "The European Commission is set to impose a record fine on Google for anticompetitive practices in its digital advertising business."
+    },
+    {
+      "title": "YouTube Shorts Monetization Ramp Drives 40% Creator Revenue Growth",
+      "url": "https://www.cnbc.com/youtube-shorts-monetization",
+      "source": "CNBC",
+      "publishedAt": "2026-02-27T11:45:00Z",
+      "sentimentScore": 0.6,
+      "summary": "YouTube's expanded Shorts monetization program has driven significant revenue growth for creators, narrowing the gap with TikTok."
+    },
+    {
+      "title": "Google Cloud Secures Major Deal With Pentagon for AI Defense Tools",
+      "url": "https://www.wsj.com/tech/google-pentagon-deal",
+      "source": "The Wall Street Journal",
+      "publishedAt": "2026-02-26T16:00:00Z",
+      "sentimentScore": 0.65,
+      "summary": "Google Cloud has won a multi-year contract with the Department of Defense to develop AI-powered cybersecurity and reconnaissance tools."
+    },
+    {
+      "title": "Alphabet Stock Downgraded by Morgan Stanley on Valuation Concerns",
+      "url": "https://seekingalpha.com/article/google-downgrade",
+      "source": "Seeking Alpha",
+      "publishedAt": "2026-02-24T14:30:00Z",
+      "sentimentScore": -0.35,
+      "summary": "Morgan Stanley cut its rating on Alphabet to equal-weight, citing rich valuation after the stock's 45% run-up over the past year."
+    }
+  ],
+  "AMZN": [
+    {
+      "title": "Amazon Web Services Loses Key Government Contract to Microsoft",
+      "url": "https://www.bloomberg.com/news/aws-jedi-contract",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T17:45:00Z",
+      "sentimentScore": -0.55,
+      "summary": "The Pentagon has awarded a $9 billion cloud contract to Microsoft, dealing a blow to AWS's government business ambitions."
+    },
+    {
+      "title": "Amazon Prime Subscriber Growth Reaccelerates in Q4",
+      "url": "https://www.reuters.com/business/amazon-prime-growth",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T13:00:00Z",
+      "sentimentScore": 0.7,
+      "summary": "Amazon Prime added 12 million new subscribers in the holiday quarter, reversing a slowdown seen earlier in 2025."
+    },
+    {
+      "title": "Amazon to Launch Grocery Delivery Expansion in 50 New Markets",
+      "url": "https://www.cnbc.com/amazon-grocery-expansion",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T08:00:00Z",
+      "sentimentScore": 0.55,
+      "summary": "Amazon is expanding its Fresh and Whole Foods delivery service to 50 additional metropolitan areas by year-end."
+    },
+    {
+      "title": "FTC Investigates Amazon's AI Product Recommendations for Bias",
+      "url": "https://www.marketwatch.com/story/amazon-ftc-ai-investigation",
+      "source": "MarketWatch",
+      "publishedAt": "2026-02-27T09:30:00Z",
+      "sentimentScore": -0.5,
+      "summary": "The Federal Trade Commission has opened an inquiry into whether Amazon's AI-driven product recommendations unfairly favor its private-label brands."
+    },
+    {
+      "title": "Amazon Robotics Division Reports First Profitable Quarter",
+      "url": "https://www.barrons.com/articles/amazon-robotics-profit",
+      "source": "Barron's",
+      "publishedAt": "2026-02-26T10:15:00Z",
+      "sentimentScore": 0.6,
+      "summary": "Amazon's warehouse robotics business turned profitable for the first time as automation efficiency gains offset labor cost pressures."
+    },
+    {
+      "title": "Analysts Bullish on Amazon's Advertising Revenue Potential",
+      "url": "https://www.investors.com/news/amazon-ad-revenue",
+      "source": "Investor's Business Daily",
+      "publishedAt": "2026-02-24T12:00:00Z",
+      "sentimentScore": 0.75,
+      "summary": "Wall Street analysts see Amazon's ad business as a major growth driver, with revenue potentially doubling by 2028."
+    }
+  ],
+  "NVDA": [
+    {
+      "title": "Nvidia Announces Next-Gen Blackwell Chips, Shares Soar 8%",
+      "url": "https://www.bloomberg.com/news/nvidia-blackwell-launch",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T18:00:00Z",
+      "sentimentScore": 0.9,
+      "summary": "Nvidia unveiled its Blackwell GPU architecture with significant performance gains, sending shares to a new all-time high."
+    },
+    {
+      "title": "Nvidia Data Center Revenue Tops $25B, Exceeds All Expectations",
+      "url": "https://www.reuters.com/technology/nvidia-earnings-record",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T21:30:00Z",
+      "sentimentScore": 0.85,
+      "summary": "Nvidia reported record data center revenue of $25.4 billion, with demand for AI chips showing no signs of cooling."
+    },
+    {
+      "title": "US Restricts Nvidia Chip Export to Middle East Amid Geopolitical Tensions",
+      "url": "https://www.ft.com/content/nvidia-export-restrictions",
+      "source": "Financial Times",
+      "publishedAt": "2026-02-28T14:00:00Z",
+      "sentimentScore": -0.55,
+      "summary": "The Commerce Department has expanded export controls on Nvidia's high-performance chips to certain Middle Eastern nations."
+    },
+    {
+      "title": "Nvidia Strikes Partnership With Major Automakers for Autonomous Driving",
+      "url": "https://www.cnbc.com/nvidia-auto-partnership",
+      "source": "CNBC",
+      "publishedAt": "2026-02-27T11:00:00Z",
+      "sentimentScore": 0.7,
+      "summary": "Nvidia's Drive platform will power next-generation autonomous systems for Ford, GM, and several Chinese EV makers."
+    },
+    {
+      "title": "Some Analysts See Nvidia Valuation Stretched, Recommend Caution",
+      "url": "https://seekingalpha.com/article/nvidia-valuation-warning",
+      "source": "Seeking Alpha",
+      "publishedAt": "2026-02-26T15:45:00Z",
+      "sentimentScore": -0.35,
+      "summary": "A growing chorus of analysts warn that Nvidia's stock price reflects overly optimistic AI demand assumptions."
+    },
+    {
+      "title": "Nvidia Opens New AI Research Lab in Taiwan",
+      "url": "https://www.wsj.com/tech/nvidia-taiwan-lab",
+      "source": "The Wall Street Journal",
+      "publishedAt": "2026-02-25T06:00:00Z",
+      "sentimentScore": 0.5,
+      "summary": "Nvidia is establishing a major AI research facility in Taiwan to deepen collaboration with local semiconductor partners."
+    }
+  ],
+  "TSLA": [
+    {
+      "title": "Tesla Recalls 2.2 Million Vehicles Over Autopilot Software Glitch",
+      "url": "https://www.reuters.com/business/tesla-recall-autopilot",
+      "source": "Reuters",
+      "publishedAt": "2026-03-02T10:00:00Z",
+      "sentimentScore": -0.75,
+      "summary": "Tesla is recalling millions of vehicles to address a software issue in its Autopilot system identified by federal safety regulators."
+    },
+    {
+      "title": "Tesla Model Y Refresh Drives Record Orders in China",
+      "url": "https://www.bloomberg.com/news/tesla-china-orders",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-01T08:30:00Z",
+      "sentimentScore": 0.7,
+      "summary": "The refreshed Model Y has received over 100,000 orders in China within the first week of availability."
+    },
+    {
+      "title": "Elon Musk Says Tesla Robotaxi Launch On Track for August 2026",
+      "url": "https://www.cnbc.com/tesla-robotaxi-timeline",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T19:00:00Z",
+      "sentimentScore": 0.65,
+      "summary": "Tesla CEO reaffirmed the Robotaxi unveil date, claiming the autonomous ride-hailing fleet will transform mobility and company margins."
+    },
+    {
+      "title": "Tesla Cuts Full-Self Driving Price by 25% to Boost Adoption",
+      "url": "https://www.marketwatch.com/story/tesla-fsd-price-cut",
+      "source": "MarketWatch",
+      "publishedAt": "2026-02-27T12:00:00Z",
+      "sentimentScore": 0.45,
+      "summary": "Tesla lowered FSD subscription and one-time purchase prices in an effort to expand the supervised autonomy user base."
+    },
+    {
+      "title": "Tesla Faces Lawsuit Over Alleged Defective Batteries in Older Models",
+      "url": "https://www.wsj.com/business/tesla-battery-lawsuit",
+      "source": "The Wall Street Journal",
+      "publishedAt": "2026-02-26T14:30:00Z",
+      "sentimentScore": -0.6,
+      "summary": "A class-action lawsuit alleges Tesla knowingly sold vehicles with defective battery packs that degrade prematurely."
+    },
+    {
+      "title": "Tesla Energy Storage Business Surges 200% Year-Over-Year",
+      "url": "https://www.barrons.com/articles/tesla-energy-storage",
+      "source": "Barron's",
+      "publishedAt": "2026-02-24T11:00:00Z",
+      "sentimentScore": 0.8,
+      "summary": "Tesla's Megapack and Powerwall divisions are seeing explosive growth as utilities race to add grid storage capacity."
+    }
+  ],
+  "META": [
+    {
+      "title": "Meta's Reality Labs Losses Narrow as Quest Sales Pick Up",
+      "url": "https://www.bloomberg.com/news/meta-reality-labs",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T19:30:00Z",
+      "sentimentScore": 0.55,
+      "summary": "Meta's metaverse division reduced its operating loss by 18% as Quest 3 headset sales exceeded expectations."
+    },
+    {
+      "title": "Meta Platforms Hit With Privacy Fine in EU Over Ad Targeting",
+      "url": "https://www.reuters.com/technology/meta-eu-privacy-fine",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T09:45:00Z",
+      "sentimentScore": -0.5,
+      "summary": "Ireland's data protection authority imposed a €350 million fine on Meta for unlawful data processing in its advertising system."
+    },
+    {
+      "title": "Instagram Reels Monetization Surges, Outpacing TikTok Creator Pay",
+      "url": "https://www.cnbc.com/instagram-reels-revenue",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T13:00:00Z",
+      "sentimentScore": 0.7,
+      "summary": "Meta's Reels Play bonus program is paying creators significantly more per view than TikTok's Creator Fund, driving creator migration."
+    },
+    {
+      "title": "Meta Llama 4 Open-Source Model Challenges GPT-4 in Benchmarks",
+      "url": "https://www.ft.com/content/meta-llama-4",
+      "source": "Financial Times",
+      "publishedAt": "2026-02-27T16:30:00Z",
+      "sentimentScore": 0.75,
+      "summary": "Meta's latest open-source Llama 4 model rivals closed-source alternatives, giving the company a credible AI narrative."
+    },
+    {
+      "title": "WhatsApp Business API Crosses 200 Million Business Accounts",
+      "url": "https://www.marketwatch.com/story/whatsapp-business-milestone",
+      "source": "MarketWatch",
+      "publishedAt": "2026-02-26T08:45:00Z",
+      "sentimentScore": 0.6,
+      "summary": "WhatsApp's business platform has surpassed 200 million accounts, becoming a major revenue driver for Meta's family of apps."
+    },
+    {
+      "title": "Meta Stock Upgraded to Buy at Goldman on Ad Recovery",
+      "url": "https://www.investors.com/news/meta-upgrade-goldman",
+      "source": "Investor's Business Daily",
+      "publishedAt": "2026-02-24T10:00:00Z",
+      "sentimentScore": 0.8,
+      "summary": "Goldman Sachs upgraded Meta to buy, citing resilient ad demand and improving efficiency in the company's cost structure."
+    }
+  ],
+  "JPM": [
+    {
+      "title": "JPMorgan Chase Reports Record Q4 Profit on Strong Trading, Investment Banking",
+      "url": "https://www.bloomberg.com/news/jpmorgan-record-profit",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T12:30:00Z",
+      "sentimentScore": 0.85,
+      "summary": "JPMorgan posted its best fourth quarter ever, with markets and investment banking revenues exceeding analyst expectations."
+    },
+    {
+      "title": "Jamie Dimon: Fed May Need to Hold Rates Higher for Longer",
+      "url": "https://www.reuters.com/business/jpmorgan-dimon-rates",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T15:00:00Z",
+      "sentimentScore": -0.2,
+      "summary": "JPMorgan CEO warned that interest rates could remain elevated as the economy proves more resilient than expected."
+    },
+    {
+      "title": "JPMorgan to Acquire Wealth Management Firm for $2.5B",
+      "url": "https://www.cnbc.com/jpmorgan-acquisition-wealth",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T11:00:00Z",
+      "sentimentScore": 0.6,
+      "summary": "JPMorgan has agreed to buy a regional wealth manager to expand its presence in high-net-worth advisory services."
+    },
+    {
+      "title": "JPMorgan Faces DOJ Probe Over Epstein Banking Records",
+      "url": "https://www.wsj.com/business/jpmorgan-epstein-probe",
+      "source": "The Wall Street Journal",
+      "publishedAt": "2026-02-27T09:00:00Z",
+      "sentimentScore": -0.65,
+      "summary": "The Justice Department is investigating JPMorgan's handling of Jeffrey Epstein's accounts, sources familiar with the matter say."
+    },
+    {
+      "title": "JPMorgan Raises Dividend 10%, Authorizes $30B Buyback",
+      "url": "https://www.barrons.com/articles/jpmorgan-dividend-buyback",
+      "source": "Barron's",
+      "publishedAt": "2026-02-26T14:00:00Z",
+      "sentimentScore": 0.8,
+      "summary": "JPMorgan increased its quarterly dividend and announced a new $30 billion share repurchase authorization, rewarding shareholders."
+    },
+    {
+      "title": "JPMorgan AI Investments Pay Off as Efficiency Ratios Improve",
+      "url": "https://seekingalpha.com/article/jpmorgan-ai-efficiency",
+      "source": "Seeking Alpha",
+      "publishedAt": "2026-02-24T13:30:00Z",
+      "sentimentScore": 0.5,
+      "summary": "JPMorgan's $15 billion AI and tech spend over five years is yielding measurable efficiency gains across operations."
+    }
+  ],
+  "NFLX": [
+    {
+      "title": "Netflix Adds 13 Million Subscribers in Q1, Beating Estimates",
+      "url": "https://www.bloomberg.com/news/netflix-subscribers-q1",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T16:00:00Z",
+      "sentimentScore": 0.85,
+      "summary": "Netflix's subscriber growth accelerated sharply, driven by password-sharing crackdown and strong content slate."
+    },
+    {
+      "title": "Netflix Gaming Division Reaches 50 Million Monthly Users",
+      "url": "https://www.reuters.com/technology/netflix-gaming-milestone",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T10:30:00Z",
+      "sentimentScore": 0.65,
+      "summary": "Netflix's fledgling games business has crossed 50 million monthly active users, emerging as a potential new revenue stream."
+    },
+    {
+      "title": "Netflix Raises Prices in US, UK as Content Costs Soar",
+      "url": "https://www.cnbc.com/netflix-price-increase",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T12:15:00Z",
+      "sentimentScore": -0.35,
+      "summary": "Netflix announced price increases across its US and UK plans, with the premium tier rising by $3 per month."
+    },
+    {
+      "title": "Netflix Wins Bidding War for Major Sports Rights Package",
+      "url": "https://www.ft.com/content/netflix-sports-rights",
+      "source": "Financial Times",
+      "publishedAt": "2026-02-27T14:00:00Z",
+      "sentimentScore": 0.7,
+      "summary": "Netflix secured streaming rights to a major sports league in a multi-billion dollar deal, entering live sports for the first time."
+    },
+    {
+      "title": "Squid Game Season 2 Breaks Netflix Viewing Records",
+      "url": "https://www.marketwatch.com/story/squid-game-netflix-records",
+      "source": "MarketWatch",
+      "publishedAt": "2026-02-26T07:00:00Z",
+      "sentimentScore": 0.8,
+      "summary": "The second season of Squid Game became Netflix's most-watched series debut ever, with 265 million hours viewed in the first week."
+    },
+    {
+      "title": "Analysts Cut Netflix Price Targets on Slower Ad Tier Growth",
+      "url": "https://www.investors.com/news/netflix-ad-tier-downgrade",
+      "source": "Investor's Business Daily",
+      "publishedAt": "2026-02-24T15:00:00Z",
+      "sentimentScore": -0.4,
+      "summary": "Several analysts trimmed Netflix price targets, citing slower-than-expected adoption of the ad-supported plan."
+    }
+  ],
+  "AMD": [
+    {
+      "title": "AMD Ryzen 9000 CPUs Gain Market Share Against Intel",
+      "url": "https://www.bloomberg.com/news/amd-intel-market-share",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T11:00:00Z",
+      "sentimentScore": 0.75,
+      "summary": "AMD captured 32% of the desktop CPU market in the latest quarter, its highest share in over a decade."
+    },
+    {
+      "title": "AMD MI300 Data Center Chip Demand Exceeds Supply",
+      "url": "https://www.reuters.com/technology/amd-mi300-demand",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T08:00:00Z",
+      "sentimentScore": 0.8,
+      "summary": "AMD's AI accelerator chips are sold out through Q3 as cloud providers scramble to secure supply for AI workloads."
+    },
+    {
+      "title": "AMD Cuts Full-Year Guidance on Weak Gaming Console Sales",
+      "url": "https://www.cnbc.com/amd-guidance-cut",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T17:30:00Z",
+      "sentimentScore": -0.55,
+      "summary": "AMD lowered its revenue outlook for 2026, citing a sharper-than-expected decline in gaming console chip demand."
+    },
+    {
+      "title": "AMD Partners With Samsung for Next-Gen Mobile Chips",
+      "url": "https://www.marketwatch.com/story/amd-samsung-partnership",
+      "source": "MarketWatch",
+      "publishedAt": "2026-02-27T10:00:00Z",
+      "sentimentScore": 0.55,
+      "summary": "AMD and Samsung announced a partnership to develop custom mobile processors for future flagship smartphones."
+    },
+    {
+      "title": "AMD Stock Surges 12% on AI Chip Order Win",
+      "url": "https://finance.yahoo.com/news/amd-ai-order-surge",
+      "source": "Yahoo Finance",
+      "publishedAt": "2026-02-26T13:45:00Z",
+      "sentimentScore": 0.85,
+      "summary": "AMD shares jumped after the company disclosed a major order from a hyperscaler for its MI300X accelerators."
+    },
+    {
+      "title": "AMD Faces Patent Lawsuit From Rival over GPU Technology",
+      "url": "https://seekingalpha.com/article/amd-patent-lawsuit",
+      "source": "Seeking Alpha",
+      "publishedAt": "2026-02-24T09:30:00Z",
+      "sentimentScore": -0.45,
+      "summary": "A competitor has filed a patent infringement lawsuit against AMD, seeking to block sales of certain Radeon graphics products."
+    }
+  ],
+  "CRM": [
+    {
+      "title": "Salesforce Reports Record Q4 Revenue, Raises FY Guidance",
+      "url": "https://www.bloomberg.com/news/salesforce-earnings-q4",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T21:30:00Z",
+      "sentimentScore": 0.85,
+      "summary": "Salesforce beat on both top and bottom lines and lifted its full-year forecast, with Data Cloud and Einstein AI driving growth."
+    },
+    {
+      "title": "Salesforce Einstein AI Reaches 100,000 Customer Deployments",
+      "url": "https://www.reuters.com/technology/salesforce-einstein-milestone",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T12:00:00Z",
+      "sentimentScore": 0.75,
+      "summary": "Salesforce's AI platform has been deployed by over 100,000 customers since its launch 18 months ago."
+    },
+    {
+      "title": "Salesforce Announces Acquisition of Marketing Automation Startup",
+      "url": "https://www.cnbc.com/salesforce-acquisition",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T09:00:00Z",
+      "sentimentScore": 0.6,
+      "summary": "Salesforce has agreed to acquire a marketing technology company for $1.2 billion to strengthen its Marketing Cloud offerings."
+    },
+    {
+      "title": "Activist Investor Pushes Salesforce to Cut Costs, Return Cash",
+      "url": "https://www.wsj.com/business/salesforce-activist",
+      "source": "The Wall Street Journal",
+      "publishedAt": "2026-02-27T11:30:00Z",
+      "sentimentScore": -0.2,
+      "summary": "An activist hedge fund has built a stake in Salesforce and is urging the company to improve margins and increase buybacks."
+    },
+    {
+      "title": "Salesforce Slack Integration Drives Record Collaboration Metrics",
+      "url": "https://www.barrons.com/articles/salesforce-slack-growth",
+      "source": "Barron's",
+      "publishedAt": "2026-02-26T15:00:00Z",
+      "sentimentScore": 0.65,
+      "summary": "Deep integration of Slack into Salesforce's platform has resulted in 40% higher engagement among enterprise customers."
+    },
+    {
+      "title": "Salesforce Stock Hits All-Time High on Strong Enterprise Demand",
+      "url": "https://www.investors.com/news/salesforce-ath",
+      "source": "Investor's Business Daily",
+      "publishedAt": "2026-02-24T11:00:00Z",
+      "sentimentScore": 0.8,
+      "summary": "Salesforce shares reached a new record as enterprise software spending shows resilience despite economic uncertainty."
+    }
+  ],
+  "LLY": [
+    {
+      "title": "Eli Lilly's Mounjaro Sales Surpass $15B Annually, Beat Ozempic",
+      "url": "https://www.bloomberg.com/news/lilly-mounjaro-sales",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T14:00:00Z",
+      "sentimentScore": 0.9,
+      "summary": "Lilly's GLP-1 drug Mounjaro has overtaken Novo Nordisk's Ozempic in prescription volume and revenue."
+    },
+    {
+      "title": "Eli Lilly Alzheimer's Drug Donanemab Gets Full FDA Approval",
+      "url": "https://www.reuters.com/business/healthcare-pharmaceuticals/lilly-donanemab-approval",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T16:00:00Z",
+      "sentimentScore": 0.85,
+      "summary": "The FDA granted full approval to Lilly's donanemab, the second amyloid-targeting Alzheimer's drug to reach the market."
+    },
+    {
+      "title": "Eli Lilly Faces Supply Constraints on Weight-Loss Drug Demand",
+      "url": "https://www.cnbc.com/lilly-supply-shortage",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T10:00:00Z",
+      "sentimentScore": -0.35,
+      "summary": "Lilly warned that Zepbound and Mounjaro will remain in short supply through 2026 due to unprecedented demand."
+    },
+    {
+      "title": "Eli Lilly to Build $3.7B Manufacturing Plant in North Carolina",
+      "url": "https://www.marketwatch.com/story/lilly-north-carolina-plant",
+      "source": "MarketWatch",
+      "publishedAt": "2026-02-27T08:00:00Z",
+      "sentimentScore": 0.6,
+      "summary": "Lilly announced plans to construct a major new facility to expand production capacity for GLP-1 medications."
+    },
+    {
+      "title": "Medicare to Cover Lilly's Donanemab Under New Policy",
+      "url": "https://www.ft.com/content/medicare-lilly-alzheimers",
+      "source": "Financial Times",
+      "publishedAt": "2026-02-26T12:30:00Z",
+      "sentimentScore": 0.75,
+      "summary": "CMS has expanded Medicare coverage to include Lilly's Alzheimer's drug, potentially expanding the treatment population significantly."
+    },
+    {
+      "title": "Eli Lilly Stock Downgraded on Valuation After 150% Run",
+      "url": "https://seekingalpha.com/article/lilly-valuation-downgrade",
+      "source": "Seeking Alpha",
+      "publishedAt": "2026-02-24T14:00:00Z",
+      "sentimentScore": -0.3,
+      "summary": "One analyst downgraded Lilly to hold, arguing the stock's valuation leaves limited upside from current levels."
+    }
+  ],
+  "XOM": [
+    {
+      "title": "Exxon Mobil Reports Strong Q4 on Guyana Production Ramp",
+      "url": "https://www.bloomberg.com/news/exxon-guyana-production",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T13:00:00Z",
+      "sentimentScore": 0.7,
+      "summary": "Exxon's fourth-quarter results beat estimates as production from Guyana's offshore fields reached new highs."
+    },
+    {
+      "title": "Exxon Faces $2B Climate Lawsuit From Massachusetts",
+      "url": "https://www.reuters.com/business/energy/exxon-climate-lawsuit",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T11:00:00Z",
+      "sentimentScore": -0.6,
+      "summary": "Massachusetts has sued Exxon and other oil companies, seeking billions in damages for climate change impacts."
+    },
+    {
+      "title": "Exxon Doubles Down on Lithium Venture for EV Battery Supply",
+      "url": "https://www.cnbc.com/exxon-lithium-investment",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T14:30:00Z",
+      "sentimentScore": 0.55,
+      "summary": "Exxon is expanding its lithium extraction business with a $2 billion investment in Arkansas brine projects."
+    },
+    {
+      "title": "OPEC+ Cuts Send Oil Prices Higher, Boosting Major Producers",
+      "url": "https://www.wsj.com/energy/oil-opec-exxon",
+      "source": "The Wall Street Journal",
+      "publishedAt": "2026-02-27T07:00:00Z",
+      "sentimentScore": 0.65,
+      "summary": "OPEC+ extended production cuts through June, supporting crude prices and margins for Exxon and peers."
+    },
+    {
+      "title": "Exxon Mobil Increases Dividend for 42nd Consecutive Year",
+      "url": "https://www.barrons.com/articles/exxon-dividend-increase",
+      "source": "Barron's",
+      "publishedAt": "2026-02-26T09:00:00Z",
+      "sentimentScore": 0.6,
+      "summary": "Exxon raised its quarterly dividend by 4%, extending its streak of annual increases to 42 years."
+    },
+    {
+      "title": "Exxon's Carbon Capture Project Faces Cost Overruns",
+      "url": "https://www.ft.com/content/exxon-ccs-costs",
+      "source": "Financial Times",
+      "publishedAt": "2026-02-24T16:00:00Z",
+      "sentimentScore": -0.4,
+      "summary": "Exxon's flagship carbon capture hub in the Gulf Coast is running 30% over budget, according to internal documents."
+    }
+  ],
+  "BA": [
+    {
+      "title": "Boeing 737 Max Production Halted After New Quality Lapse",
+      "url": "https://www.reuters.com/business/aerospace-defense/boeing-737-max-halt",
+      "source": "Reuters",
+      "publishedAt": "2026-03-02T09:00:00Z",
+      "sentimentScore": -0.8,
+      "summary": "Boeing has temporarily suspended 737 Max production after inspectors discovered improperly installed parts in the fuselage."
+    },
+    {
+      "title": "Boeing CEO Dave Calhoun to Step Down Amid Crisis",
+      "url": "https://www.bloomberg.com/news/boeing-ceo-departure",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-01T17:00:00Z",
+      "sentimentScore": -0.5,
+      "summary": "Boeing announced that CEO Dave Calhoun will retire at year-end as the company faces intense regulatory and customer scrutiny."
+    },
+    {
+      "title": "Boeing Wins $12B Air Force Contract for New Tanker Variant",
+      "url": "https://www.cnbc.com/boeing-air-force-contract",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T11:30:00Z",
+      "sentimentScore": 0.7,
+      "summary": "The Air Force awarded Boeing a contract to develop and produce the KC-46 tanker Block 2 variant."
+    },
+    {
+      "title": "United Airlines Demands Compensation From Boeing for Delivery Delays",
+      "url": "https://www.wsj.com/business/airlines/united-boeing-compensation",
+      "source": "The Wall Street Journal",
+      "publishedAt": "2026-02-27T13:00:00Z",
+      "sentimentScore": -0.55,
+      "summary": "United is seeking significant compensation from Boeing for delayed aircraft deliveries that have disrupted its growth plans."
+    },
+    {
+      "title": "Boeing 777X Certification Nears Completion, FAA Says",
+      "url": "https://www.marketwatch.com/story/boeing-777x-certification",
+      "source": "MarketWatch",
+      "publishedAt": "2026-02-26T10:00:00Z",
+      "sentimentScore": 0.5,
+      "summary": "The FAA indicated that certification of Boeing's 777X widebody could be completed by the end of Q2."
+    },
+    {
+      "title": "Boeing Stock Hits 52-Week Low on Safety Concerns",
+      "url": "https://www.investors.com/news/boeing-52-week-low",
+      "source": "Investor's Business Daily",
+      "publishedAt": "2026-02-24T08:00:00Z",
+      "sentimentScore": -0.65,
+      "summary": "Boeing shares fell to their lowest level in a year as investors weigh the impact of ongoing quality and safety issues."
+    }
+  ],
+  "COIN": [
+    {
+      "title": "Coinbase Q4 Revenue Beats on Surging Trading Volumes",
+      "url": "https://www.bloomberg.com/news/coinbase-earnings-q4",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T20:00:00Z",
+      "sentimentScore": 0.85,
+      "summary": "Coinbase reported stronger-than-expected revenue as cryptocurrency trading activity picked up sharply in the quarter."
+    },
+    {
+      "title": "Coinbase Secures License to Operate in EU Under MiCA Rules",
+      "url": "https://www.reuters.com/business/finance/coinbase-eu-license",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T12:30:00Z",
+      "sentimentScore": 0.7,
+      "summary": "Coinbase received regulatory approval to offer full crypto services across the European Union under the new MiCA framework."
+    },
+    {
+      "title": "Bitcoin ETF Flows Drive Record Custody Growth for Coinbase",
+      "url": "https://www.cnbc.com/coinbase-bitcoin-etf-custody",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T15:00:00Z",
+      "sentimentScore": 0.75,
+      "summary": "Coinbase's custody assets grew 40% quarter-over-quarter as Bitcoin ETF issuers selected the exchange as custodian."
+    },
+    {
+      "title": "SEC Subpoenas Coinbase Over Staking Product Offerings",
+      "url": "https://www.wsj.com/finance/regulation/coinbase-sec-subpoena",
+      "source": "The Wall Street Journal",
+      "publishedAt": "2026-02-27T10:00:00Z",
+      "sentimentScore": -0.55,
+      "summary": "The SEC has issued subpoenas to Coinbase regarding its staking products, signaling potential enforcement action."
+    },
+    {
+      "title": "Coinbase Base Layer 2 Network Surpasses $5B in Total Value",
+      "url": "https://www.marketwatch.com/story/coinbase-base-tvl",
+      "source": "MarketWatch",
+      "publishedAt": "2026-02-26T14:00:00Z",
+      "sentimentScore": 0.65,
+      "summary": "Coinbase's Base blockchain has crossed $5 billion in total value locked, becoming a major Ethereum scaling solution."
+    },
+    {
+      "title": "Crypto Winter Thaw Boosts Coinbase User Growth",
+      "url": "https://www.barrons.com/articles/coinbase-users-crypto-recovery",
+      "source": "Barron's",
+      "publishedAt": "2026-02-24T11:30:00Z",
+      "sentimentScore": 0.6,
+      "summary": "Coinbase added 8 million new verified users in Q4 as Bitcoin's rally brought retail traders back to the platform."
+    }
+  ],
+  "MARKET": [
+    {
+      "title": "S&P 500 Closes at Record High as AI Rally Extends Into March",
+      "url": "https://www.bloomberg.com/news/sp500-record-march",
+      "source": "Bloomberg",
+      "publishedAt": "2026-03-02T21:00:00Z",
+      "sentimentScore": 0.8,
+      "summary": "The S&P 500 notched another all-time high as technology stocks led gains amid continued optimism about AI adoption."
+    },
+    {
+      "title": "Fed Chair Powell Signals Rate Cuts Remain On Table for 2026",
+      "url": "https://www.reuters.com/markets/rates-bonds/fed-powell-rate-cuts-2026",
+      "source": "Reuters",
+      "publishedAt": "2026-03-01T19:30:00Z",
+      "sentimentScore": 0.65,
+      "summary": "Federal Reserve Chair Jerome Powell indicated the central bank could begin cutting rates later this year if inflation continues to cool."
+    },
+    {
+      "title": "February Jobs Report Exceeds Expectations, Adds 275,000 Positions",
+      "url": "https://www.cnbc.com/jobs-report-february-2026",
+      "source": "CNBC",
+      "publishedAt": "2026-02-28T13:30:00Z",
+      "sentimentScore": 0.55,
+      "summary": "The US economy added more jobs than expected in February, with the unemployment rate holding at 3.7%."
+    },
+    {
+      "title": "10-Year Treasury Yield Tops 4.5% for First Time Since November",
+      "url": "https://www.wsj.com/finance/treasury-yields-rise",
+      "source": "The Wall Street Journal",
+      "publishedAt": "2026-02-27T15:00:00Z",
+      "sentimentScore": -0.35,
+      "summary": "Bond yields surged as strong economic data dimmed expectations for aggressive Fed rate cuts."
+    },
+    {
+      "title": "Tech Sector Leads Market Gains as Magnificent Seven Extend Rally",
+      "url": "https://www.marketwatch.com/story/tech-magnificent-seven-rally",
+      "source": "MarketWatch",
+      "publishedAt": "2026-02-26T16:00:00Z",
+      "sentimentScore": 0.75,
+      "summary": "Technology stocks outperformed again, with the Magnificent Seven adding $500 billion in market cap this week."
+    },
+    {
+      "title": "Small-Cap Stocks Rally on Soft Landing Optimism",
+      "url": "https://www.ft.com/content/small-cap-rally",
+      "source": "Financial Times",
+      "publishedAt": "2026-02-26T12:00:00Z",
+      "sentimentScore": 0.6,
+      "summary": "The Russell 2000 jumped 3% as investors bet that smaller companies will benefit from a resilient US economy."
+    },
+    {
+      "title": "VIX Drops to Lowest Level in 6 Months Amid Calm Markets",
+      "url": "https://finance.yahoo.com/news/vix-lowest-level",
+      "source": "Yahoo Finance",
+      "publishedAt": "2026-02-25T14:00:00Z",
+      "sentimentScore": 0.5,
+      "summary": "The CBOE Volatility Index fell below 12, reflecting diminished fear among options traders about near-term market moves."
+    },
+    {
+      "title": "Global Fund Managers Increase Equity Exposure to 18-Month High",
+      "url": "https://www.barrons.com/articles/fund-manager-survey-bulls",
+      "source": "Barron's",
+      "publishedAt": "2026-02-24T10:00:00Z",
+      "sentimentScore": 0.7,
+      "summary": "A survey of global fund managers showed the highest net bullish positioning in stocks since September 2024."
+    },
+    {
+      "title": "Retail Sales Disappoint in January, Signal Consumer Caution",
+      "url": "https://seekingalpha.com/article/retail-sales-january",
+      "source": "Seeking Alpha",
+      "publishedAt": "2026-02-24T08:00:00Z",
+      "sentimentScore": -0.45,
+      "summary": "US retail sales fell 0.8% in January, worse than expected, suggesting consumers are pulling back on discretionary spending."
+    },
+    {
+      "title": "Earnings Season Wrap: S&P 500 Profits Beat Estimates by 5%",
+      "url": "https://www.investors.com/news/earnings-season-wrap-2026",
+      "source": "Investor's Business Daily",
+      "publishedAt": "2026-02-23T17:00:00Z",
+      "sentimentScore": 0.75,
+      "summary": "With 95% of S&P 500 companies having reported, aggregate earnings topped analyst expectations by an average of 5%."
+    }
+  ]
+}

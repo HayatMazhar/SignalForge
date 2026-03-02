@@ -1,0 +1,38 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+*.DotSettings.user
+project.lock.json
+*.nuget.props
+*.nuget.targets
+appsettings.*.json
+!appsettings.json
+
+# Node / React / Expo
+node_modules/
+dist/
+.expo/
+*.tsbuildinfo
+.env
+.env.local
+.env.production
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+*.log
+*.cache

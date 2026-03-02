@@ -1,0 +1,186 @@
+{
+  "gainers": [
+    {
+      "symbol": "SMCI",
+      "name": "Super Micro Computer",
+      "price": 42.5,
+      "changePercent": 12.35
+    },
+    {
+      "symbol": "PLTR",
+      "name": "Palantir Technologies",
+      "price": 78.2,
+      "changePercent": 9.87
+    },
+    {
+      "symbol": "RIVN",
+      "name": "Rivian Automotive",
+      "price": 14.8,
+      "changePercent": 8.42
+    },
+    {
+      "symbol": "SOFI",
+      "name": "SoFi Technologies",
+      "price": 12.35,
+      "changePercent": 7.93
+    },
+    {
+      "symbol": "MARA",
+      "name": "Marathon Digital Holdings",
+      "price": 22.1,
+      "changePercent": 7.15
+    },
+    {
+      "symbol": "RBLX",
+      "name": "Roblox Corporation",
+      "price": 58.4,
+      "changePercent": 6.28
+    },
+    {
+      "symbol": "SQ",
+      "name": "Block Inc",
+      "price": 82.75,
+      "changePercent": 5.94
+    },
+    {
+      "symbol": "SNAP",
+      "name": "Snap Inc",
+      "price": 12.9,
+      "changePercent": 5.67
+    },
+    {
+      "symbol": "ROKU",
+      "name": "Roku Inc",
+      "price": 88.3,
+      "changePercent": 5.12
+    },
+    {
+      "symbol": "DKNG",
+      "name": "DraftKings Inc",
+      "price": 42.15,
+      "changePercent": 4.83
+    },
+    {
+      "symbol": "HOOD",
+      "name": "Robinhood Markets",
+      "price": 38.6,
+      "changePercent": 4.56
+    },
+    {
+      "symbol": "AFRM",
+      "name": "Affirm Holdings",
+      "price": 62.4,
+      "changePercent": 4.21
+    },
+    {
+      "symbol": "U",
+      "name": "Unity Software",
+      "price": 24.8,
+      "changePercent": 3.87
+    },
+    {
+      "symbol": "PINS",
+      "name": "Pinterest Inc",
+      "price": 35.2,
+      "changePercent": 3.52
+    },
+    {
+      "symbol": "LYFT",
+      "name": "Lyft Inc",
+      "price": 14.65,
+      "changePercent": 3.18
+    }
+  ],
+  "losers": [
+    {
+      "symbol": "PARA",
+      "name": "Paramount Global",
+      "price": 11.2,
+      "changePercent": -11.45
+    },
+    {
+      "symbol": "WBA",
+      "name": "Walgreens Boots Alliance",
+      "price": 10.85,
+      "changePercent": -9.78
+    },
+    {
+      "symbol": "INTC",
+      "name": "Intel Corporation",
+      "price": 22.4,
+      "changePercent": -8.52
+    },
+    {
+      "symbol": "NKE",
+      "name": "Nike Inc",
+      "price": 72.3,
+      "changePercent": -7.36
+    },
+    {
+      "symbol": "MRNA",
+      "name": "Moderna Inc",
+      "price": 35.6,
+      "changePercent": -6.94
+    },
+    {
+      "symbol": "ZM",
+      "name": "Zoom Video Communications",
+      "price": 68.9,
+      "changePercent": -6.21
+    },
+    {
+      "symbol": "DOCU",
+      "name": "DocuSign Inc",
+      "price": 58.4,
+      "changePercent": -5.87
+    },
+    {
+      "symbol": "BYND",
+      "name": "Beyond Meat Inc",
+      "price": 5.2,
+      "changePercent": -5.43
+    },
+    {
+      "symbol": "FSLY",
+      "name": "Fastly Inc",
+      "price": 8.75,
+      "changePercent": -4.92
+    },
+    {
+      "symbol": "WISH",
+      "name": "ContextLogic Inc",
+      "price": 6.3,
+      "changePercent": -4.58
+    },
+    {
+      "symbol": "LMND",
+      "name": "Lemonade Inc",
+      "price": 22.8,
+      "changePercent": -4.15
+    },
+    {
+      "symbol": "OPEN",
+      "name": "Opendoor Technologies",
+      "price": 3.45,
+      "changePercent": -3.87
+    },
+    {
+      "symbol": "SPCE",
+      "name": "Virgin Galactic Holdings",
+      "price": 1.85,
+      "changePercent": -3.52
+    },
+    {
+      "symbol": "RIDE",
+      "name": "Lordstown Motors",
+      "price": 0.45,
+      "changePercent": -3.28
+    },
+    {
+      "symbol": "GOEV",
+      "name": "Canoo Inc",
+      "price": 0.32,
+      "changePercent": -3.05
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+# SignalForge - AI Stock Trading Intelligence Platform
+
+A full-stack AI-powered stock trading intelligence platform with real-time market data, AI signals, options flow analysis, and smart money tracking.
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Backend** | .NET 10, ASP.NET Core, Entity Framework Core, SignalR |
+| **Frontend** | React 18, TypeScript, Vite, TailwindCSS |
+| **Mobile** | React Native, Expo SDK 55, Expo Router |
+| **Database** | SQL Server 2022 |
+| **Cache** | Redis (optional) |
+| **AI** | Core42 AI (GPT-4o compatible) |
+| **Market Data** | Polygon.io |
+
+## Features
+
+### Core Trading
+- Real-time stock quotes and candlestick charts
+- AI-generated Buy/Sell/Hold signals with confidence scores
+- Technical indicators (RSI, MACD, SMA, Bollinger Bands, ATR)
+- Options flow analysis
+- News with sentiment analysis
+
+### Unique Features
+- **AI Trade Thesis** - Full research report with bull/bear case and entry/exit prices
+- **Fear & Greed Index** - Composite market sentiment gauge
+- **Smart Money Tracker** - Institutional vs retail flow visualization
+- **Market Pulse Timeline** - Real-time chronological event feed
+- **Portfolio Risk Radar** - Multi-axis risk visualization
+- **Backtesting Engine** - Test 4 strategies against historical data
+- **AI Chat Assistant** - Conversational stock analysis
+
+### Platform
+- JWT authentication with refresh tokens
+- Role-based access control (Admin, Moderator, Analyst, User)
+- Subscription tiers (Free, Pro, Elite) with feature gating
+- Real-time updates via SignalR WebSockets
+- Toast notifications with audio chime
+- Admin dashboard with user/role management
+
+## Quick Start
+
+### Prerequisites
+- .NET 10 SDK
+- Node.js 20+
+- SQL Server (or SQL Server Express)
+
+### Backend
+```bash
+cd src/SignalForge.API
+dotnet run --environment Development
+```
+API runs at http://localhost:5280
+Swagger at http://localhost:5280/swagger
+
+### Frontend
+```bash
+cd src/SignalForge.Web
+npm install
+npm run dev
+```
+App runs at http://localhost:5173
+
+### Mobile
+```bash
+cd src/SignalForge.Mobile
+npm install
+npx expo start
+```
+
+### Docker
+```bash
+docker-compose up -d
+```
+
+## Test Accounts
+
+| Email | Password | Role | Tier |
+|-------|----------|------|------|
+| admin@signalforge.com | Admin@12345! | Admin | Elite |
+| pro@signalforge.com | ProUser123! | User | Pro |
+| free@signalforge.com | FreeUser123! | User | Free |
+
+## API Endpoints (50+)
+
+### Auth
+- POST /api/auth/register
+- POST /api/auth/login
+- POST /api/auth/refresh
+- POST /api/auth/logout
+- GET /api/auth/me
+
+### Stocks
+- GET /api/stocks/search?q={query}
+- GET /api/stocks/{symbol}/quote
+- GET /api/stocks/{symbol}/history
+- GET /api/stocks/{symbol}/indicators
+- GET /api/stocks/top-movers
+- GET /api/stocks/movers/losers
+
+### Signals
+- GET /api/signals
+- POST /api/signals/generate
+- GET /api/signals/watchlist
+
+### News
+- GET /api/news/{symbol}
+- GET /api/news/market
+- GET /api/news/{symbol}/sentiment
+
+### Options
+- GET /api/options/unusual
+- GET /api/options/{symbol}
+
+### User Features
+- GET/POST/DELETE /api/watchlist
+- GET/POST/DELETE /api/alerts
+- GET/POST/DELETE /api/portfolio
+
+### AI Insights
+- GET /api/insights/thesis/{symbol}
+- GET /api/insights/fear-greed
+- GET /api/insights/market-pulse
+- GET /api/insights/smart-money
+
+### Advanced
+- POST /api/backtest
+- GET /api/backtest/strategies
+- POST /api/chat
+- GET /api/social/leaderboard
+- GET /api/compare?symbols=AAPL,MSFT
+
+### Admin
+- GET /api/admin/stats
+- GET /api/admin/users
+- PUT /api/admin/users/{id}/role
+- PUT /api/admin/users/{id}/tier
+- PUT /api/admin/users/{id}/lock
+- GET /api/admin/roles
+- POST /api/admin/roles
+
+## Project Structure
+
+```
+SignalForge/
+├── src/
+│   ├── SignalForge.API/           # ASP.NET Core Web API
+│   ├── SignalForge.Application/   # CQRS handlers, DTOs, interfaces
+│   ├── SignalForge.Domain/        # Entities, enums
+│   ├── SignalForge.Infrastructure/ # EF Core, external APIs, services
+│   ├── SignalForge.Web/           # React frontend (Vite)
+│   └── SignalForge.Mobile/        # React Native (Expo)
+├── tests/
+│   └── SignalForge.Tests/         # xUnit tests
+├── docker-compose.yml
+├── Dockerfile
+└── SignalForge.slnx
+```
+
+## Configuration
+
+Copy `appsettings.Development.json` and add your API keys:
+- **Core42 AI** - Sentiment analysis and signal reasoning
+- **Polygon.io** - Live market data (free tier available)
+- **NewsAPI** - News headlines (free tier available)
+
+## License
+
+Proprietary - All rights reserved.

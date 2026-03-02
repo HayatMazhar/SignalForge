@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "SignalForge@2026!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build: .
+    ports:
+      - "5280:5280"
+    depends_on:
+      - sqlserver
+      - redis
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=SignalForge;User=sa;Password=SignalForge@2026!;TrustServerCertificate=true"
+      ConnectionStrings__Redis: "redis:6379"
+      Jwt__Key: "YourProductionSecretKey256BitsLongEnoughForHS256!!"
+      Jwt__Issuer: "signalforge"
+      Core42Ai__ApiEndpoint: "https://api.core42.ai/v1/"
+      Core42Ai__ApiKey: "${CORE42_API_KEY}"
+      Core42Ai__ModelName: "gpt-4o"
+      Polygon__ApiKey: "${POLYGON_API_KEY}"
+      NewsApi__ApiKey: "${NEWS_API_KEY}"
+
+  web:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./src/SignalForge.Web:/app
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - api
+
+volumes:
+  sqldata:
