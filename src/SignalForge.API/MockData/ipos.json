@@ -1,0 +1,12 @@
+[
+  {"symbol":"RDDT","company":"Reddit Inc.","date":"2026-04-15","exchange":"NYSE","priceRange":"$38-$42","shares":"22M","valuation":"$8.5B","sector":"Technology","status":"Upcoming","lead":"Goldman Sachs"},
+  {"symbol":"STRP","company":"Stripe Inc.","date":"2026-05-10","exchange":"NYSE","priceRange":"$65-$75","shares":"50M","valuation":"$70B","sector":"Financial Services","status":"Upcoming","lead":"JPMorgan"},
+  {"symbol":"DBRX","company":"Databricks Inc.","date":"2026-05-22","exchange":"NASDAQ","priceRange":"$52-$60","shares":"35M","valuation":"$45B","sector":"Technology","status":"Upcoming","lead":"Morgan Stanley"},
+  {"symbol":"SHEIN","company":"Shein Group","date":"2026-06-01","exchange":"NYSE","priceRange":"$45-$55","shares":"100M","valuation":"$60B","sector":"Consumer","status":"Filed","lead":"Goldman Sachs"},
+  {"symbol":"KLRNA","company":"Klarna Bank","date":"2026-04-28","exchange":"NYSE","priceRange":"$35-$40","shares":"40M","valuation":"$15B","sector":"Financial Services","status":"Upcoming","lead":"Morgan Stanley"},
+  {"symbol":"CNBS","company":"Canva Pty Ltd","date":"2026-07-15","exchange":"NASDAQ","priceRange":"$80-$95","shares":"30M","valuation":"$40B","sector":"Technology","status":"Expected","lead":"Goldman Sachs"},
+  {"symbol":"PLNTR","company":"Planet Labs","date":"2026-03-20","exchange":"NYSE","priceRange":"$8-$10","shares":"60M","valuation":"$4B","sector":"Technology","status":"Priced","lead":"Barclays"},
+  {"symbol":"MDAI","company":"MedAI Health","date":"2026-04-05","exchange":"NASDAQ","priceRange":"$18-$22","shares":"15M","valuation":"$2.8B","sector":"Healthcare","status":"Upcoming","lead":"Jefferies"},
+  {"symbol":"QTUM","company":"Quantum Computing Inc.","date":"2026-05-15","exchange":"NASDAQ","priceRange":"$25-$30","shares":"20M","valuation":"$5B","sector":"Technology","status":"Filed","lead":"Citigroup"},
+  {"symbol":"GRNR","company":"GreenRun Energy","date":"2026-06-10","exchange":"NYSE","priceRange":"$15-$18","shares":"25M","valuation":"$3.5B","sector":"Energy","status":"Expected","lead":"BofA Securities"}
+]

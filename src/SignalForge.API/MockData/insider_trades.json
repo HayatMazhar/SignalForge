@@ -1,0 +1,22 @@
+[
+  {"date":"2026-03-01","symbol":"AAPL","insider":"Tim Cook","title":"CEO","type":"Sale","shares":150000,"price":236.50,"value":35475000},
+  {"date":"2026-02-28","symbol":"NVDA","insider":"Jensen Huang","title":"CEO","type":"Sale","shares":200000,"price":885.00,"value":177000000},
+  {"date":"2026-02-27","symbol":"MSFT","insider":"Satya Nadella","title":"CEO","type":"Sale","shares":50000,"price":442.00,"value":22100000},
+  {"date":"2026-02-26","symbol":"TSLA","insider":"Elon Musk","title":"CEO","type":"Purchase","shares":100000,"price":245.00,"value":24500000},
+  {"date":"2026-02-25","symbol":"META","insider":"Mark Zuckerberg","title":"CEO","type":"Sale","shares":75000,"price":608.00,"value":45600000},
+  {"date":"2026-02-24","symbol":"AMZN","insider":"Andy Jassy","title":"CEO","type":"Sale","shares":30000,"price":224.00,"value":6720000},
+  {"date":"2026-02-23","symbol":"JPM","insider":"Jamie Dimon","title":"CEO","type":"Sale","shares":150000,"price":214.00,"value":32100000},
+  {"date":"2026-02-22","symbol":"CRM","insider":"Marc Benioff","title":"CEO","type":"Sale","shares":25000,"price":328.00,"value":8200000},
+  {"date":"2026-02-21","symbol":"AMD","insider":"Lisa Su","title":"CEO","type":"Sale","shares":40000,"price":164.00,"value":6560000},
+  {"date":"2026-02-20","symbol":"GOOGL","insider":"Sundar Pichai","title":"CEO","type":"Sale","shares":22000,"price":190.00,"value":4180000},
+  {"date":"2026-02-19","symbol":"NFLX","insider":"Ted Sarandos","title":"Co-CEO","type":"Sale","shares":15000,"price":720.00,"value":10800000},
+  {"date":"2026-02-18","symbol":"LLY","insider":"David Ricks","title":"CEO","type":"Sale","shares":12000,"price":818.00,"value":9816000},
+  {"date":"2026-02-17","symbol":"COIN","insider":"Brian Armstrong","title":"CEO","type":"Purchase","shares":50000,"price":262.00,"value":13100000},
+  {"date":"2026-02-16","symbol":"BA","insider":"Kelly Ortberg","title":"CEO","type":"Purchase","shares":10000,"price":183.00,"value":1830000},
+  {"date":"2026-02-15","symbol":"XOM","insider":"Darren Woods","title":"CEO","type":"Purchase","shares":20000,"price":109.00,"value":2180000},
+  {"date":"2026-02-14","symbol":"DIS","insider":"Bob Iger","title":"CEO","type":"Sale","shares":100000,"price":116.00,"value":11600000},
+  {"date":"2026-02-13","symbol":"V","insider":"Ryan McInerney","title":"CEO","type":"Sale","shares":18000,"price":293.00,"value":5274000},
+  {"date":"2026-02-12","symbol":"AVGO","insider":"Hock Tan","title":"CEO","type":"Sale","shares":8000,"price":1475.00,"value":11800000},
+  {"date":"2026-02-11","symbol":"ORCL","insider":"Safra Catz","title":"CEO","type":"Sale","shares":50000,"price":174.00,"value":8700000},
+  {"date":"2026-02-10","symbol":"GS","insider":"David Solomon","title":"CEO","type":"Purchase","shares":5000,"price":508.00,"value":2540000}
+]

@@ -1,0 +1,17 @@
+[
+  {"date":"2026-03-07","time":"08:30","event":"Non-Farm Payrolls","country":"US","impact":"High","forecast":"185K","previous":"225K","actual":null},
+  {"date":"2026-03-12","time":"08:30","event":"CPI Year-over-Year","country":"US","impact":"High","forecast":"2.8%","previous":"2.9%","actual":null},
+  {"date":"2026-03-18","time":"14:00","event":"FOMC Rate Decision","country":"US","impact":"High","forecast":"4.25%","previous":"4.50%","actual":null},
+  {"date":"2026-03-20","time":"08:30","event":"Initial Jobless Claims","country":"US","impact":"Medium","forecast":"218K","previous":"215K","actual":null},
+  {"date":"2026-03-27","time":"08:30","event":"GDP Growth Rate QoQ","country":"US","impact":"High","forecast":"2.1%","previous":"2.3%","actual":null},
+  {"date":"2026-03-28","time":"08:30","event":"PCE Price Index","country":"US","impact":"High","forecast":"2.6%","previous":"2.8%","actual":null},
+  {"date":"2026-04-03","time":"10:00","event":"ISM Manufacturing PMI","country":"US","impact":"High","forecast":"51.2","previous":"50.3","actual":null},
+  {"date":"2026-04-04","time":"08:30","event":"Non-Farm Payrolls","country":"US","impact":"High","forecast":"195K","previous":"185K","actual":null},
+  {"date":"2026-04-10","time":"08:30","event":"CPI Year-over-Year","country":"US","impact":"High","forecast":"2.7%","previous":"2.8%","actual":null},
+  {"date":"2026-04-29","time":"14:00","event":"FOMC Rate Decision","country":"US","impact":"High","forecast":"4.00%","previous":"4.25%","actual":null},
+  {"date":"2026-02-28","time":"08:30","event":"GDP Growth Rate QoQ","country":"US","impact":"High","forecast":"2.3%","previous":"2.5%","actual":"2.3%"},
+  {"date":"2026-02-26","time":"08:30","event":"Durable Goods Orders","country":"US","impact":"Medium","forecast":"0.8%","previous":"-1.2%","actual":"1.1%"},
+  {"date":"2026-02-21","time":"08:30","event":"Initial Jobless Claims","country":"US","impact":"Medium","forecast":"215K","previous":"219K","actual":"212K"},
+  {"date":"2026-02-14","time":"08:30","event":"Retail Sales MoM","country":"US","impact":"High","forecast":"0.3%","previous":"-0.8%","actual":"0.2%"},
+  {"date":"2026-02-12","time":"08:30","event":"CPI Year-over-Year","country":"US","impact":"High","forecast":"2.9%","previous":"2.9%","actual":"2.8%"}
+]
