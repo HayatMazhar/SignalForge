@@ -206,28 +206,64 @@ public class PolygonMarketDataService : IMarketDataService
         ["NVDA"] = ("NVIDIA Corporation", "Technology", "NASDAQ", 1200000000000m),
         ["TSLA"] = ("Tesla Inc.", "Consumer Cyclical", "NASDAQ", 800000000000m),
         ["META"] = ("Meta Platforms Inc.", "Technology", "NASDAQ", 750000000000m),
+        ["BRK.B"] = ("Berkshire Hathaway", "Financial Services", "NYSE", 700000000000m),
         ["JPM"] = ("JPMorgan Chase & Co.", "Financial Services", "NYSE", 430000000000m),
-        ["NFLX"] = ("Netflix Inc.", "Communication Services", "NASDAQ", 200000000000m),
-        ["AMD"] = ("Advanced Micro Devices", "Technology", "NASDAQ", 180000000000m),
-        ["CRM"] = ("Salesforce Inc.", "Technology", "NYSE", 210000000000m),
         ["V"] = ("Visa Inc.", "Financial Services", "NYSE", 470000000000m),
+        ["JNJ"] = ("Johnson & Johnson", "Healthcare", "NYSE", 420000000000m),
+        ["WMT"] = ("Walmart Inc.", "Consumer Defensive", "NYSE", 400000000000m),
+        ["PG"] = ("Procter & Gamble", "Consumer Defensive", "NYSE", 350000000000m),
         ["MA"] = ("Mastercard Inc.", "Financial Services", "NYSE", 340000000000m),
+        ["UNH"] = ("UnitedHealth Group", "Healthcare", "NYSE", 450000000000m),
+        ["HD"] = ("Home Depot Inc.", "Consumer Cyclical", "NYSE", 300000000000m),
         ["DIS"] = ("Walt Disney Co.", "Communication Services", "NYSE", 180000000000m),
         ["PYPL"] = ("PayPal Holdings", "Financial Services", "NASDAQ", 80000000000m),
+        ["NFLX"] = ("Netflix Inc.", "Communication Services", "NASDAQ", 200000000000m),
+        ["ADBE"] = ("Adobe Inc.", "Technology", "NASDAQ", 220000000000m),
+        ["CRM"] = ("Salesforce Inc.", "Technology", "NYSE", 210000000000m),
         ["INTC"] = ("Intel Corporation", "Technology", "NASDAQ", 120000000000m),
-        ["BA"] = ("Boeing Company", "Industrials", "NYSE", 120000000000m),
-        ["XOM"] = ("Exxon Mobil Corp.", "Energy", "NYSE", 450000000000m),
+        ["AMD"] = ("Advanced Micro Devices", "Technology", "NASDAQ", 180000000000m),
+        ["CSCO"] = ("Cisco Systems", "Technology", "NASDAQ", 200000000000m),
+        ["ORCL"] = ("Oracle Corporation", "Technology", "NYSE", 290000000000m),
+        ["IBM"] = ("International Business Machines", "Technology", "NYSE", 130000000000m),
+        ["QCOM"] = ("Qualcomm Inc.", "Technology", "NASDAQ", 150000000000m),
+        ["TXN"] = ("Texas Instruments", "Technology", "NASDAQ", 160000000000m),
+        ["AVGO"] = ("Broadcom Inc.", "Technology", "NASDAQ", 350000000000m),
+        ["COST"] = ("Costco Wholesale", "Consumer Defensive", "NASDAQ", 250000000000m),
+        ["ABBV"] = ("AbbVie Inc.", "Healthcare", "NYSE", 250000000000m),
+        ["PFE"] = ("Pfizer Inc.", "Healthcare", "NYSE", 160000000000m),
+        ["MRK"] = ("Merck & Co.", "Healthcare", "NYSE", 270000000000m),
         ["LLY"] = ("Eli Lilly and Co.", "Healthcare", "NYSE", 400000000000m),
+        ["TMO"] = ("Thermo Fisher Scientific", "Healthcare", "NYSE", 200000000000m),
+        ["CMCSA"] = ("Comcast Corporation", "Communication Services", "NASDAQ", 150000000000m),
+        ["VZ"] = ("Verizon Communications", "Communication Services", "NYSE", 150000000000m),
+        ["T"] = ("AT&T Inc.", "Communication Services", "NYSE", 110000000000m),
+        ["BA"] = ("Boeing Company", "Industrials", "NYSE", 120000000000m),
+        ["CAT"] = ("Caterpillar Inc.", "Industrials", "NYSE", 130000000000m),
+        ["GE"] = ("General Electric", "Industrials", "NYSE", 120000000000m),
+        ["MMM"] = ("3M Company", "Industrials", "NYSE", 60000000000m),
+        ["XOM"] = ("Exxon Mobil Corp.", "Energy", "NYSE", 450000000000m),
+        ["CVX"] = ("Chevron Corporation", "Energy", "NYSE", 300000000000m),
+        ["COP"] = ("ConocoPhillips", "Energy", "NYSE", 130000000000m),
+        ["GS"] = ("Goldman Sachs", "Financial Services", "NYSE", 110000000000m),
+        ["MS"] = ("Morgan Stanley", "Financial Services", "NYSE", 140000000000m),
+        ["BAC"] = ("Bank of America", "Financial Services", "NYSE", 230000000000m),
+        ["C"] = ("Citigroup Inc.", "Financial Services", "NYSE", 90000000000m),
         ["COIN"] = ("Coinbase Global", "Financial Services", "NASDAQ", 40000000000m),
     };
 
     private List<StockDto> SearchMockStocks(string query)
     {
-        var q = query.ToUpperInvariant();
-        return StockInfo
-            .Where(kv => kv.Key.Contains(q) || kv.Value.Name.ToUpperInvariant().Contains(q))
+        var q = query.Trim().ToUpperInvariant();
+        if (string.IsNullOrEmpty(q)) return StockInfo.Take(10)
+            .Select(kv => new StockDto(Guid.NewGuid(), kv.Key, kv.Value.Name, kv.Value.Sector, kv.Value.Exchange, kv.Value.MarketCap, null)).ToList();
+
+        var exact = StockInfo.Where(kv => kv.Key == q).ToList();
+        var startsWith = StockInfo.Where(kv => kv.Key.StartsWith(q) && kv.Key != q).ToList();
+        var contains = StockInfo.Where(kv => (kv.Key.Contains(q) || kv.Value.Name.ToUpperInvariant().Contains(q)) && !kv.Key.StartsWith(q)).ToList();
+
+        return exact.Concat(startsWith).Concat(contains)
             .Select(kv => new StockDto(Guid.NewGuid(), kv.Key, kv.Value.Name, kv.Value.Sector, kv.Value.Exchange, kv.Value.MarketCap, null))
-            .Take(10)
+            .Take(15)
             .ToList();
     }
 

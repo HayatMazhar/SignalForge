@@ -1,0 +1,23 @@
+[
+  {"symbol":"AAPL","company":"Apple Inc.","date":"2026-04-24","time":"After Close","epsEstimate":2.35,"epsActual":null,"revenueEstimate":"124.5B","revenueActual":null,"surprise":null,"status":"Upcoming"},
+  {"symbol":"MSFT","company":"Microsoft","date":"2026-04-22","time":"After Close","epsEstimate":3.22,"epsActual":null,"revenueEstimate":"68.2B","revenueActual":null,"surprise":null,"status":"Upcoming"},
+  {"symbol":"GOOGL","company":"Alphabet","date":"2026-04-22","time":"After Close","epsEstimate":2.08,"epsActual":null,"revenueEstimate":"92.1B","revenueActual":null,"surprise":null,"status":"Upcoming"},
+  {"symbol":"AMZN","company":"Amazon","date":"2026-04-29","time":"After Close","epsEstimate":1.42,"epsActual":null,"revenueEstimate":"158.3B","revenueActual":null,"surprise":null,"status":"Upcoming"},
+  {"symbol":"META","company":"Meta Platforms","date":"2026-04-23","time":"After Close","epsEstimate":6.12,"epsActual":null,"revenueEstimate":"42.8B","revenueActual":null,"surprise":null,"status":"Upcoming"},
+  {"symbol":"NVDA","company":"NVIDIA","date":"2026-05-21","time":"After Close","epsEstimate":0.82,"epsActual":null,"revenueEstimate":"38.5B","revenueActual":null,"surprise":null,"status":"Upcoming"},
+  {"symbol":"TSLA","company":"Tesla","date":"2026-04-16","time":"After Close","epsEstimate":0.58,"epsActual":null,"revenueEstimate":"26.1B","revenueActual":null,"surprise":null,"status":"Upcoming"},
+  {"symbol":"JPM","company":"JPMorgan Chase","date":"2026-04-11","time":"Before Open","epsEstimate":4.68,"epsActual":null,"revenueEstimate":"42.5B","revenueActual":null,"surprise":null,"status":"Upcoming"},
+  {"symbol":"NFLX","company":"Netflix","date":"2026-04-15","time":"After Close","epsEstimate":5.92,"epsActual":null,"revenueEstimate":"10.8B","revenueActual":null,"surprise":null,"status":"Upcoming"},
+  {"symbol":"AMD","company":"AMD","date":"2026-04-29","time":"After Close","epsEstimate":0.94,"epsActual":null,"revenueEstimate":"7.4B","revenueActual":null,"surprise":null,"status":"Upcoming"},
+
+  {"symbol":"AAPL","company":"Apple Inc.","date":"2026-01-30","time":"After Close","epsEstimate":2.18,"epsActual":2.40,"revenueEstimate":"118.2B","revenueActual":"124.3B","surprise":10.1,"status":"Beat"},
+  {"symbol":"MSFT","company":"Microsoft","date":"2026-01-28","time":"After Close","epsEstimate":3.05,"epsActual":3.23,"revenueEstimate":"65.8B","revenueActual":"69.6B","surprise":5.9,"status":"Beat"},
+  {"symbol":"GOOGL","company":"Alphabet","date":"2026-01-28","time":"After Close","epsEstimate":1.92,"epsActual":2.15,"revenueEstimate":"88.7B","revenueActual":"96.5B","surprise":12.0,"status":"Beat"},
+  {"symbol":"TSLA","company":"Tesla","date":"2026-01-22","time":"After Close","epsEstimate":0.52,"epsActual":0.45,"revenueEstimate":"25.8B","revenueActual":"25.2B","surprise":-13.5,"status":"Missed"},
+  {"symbol":"META","company":"Meta Platforms","date":"2026-01-29","time":"After Close","epsEstimate":5.88,"epsActual":6.43,"revenueEstimate":"40.1B","revenueActual":"43.8B","surprise":9.4,"status":"Beat"},
+  {"symbol":"NVDA","company":"NVIDIA","date":"2026-02-19","time":"After Close","epsEstimate":0.75,"epsActual":0.89,"revenueEstimate":"35.2B","revenueActual":"39.3B","surprise":18.7,"status":"Beat"},
+  {"symbol":"AMD","company":"AMD","date":"2026-01-28","time":"After Close","epsEstimate":0.88,"epsActual":0.91,"revenueEstimate":"7.1B","revenueActual":"7.7B","surprise":3.4,"status":"Beat"},
+  {"symbol":"NFLX","company":"Netflix","date":"2026-01-21","time":"After Close","epsEstimate":5.12,"epsActual":5.58,"revenueEstimate":"10.1B","revenueActual":"10.2B","surprise":9.0,"status":"Beat"},
+  {"symbol":"JPM","company":"JPMorgan Chase","date":"2026-01-10","time":"Before Open","epsEstimate":4.52,"epsActual":4.81,"revenueEstimate":"41.5B","revenueActual":"44.0B","surprise":6.4,"status":"Beat"},
+  {"symbol":"BA","company":"Boeing","date":"2026-01-22","time":"Before Open","epsEstimate":-0.52,"epsActual":-1.05,"revenueEstimate":"18.2B","revenueActual":"16.9B","surprise":-101.9,"status":"Missed"}
+]
