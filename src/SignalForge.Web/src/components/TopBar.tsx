@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, X, TrendingUp, TrendingDown, ChevronRight } from 'lucide-react';
+import { Search, Bell, X, TrendingUp, TrendingDown, ChevronRight, Sun, Moon } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { useSignalStore } from '../stores/signalStore';
+import { useThemeStore } from '../stores/themeStore';
 import { getSignalLabel } from '../utils/signalType';
 import { stocksApi } from '../api/stocks';
 import type { Stock } from '../types';
@@ -62,7 +63,13 @@ export default function TopBar() {
         )}
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
+        {/* Theme Toggle */}
+        <button onClick={useThemeStore.getState().toggle}
+          className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-light transition-all">
+          {useThemeStore.getState().theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        </button>
+
         {/* Notifications */}
         <div ref={notifRef} className="relative">
           <button onClick={() => setShowNotifications(!showNotifications)}

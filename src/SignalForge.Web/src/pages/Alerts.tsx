@@ -22,6 +22,7 @@ export default function Alerts() {
   const createMutation = useMutation({
     mutationFn: () => alertsApi.create(symbol.toUpperCase(), alertType, parseFloat(targetValue)),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['alerts'] }); setShowForm(false); setSymbol(''); setTargetValue(''); },
+    onError: () => {},
   });
 
   const deleteMutation = useMutation({
@@ -91,10 +92,10 @@ export default function Alerts() {
             <div key={a.id} className="bg-surface border border-border rounded-xl p-4 flex items-center justify-between hover:bg-surface-light transition-colors">
               <div className="flex items-center gap-4">
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  a.alertType === 'Price' ? 'bg-blue-400/10' : a.alertType === 'Signal' ? 'bg-accent/10' : 'bg-purple-400/10'
+                  (a.alertType === 'Price' || a.alertType === 0) ? 'bg-blue-400/10' : (a.alertType === 'Signal' || a.alertType === 1) ? 'bg-accent/10' : 'bg-purple-400/10'
                 }`}>
-                  {a.alertType === 'Price' ? <TrendingUp className="w-5 h-5 text-blue-400" /> :
-                   a.alertType === 'Signal' ? <Zap className="w-5 h-5 text-accent" /> :
+                  {(a.alertType === 'Price' || a.alertType === 0) ? <TrendingUp className="w-5 h-5 text-blue-400" /> :
+                   (a.alertType === 'Signal' || a.alertType === 1) ? <Zap className="w-5 h-5 text-accent" /> :
                    <Newspaper className="w-5 h-5 text-purple-400" />}
                 </div>
                 <div>
@@ -105,7 +106,7 @@ export default function Alerts() {
                       {a.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
-                  <div className="text-xs text-text-muted mt-0.5">Target: ${a.targetValue.toFixed(2)} | Created: {new Date(a.createdAt).toLocaleDateString()}</div>
+                  <div className="text-xs text-text-muted mt-0.5">Target: ${(a.targetValue ?? 0).toFixed(2)} | Created: {new Date(a.createdAt).toLocaleDateString()}</div>
                 </div>
               </div>
               <button onClick={() => deleteMutation.mutate(a.id)} className="text-text-muted hover:text-danger transition-colors p-2">

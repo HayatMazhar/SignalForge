@@ -36,7 +36,7 @@ export default function SignalCard({ signal }: { signal: Signal }) {
             </div>
             <div className="flex items-center gap-1.5 text-text-muted text-[10px] mt-1">
               <Clock className="w-3 h-3" />
-              {formatDistanceToNow(new Date(signal.generatedAt), { addSuffix: true })}
+              {signal.generatedAt ? formatDistanceToNow(new Date(signal.generatedAt), { addSuffix: true }) : '—'}
             </div>
           </div>
 
@@ -47,7 +47,7 @@ export default function SignalCard({ signal }: { signal: Signal }) {
               <circle cx="18" cy="18" r="14" fill="none"
                 stroke={signal.confidenceScore >= 65 ? '#00FF94' : signal.confidenceScore <= 35 ? '#FF3B5C' : '#FFB020'}
                 strokeWidth="3" strokeLinecap="round"
-                strokeDasharray={`${signal.confidenceScore * 0.88} 88`} />
+                strokeDasharray={`${(signal.confidenceScore ?? 0) * 0.88} 88`} />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-[10px] font-black text-text-primary">{signal.confidenceScore}%</span>

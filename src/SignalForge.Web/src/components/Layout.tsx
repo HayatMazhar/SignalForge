@@ -19,11 +19,41 @@ import {
   Bot,
   Trophy,
   ArrowLeftRight,
+  Calendar,
+  Landmark,
+  UserCheck,
+  Target,
+  Sparkles,
+  BookOpen,
+  MessageSquare,
+  TrendingUp,
+  DollarSign,
+  Rocket,
+  MessageCircle,
+  PieChart,
+  Grid3X3,
+  Receipt,
+  Webhook,
+  Users as UsersIcon,
+  LayoutGrid,
+  RefreshCw,
+  AlertTriangle,
+  Share2,
+  FileDown,
+  LineChart as MultiLineChart,
+  Bell as BellNav,
+  ClipboardList,
+  Download,
+  Gift,
+  HelpCircle,
+  MessageSquare as FeedbackIcon,
+  Link as LinkIcon,
 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import TopBar from './TopBar';
 import ScrollingTicker from './ScrollingTicker';
 import ToastContainer from './common/Toast';
+import LiveChat from './LiveChat';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -39,6 +69,35 @@ const navItems = [
   { to: '/chat', icon: Bot, label: 'AI Chat' },
   { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
   { to: '/compare', icon: ArrowLeftRight, label: 'Compare' },
+  { to: '/earnings', icon: Calendar, label: 'Earnings' },
+  { to: '/economic-calendar', icon: Landmark, label: 'Economy' },
+  { to: '/insider-trades', icon: UserCheck, label: 'Insiders' },
+  { to: '/price-predictor', icon: Target, label: 'AI Predict' },
+  { to: '/portfolio-optimizer', icon: Sparkles, label: 'Optimizer' },
+  { to: '/trade-journal', icon: BookOpen, label: 'Journal' },
+  { to: '/natural-query', icon: MessageSquare, label: 'AI Query' },
+  { to: '/sentiment-trend', icon: TrendingUp, label: 'Sentiment' },
+  { to: '/dividends', icon: DollarSign, label: 'Dividends' },
+  { to: '/ipos', icon: Rocket, label: 'IPOs' },
+  { to: '/discussion', icon: MessageCircle, label: 'Discuss' },
+  { to: '/analytics', icon: PieChart, label: 'Analytics' },
+  { to: '/correlation', icon: Grid3X3, label: 'Correlation' },
+  { to: '/tax-report', icon: Receipt, label: 'Tax Report' },
+  { to: '/webhooks', icon: Webhook, label: 'Webhooks' },
+  { to: '/copy-trading', icon: UsersIcon, label: 'Copy Trade' },
+  { to: '/heatmap', icon: LayoutGrid, label: 'Heatmap' },
+  { to: '/sector-rotation', icon: RefreshCw, label: 'Sectors' },
+  { to: '/anomaly-detector', icon: AlertTriangle, label: 'Anomalies' },
+  { to: '/share-signal', icon: Share2, label: 'Share' },
+  { to: '/pdf-export', icon: FileDown, label: 'Export' },
+  { to: '/multi-chart', icon: MultiLineChart, label: 'Charts' },
+  { to: '/notifications', icon: BellNav, label: 'Notifications' },
+  { to: '/activity-log', icon: ClipboardList, label: 'Activity' },
+  { to: '/data-export', icon: Download, label: 'Data Export' },
+  { to: '/referral', icon: Gift, label: 'Referral' },
+  { to: '/help', icon: HelpCircle, label: 'Help' },
+  { to: '/feedback', icon: FeedbackIcon, label: 'Feedback' },
+  { to: '/connected-accounts', icon: LinkIcon, label: 'Connections' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 
@@ -137,6 +196,8 @@ export default function Layout() {
         </main>
         <ScrollingTicker />
       </div>
+
+      <LiveChat />
     </div>
   );
 }

@@ -120,6 +120,7 @@ function ComparisonCard({ symbol }: { symbol: string }) {
   });
 
   if (qLoading || tLoading) return <div className="bg-surface border border-border rounded-xl p-5"><LoadingSpinner size="sm" /></div>;
+  if (!quote) return <div className="bg-surface border border-border rounded-xl p-5 text-center"><p className="text-text-muted text-xs py-4">Failed to load</p></div>;
 
   const isPositive = (quote?.changePercent ?? 0) >= 0;
 
@@ -127,21 +128,21 @@ function ComparisonCard({ symbol }: { symbol: string }) {
     <div className="bg-surface border border-border rounded-xl p-5 card-hover">
       <div className="text-center mb-4">
         <h3 className="text-xl font-black text-accent">{symbol}</h3>
-        <div className="text-2xl font-black text-text-primary mt-1 font-mono">${quote?.price.toFixed(2)}</div>
+        <div className="text-2xl font-black text-text-primary mt-1 font-mono">${(quote?.price ?? 0).toFixed(2)}</div>
         <div className={`text-sm font-bold flex items-center justify-center gap-1 mt-0.5 ${isPositive ? 'text-accent' : 'text-danger'}`}>
           {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-          {isPositive ? '+' : ''}{quote?.changePercent.toFixed(2)}%
+          {isPositive ? '+' : ''}{(quote?.changePercent ?? 0).toFixed(2)}%
         </div>
       </div>
 
       <div className="space-y-2">
-        <MetricRow label="RSI" value={tech?.rsi.toFixed(1) ?? '—'} good={tech ? tech.rsi > 30 && tech.rsi < 70 : undefined} />
-        <MetricRow label="MACD" value={tech?.macd.toFixed(2) ?? '—'} good={tech ? tech.macd > 0 : undefined} />
+        <MetricRow label="RSI" value={tech ? tech.rsi.toFixed(1) : '—'} good={tech ? tech.rsi > 30 && tech.rsi < 70 : undefined} />
+        <MetricRow label="MACD" value={tech ? tech.macd.toFixed(2) : '—'} good={tech ? tech.macd > 0 : undefined} />
         <MetricRow label="Trend" value={tech?.trend ?? '—'} good={tech?.trend === 'Bullish' ? true : tech?.trend === 'Bearish' ? false : undefined} />
         <MetricRow label="SMA 20" value={tech ? `$${tech.sma20.toFixed(0)}` : '—'} />
         <MetricRow label="SMA 50" value={tech ? `$${tech.sma50.toFixed(0)}` : '—'} />
         <MetricRow label="SMA 200" value={tech ? `$${tech.sma200.toFixed(0)}` : '—'} />
-        <MetricRow label="ATR" value={tech?.atr.toFixed(2) ?? '—'} />
+        <MetricRow label="ATR" value={tech ? tech.atr.toFixed(2) : '—'} />
         <MetricRow label="Volume" value={quote ? `${(quote.volume / 1e6).toFixed(1)}M` : '—'} />
         <MetricRow label="High" value={quote ? `$${quote.high.toFixed(2)}` : '—'} />
         <MetricRow label="Low" value={quote ? `$${quote.low.toFixed(2)}` : '—'} />

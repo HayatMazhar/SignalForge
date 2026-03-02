@@ -165,7 +165,7 @@ export default function StockDetail() {
                     <td className="text-right py-2 px-3 text-text-primary">${o.strike.toFixed(2)}</td>
                     <td className="text-right py-2 px-3 text-text-primary">{o.volume.toLocaleString()}</td>
                     <td className="text-right py-2 px-3 text-text-muted">{o.openInterest.toLocaleString()}</td>
-                    <td className="text-right py-2 px-3 text-text-muted">{(o.impliedVolatility * 100).toFixed(1)}%</td>
+                    <td className="text-right py-2 px-3 text-text-muted">{((o.impliedVolatility ?? 0) * 100).toFixed(1)}%</td>
                     <td className="text-right py-2 px-3 text-text-primary">${o.premium.toLocaleString()}</td>
                   </tr>
                 ))}

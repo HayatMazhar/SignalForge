@@ -105,7 +105,7 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins("http://localhost:5173", "http://localhost:8081", "http://localhost:8082", "http://10.40.50.117:8081")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials());

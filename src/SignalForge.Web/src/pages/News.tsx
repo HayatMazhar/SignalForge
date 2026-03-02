@@ -65,10 +65,10 @@ export default function News() {
                         <span className="text-[10px] text-text-muted">Sentiment:</span>
                         <div className="w-20 h-1.5 bg-border rounded-full overflow-hidden">
                           <div className={`h-full rounded-full ${n.sentimentScore >= 0 ? 'bg-accent' : 'bg-danger'}`}
-                            style={{ width: `${Math.abs(n.sentimentScore) * 100}%`, marginLeft: n.sentimentScore < 0 ? `${(1 - Math.abs(n.sentimentScore)) * 100}%` : '0' }} />
+                            style={{ width: `${Math.abs(n.sentimentScore ?? 0) * 100}%`, marginLeft: (n.sentimentScore ?? 0) < 0 ? `${(1 - Math.abs(n.sentimentScore ?? 0)) * 100}%` : '0' }} />
                         </div>
                         <span className={`text-[10px] font-bold ${n.sentimentScore >= 0 ? 'text-accent' : 'text-danger'}`}>
-                          {n.sentimentScore >= 0 ? '+' : ''}{n.sentimentScore.toFixed(2)}
+                          {(n.sentimentScore ?? 0) >= 0 ? '+' : ''}{(n.sentimentScore ?? 0).toFixed(2)}
                         </span>
                       </div>
                     </div>

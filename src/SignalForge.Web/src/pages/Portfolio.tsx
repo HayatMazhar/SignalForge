@@ -18,11 +18,13 @@ export default function Portfolio() {
   const addMutation = useMutation({
     mutationFn: () => portfolioApi.addPosition(symbol.toUpperCase(), parseFloat(quantity), parseFloat(cost)),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['portfolio'] }); setShowForm(false); setSymbol(''); setQuantity(''); setCost(''); },
+    onError: () => {},
   });
 
   const removeMutation = useMutation({
     mutationFn: (id: string) => portfolioApi.removePosition(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['portfolio'] }),
+    onError: () => {},
   });
 
   const totalValue = positions?.reduce((s, p) => s + p.quantity * p.averageCost, 0) ?? 0;
@@ -90,7 +92,7 @@ export default function Portfolio() {
             </div>
             <div className="bg-surface border border-border rounded-xl p-4">
               <div className="text-xs text-text-muted">Symbols</div>
-              <div className="text-xl font-bold text-accent">{new Set(positions?.map(p => p.symbol)).size}</div>
+              <div className="text-xl font-bold text-accent">{new Set(positions?.map(p => p.symbol) ?? []).size}</div>
             </div>
           </div>
 

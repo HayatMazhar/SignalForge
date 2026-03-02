@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { createChart, type IChartApi, ColorType } from 'lightweight-charts';
+import { createChart, type IChartApi, ColorType, CandlestickSeries, HistogramSeries } from 'lightweight-charts';
 import type { OhlcBar } from '../types';
 
 interface StockChartProps {
@@ -16,28 +16,28 @@ export default function StockChart({ data, height = 400 }: StockChartProps) {
 
     const chart = createChart(containerRef.current, {
       layout: {
-        background: { type: ColorType.Solid, color: '#0F172A' },
-        textColor: '#64748B',
+        background: { type: ColorType.Solid, color: '#0C0F1A' },
+        textColor: '#5B6378',
       },
       grid: {
-        vertLines: { color: '#1E293B' },
-        horzLines: { color: '#1E293B' },
+        vertLines: { color: '#1A1F35' },
+        horzLines: { color: '#1A1F35' },
       },
       width: containerRef.current.clientWidth,
       height,
       crosshair: {
-        vertLine: { color: '#64748B', labelBackgroundColor: '#1E293B' },
-        horzLine: { color: '#64748B', labelBackgroundColor: '#1E293B' },
+        vertLine: { color: '#5B6378', labelBackgroundColor: '#1A1F35' },
+        horzLine: { color: '#5B6378', labelBackgroundColor: '#1A1F35' },
       },
     });
 
-    const candleSeries = chart.addCandlestickSeries({
+    const candleSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#00FF94',
-      downColor: '#EF4444',
+      downColor: '#FF3B5C',
       borderUpColor: '#00FF94',
-      borderDownColor: '#EF4444',
+      borderDownColor: '#FF3B5C',
       wickUpColor: '#00FF94',
-      wickDownColor: '#EF4444',
+      wickDownColor: '#FF3B5C',
     });
 
     candleSeries.setData(
@@ -50,9 +50,9 @@ export default function StockChart({ data, height = 400 }: StockChartProps) {
       }))
     );
 
-    const volumeSeries = chart.addHistogramSeries({
-      color: '#1E293B',
-      priceFormat: { type: 'volume' },
+    const volumeSeries = chart.addSeries(HistogramSeries, {
+      color: '#1A1F35',
+      priceFormat: { type: 'volume' as const },
       priceScaleId: 'volume',
     });
 
@@ -64,7 +64,7 @@ export default function StockChart({ data, height = 400 }: StockChartProps) {
       data.map((bar) => ({
         time: bar.date.split('T')[0],
         value: bar.volume,
-        color: bar.close >= bar.open ? '#00FF9430' : '#EF444430',
+        color: bar.close >= bar.open ? '#00FF9430' : '#FF3B5C30',
       }))
     );
 

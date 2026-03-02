@@ -29,7 +29,7 @@ export default function Screener() {
   const filtered = results?.filter(s => {
     if (sector !== 'All' && s.sector !== sector) return false;
     if (exchange !== 'All' && s.exchange !== exchange) return false;
-    if (query && !s.symbol.toUpperCase().includes(query.toUpperCase()) && !s.name.toUpperCase().includes(query.toUpperCase())) return false;
+    if (query && !s.symbol.toUpperCase().includes(query.toUpperCase()) && !(s.name ?? '').toUpperCase().includes(query.toUpperCase())) return false;
     return true;
   }).sort((a, b) => {
     if (sortBy === 'symbol') return a.symbol.localeCompare(b.symbol);

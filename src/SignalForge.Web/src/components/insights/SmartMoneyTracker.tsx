@@ -41,9 +41,9 @@ export default function SmartMoneyTracker() {
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-text-primary">{f.symbol}</span>
                   <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                    f.signal.includes('Strong') && isPositive ? 'bg-accent/20 text-accent' :
+                    f.signal?.includes('Strong') && isPositive ? 'bg-accent/20 text-accent' :
                     isPositive ? 'bg-accent/10 text-accent' :
-                    f.signal.includes('Strong') ? 'bg-danger/20 text-danger' :
+                    f.signal?.includes('Strong') ? 'bg-danger/20 text-danger' :
                     'bg-danger/10 text-danger'
                   }`}>
                     {f.signal}
