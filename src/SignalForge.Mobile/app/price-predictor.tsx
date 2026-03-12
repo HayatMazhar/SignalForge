@@ -62,7 +62,7 @@ export default function PricePredictorScreen() {
       const raw = res.data;
       const predictions = (raw.predictions ?? []).map((p: any) => ({
         period: p.period ?? p.horizon ?? '',
-        days: p.days ?? parseInt(p.horizon) || 0,
+        days: p.days ?? (parseInt(p.horizon) || 0),
         predictedPrice: p.predictedPrice ?? p.price ?? 0,
         changePercent: p.changePercent ?? p.change ?? 0,
         confidence: p.confidence ?? 50,
