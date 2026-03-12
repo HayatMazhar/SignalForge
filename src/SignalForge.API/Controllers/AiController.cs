@@ -71,6 +71,7 @@ public class AiController : ControllerBase
             posData.Add((pos.Symbol, pos.Quantity, pos.AverageCost, tech));
         }
 
+        var totalValue = posData.Sum(p => p.Quantity * p.AvgCost);
         var aiJson = await _ai.OptimizePortfolioAsync(posData, ct);
 
         try
