@@ -175,7 +175,7 @@ export default function Dashboard() {
                   </button>
                 );
               })}
-              {(!watchlist || watchlist.length === 0) && <p className="text-[10px] text-text-muted text-center py-4">Add stocks to watchlist</p>}
+              {(!watchlist || watchlist.length === 0) && <p className="text-[10px] text-text-muted text-center py-4">{mode === 'crypto' ? 'Add coins to watchlist' : 'Add stocks to watchlist'}</p>}
             </div>
           </div>
         </div>
@@ -285,7 +285,7 @@ export default function Dashboard() {
                 {portfolio?.slice(0, 3).map((p: any) => (
                   <div key={p.id} className="flex justify-between text-[10px]">
                     <span className="text-text-muted">{p.symbol}</span>
-                    <span className="text-text-primary font-mono">{p.quantity} shares</span>
+                    <span className="text-text-primary font-mono">{p.quantity} {mode === 'crypto' ? 'coins' : 'shares'}</span>
                   </div>
                 ))}
               </div>

@@ -16,6 +16,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { chatApi } from '../src/api/stocks';
 import api from '../src/api/client';
+import { useAssetModeStore } from '../src/stores/assetModeStore';
 
 const C = {
   bg: '#06060B',
@@ -37,6 +38,8 @@ interface Message {
 }
 
 export default function ChatScreen() {
+  const { mode } = useAssetModeStore();
+  const isCrypto = mode === 'crypto';
   const { symbol } = useLocalSearchParams<{ symbol?: string }>();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
@@ -45,7 +48,9 @@ export default function ChatScreen() {
       role: 'ai',
       text: symbol
         ? `Hi! I'm your AI trading assistant. I see you're looking at ${symbol}. Ask me anything about it — signals, technicals, or trade ideas.`
-        : "Hi! I'm your AI trading assistant. Ask me about any stock, signal, or market trend.",
+        : isCrypto
+          ? "Hi! I'm your AI crypto assistant. Ask me about any coin, signal, or crypto trend."
+          : "Hi! I'm your AI trading assistant. Ask me about any stock, signal, or market trend.",
     },
   ]);
   const flatListRef = useRef<FlatList>(null);
@@ -174,7 +179,7 @@ export default function ChatScreen() {
           style={styles.textInput}
           value={input}
           onChangeText={setInput}
-          placeholder="Ask about any stock or signal..."
+          placeholder={isCrypto ? "Ask about any coin or crypto signal..." : "Ask about any stock or signal..."}
           placeholderTextColor={C.textMuted}
           onSubmitEditing={handleSend}
           returnKeyType="send"

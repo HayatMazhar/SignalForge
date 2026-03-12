@@ -15,6 +15,7 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { watchlistApi } from '../src/api/stocks';
 import api from '../src/api/client';
+import { useAssetModeStore } from '../src/stores/assetModeStore';
 
 const C = {
   bg: '#06060B',
@@ -42,6 +43,8 @@ interface WatchlistSignal {
 }
 
 export default function WatchlistScreen() {
+  const { mode } = useAssetModeStore();
+  const isCrypto = mode === 'crypto';
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<'stocks' | 'signals'>('stocks');
   const [showAdd, setShowAdd] = useState(false);
@@ -69,7 +72,7 @@ export default function WatchlistScreen() {
     refetch: refetchSignals,
   } = useQuery<WatchlistSignal[]>({
     queryKey: ['watchlist-signals'],
-    queryFn: () => api.get('/signals/watchlist').then((r) => (Array.isArray(r.data) ? r.data : [])),
+    queryFn: () => api.get(isCrypto ? '/crypto/signals' : '/signals/watchlist').then((r) => (Array.isArray(r.data) ? r.data : [])),
     enabled: tab === 'signals',
   });
 
@@ -174,7 +177,7 @@ export default function WatchlistScreen() {
           onPress={() => setTab('stocks')}
         >
           <Text style={[styles.tabBtnText, tab === 'stocks' && styles.tabBtnTextActive]}>
-            Stocks
+            {isCrypto ? 'Coins' : 'Stocks'}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -197,7 +200,7 @@ export default function WatchlistScreen() {
                   style={styles.addInput}
                   value={newSymbol}
                   onChangeText={setNewSymbol}
-                  placeholder="Symbol (e.g. AAPL)"
+                  placeholder={isCrypto ? "Symbol (e.g. BTC)" : "Symbol (e.g. AAPL)"}
                   placeholderTextColor={C.textMuted}
                   autoCapitalize="characters"
                   autoFocus
@@ -235,7 +238,7 @@ export default function WatchlistScreen() {
               <View style={styles.centered}>
                 <Ionicons name="eye-outline" size={48} color={C.textMuted} />
                 <Text style={styles.emptyText}>Your watchlist is empty</Text>
-                <Text style={styles.emptyHint}>Tap "Add Symbol" to start tracking stocks</Text>
+                <Text style={styles.emptyHint}>Tap "Add Symbol" to start tracking {isCrypto ? 'coins' : 'stocks'}</Text>
               </View>
             }
           />
@@ -257,7 +260,7 @@ export default function WatchlistScreen() {
             <View style={styles.centered}>
               <Ionicons name="pulse-outline" size={48} color={C.textMuted} />
               <Text style={styles.emptyText}>No signals for your watchlist</Text>
-              <Text style={styles.emptyHint}>Add stocks to your watchlist to receive signals</Text>
+              <Text style={styles.emptyHint}>Add {isCrypto ? 'coins' : 'stocks'} to your watchlist to receive signals</Text>
             </View>
           }
         />

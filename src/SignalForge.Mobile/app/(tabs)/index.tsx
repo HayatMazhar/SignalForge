@@ -43,7 +43,7 @@ export default function Dashboard() {
   const { data: pulse } = useQuery({ queryKey: ['d-pulse', assetMode], queryFn: () => api.get(assetMode === 'crypto' ? '/crypto/market-pulse' : '/insights/market-pulse').then(r => r.data) });
   const { data: news = [] } = useQuery({ queryKey: ['d-news', assetMode], queryFn: () => assetMode === 'crypto' ? api.get('/crypto/news').then(r => Array.isArray(r.data) ? r.data : []) : newsApi.getMarketNews() });
   const { data: optionsFlow = [] } = useQuery({ queryKey: ['d-flow', assetMode], queryFn: () => assetMode === 'crypto' ? Promise.resolve([]) : api.get('/options/unusual').then(r => r.data).catch(() => []) });
-  const { data: smartMoney } = useQuery({ queryKey: ['d-smart'], queryFn: () => api.get('/insights/smart-money').then(r => r.data).catch(() => null) });
+  const { data: smartMoney } = useQuery({ queryKey: ['d-smart', assetMode], queryFn: () => api.get(assetMode === 'crypto' ? '/crypto/smart-money' : '/insights/smart-money').then(r => r.data).catch(() => null) });
 
   const onRefresh = useCallback(async () => { setRefreshing(true); await Promise.all([rS(), rW(), rM()]); setRefreshing(false); }, []);
 
@@ -134,13 +134,25 @@ export default function Dashboard() {
 
         {/* Terminal-Style Metrics Strip */}
         <View style={tp.termStrip}>
-          <TermCell label="VIX" value="14.82" color={C.accent} />
-          <View style={tp.termDiv} />
-          <TermCell label="P/C" value={breadth.putCall} color={parseFloat(breadth.putCall) > 1 ? C.danger : C.accent} />
-          <View style={tp.termDiv} />
-          <TermCell label="A/D" value={`${breadth.advancing}/${breadth.declining}`} color={breadth.advancing > breadth.declining ? C.accent : C.danger} />
-          <View style={tp.termDiv} />
-          <TermCell label="Vol" value="3.2B" color={C.info} />
+          {assetMode === 'crypto' ? (
+            <>
+              <TermCell label="BTC Dom" value="52.4%" color={C.accent} />
+              <View style={tp.termDiv} />
+              <TermCell label="Volume" value="48.2B" color={C.info} />
+              <View style={tp.termDiv} />
+              <TermCell label="Funding" value="0.01%" color={C.accent} />
+            </>
+          ) : (
+            <>
+              <TermCell label="VIX" value="14.82" color={C.accent} />
+              <View style={tp.termDiv} />
+              <TermCell label="P/C" value={breadth.putCall} color={parseFloat(breadth.putCall) > 1 ? C.danger : C.accent} />
+              <View style={tp.termDiv} />
+              <TermCell label="A/D" value={`${breadth.advancing}/${breadth.declining}`} color={breadth.advancing > breadth.declining ? C.accent : C.danger} />
+              <View style={tp.termDiv} />
+              <TermCell label="Vol" value="3.2B" color={C.info} />
+            </>
+          )}
         </View>
 
         {/* AI Command Center */}
@@ -161,7 +173,7 @@ export default function Dashboard() {
           <View style={tp.aiGauges}>
             <AIGaugeBar label="Technical" value={aiMarketScore.tech} color={C.info} />
             <AIGaugeBar label="Sentiment" value={aiMarketScore.sent} color={C.purple} />
-            <AIGaugeBar label="Options" value={aiMarketScore.opts} color={C.cyan} />
+            <AIGaugeBar label={assetMode === 'crypto' ? 'On-Chain' : 'Options'} value={aiMarketScore.opts} color={C.cyan} />
             <AIGaugeBar label="Macro" value={aiMarketScore.macro} color={C.warning} />
           </View>
           <View style={tp.aiFooter}>
@@ -208,76 +220,104 @@ export default function Dashboard() {
 
         {/* Indices (shared) */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16, marginTop: 8 }} contentContainerStyle={{ gap: 10 }}>
-          <IdxCard n="S&P 500" v="5,248" ch={0.85} up />
-          <IdxCard n="NASDAQ" v="16,892" ch={1.12} up />
-          <IdxCard n="DOW" v="39,145" ch={0.42} up />
-          <IdxCard n="VIX" v="14.82" ch={-3.25} up={false} />
+          {assetMode === 'crypto' ? (
+            <>
+              <IdxCard n="BTC" v="65K" ch={2.1} up />
+              <IdxCard n="ETH" v="3.5K" ch={1.5} up />
+              <IdxCard n="SOL" v="150" ch={3.2} up />
+              <IdxCard n="BNB" v="580" ch={0.8} up />
+            </>
+          ) : (
+            <>
+              <IdxCard n="S&P 500" v="5,248" ch={0.85} up />
+              <IdxCard n="NASDAQ" v="16,892" ch={1.12} up />
+              <IdxCard n="DOW" v="39,145" ch={0.42} up />
+              <IdxCard n="VIX" v="14.82" ch={-3.25} up={false} />
+            </>
+          )}
         </ScrollView>
 
         {/* Market Breadth */}
-        <Text style={st.sec}>Market Breadth</Text>
-        <View style={tp.breadthCard}>
-          <View style={tp.breadthRow}>
-            <BreadthBar label="Advancing" value={breadth.advancing} total={breadth.advancing + breadth.declining} color={C.accent} />
-            <BreadthBar label="Declining" value={breadth.declining} total={breadth.advancing + breadth.declining} color={C.danger} />
-          </View>
-          <View style={tp.breadthDivider} />
-          <View style={tp.breadthMetrics}>
-            <BreadthMini icon="arrow-up-circle" label="New Highs" value={breadth.newHighs} color={C.accent} />
-            <BreadthMini icon="arrow-down-circle" label="New Lows" value={breadth.newLows} color={C.danger} />
-            <BreadthMini icon="stats-chart" label=">200 SMA" value={`${breadth.aboveSMA200}%`} color={C.info} />
-            <BreadthMini icon="swap-horizontal" label="Put/Call" value={breadth.putCall} color={parseFloat(breadth.putCall) > 1 ? C.danger : C.accent} />
-          </View>
-        </View>
+        {assetMode !== 'crypto' && (
+          <>
+            <Text style={st.sec}>Market Breadth</Text>
+            <View style={tp.breadthCard}>
+              <View style={tp.breadthRow}>
+                <BreadthBar label="Advancing" value={breadth.advancing} total={breadth.advancing + breadth.declining} color={C.accent} />
+                <BreadthBar label="Declining" value={breadth.declining} total={breadth.advancing + breadth.declining} color={C.danger} />
+              </View>
+              <View style={tp.breadthDivider} />
+              <View style={tp.breadthMetrics}>
+                <BreadthMini icon="arrow-up-circle" label="New Highs" value={breadth.newHighs} color={C.accent} />
+                <BreadthMini icon="arrow-down-circle" label="New Lows" value={breadth.newLows} color={C.danger} />
+                <BreadthMini icon="stats-chart" label=">200 SMA" value={`${breadth.aboveSMA200}%`} color={C.info} />
+                <BreadthMini icon="swap-horizontal" label="Put/Call" value={breadth.putCall} color={parseFloat(breadth.putCall) > 1 ? C.danger : C.accent} />
+              </View>
+            </View>
+          </>
+        )}
 
         {/* Sector Rotation Heatmap */}
-        <Text style={st.sec}>Sector Rotation</Text>
-        <View style={tp.sectorGrid}>
-          {SECTORS.map(s => {
-            const pos = s.ch >= 0;
-            const intensity = Math.min(Math.abs(s.ch) / 1.5, 1);
-            const bg = pos ? `rgba(0,255,148,${0.08 + intensity * 0.15})` : `rgba(255,59,92,${0.08 + intensity * 0.15})`;
-            return (
-              <View key={s.name} style={[tp.sectorCell, { backgroundColor: bg }]}>
-                <Text style={tp.sectorName}>{s.name}</Text>
-                <Text style={[tp.sectorCh, { color: pos ? C.accent : C.danger }]}>{pos ? '+' : ''}{s.ch.toFixed(2)}%</Text>
-              </View>
-            );
-          })}
-        </View>
+        {assetMode !== 'crypto' && (
+          <>
+            <Text style={st.sec}>Sector Rotation</Text>
+            <View style={tp.sectorGrid}>
+              {SECTORS.map(s => {
+                const pos = s.ch >= 0;
+                const intensity = Math.min(Math.abs(s.ch) / 1.5, 1);
+                const bg = pos ? `rgba(0,255,148,${0.08 + intensity * 0.15})` : `rgba(255,59,92,${0.08 + intensity * 0.15})`;
+                return (
+                  <View key={s.name} style={[tp.sectorCell, { backgroundColor: bg }]}>
+                    <Text style={tp.sectorName}>{s.name}</Text>
+                    <Text style={[tp.sectorCh, { color: pos ? C.accent : C.danger }]}>{pos ? '+' : ''}{s.ch.toFixed(2)}%</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </>
+        )}
 
         {/* Options Flow Scanner */}
-        <View style={st.secRow}><Text style={st.sec}>Options Flow</Text><TouchableOpacity onPress={() => router.push('/heatmap')}><Text style={st.seeAll}>Scanner →</Text></TouchableOpacity></View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }} contentContainerStyle={{ gap: 10 }}>
-          {(optionsFlow as any[]).slice(0, 5).map((f: any, i: number) => {
-            const isCall = (f.type ?? f.optionType ?? '').toLowerCase().includes('call');
-            return (
-              <View key={f.id ?? i} style={tp.flowCard}>
-                <View style={[tp.flowAccent, { backgroundColor: isCall ? C.accent : C.danger }]} />
-                <View style={tp.flowBody}>
-                  <View style={tp.flowTop}>
-                    <Text style={tp.flowSym}>{f.symbol ?? '—'}</Text>
-                    <View style={[tp.flowTypeBadge, { backgroundColor: (isCall ? C.accent : C.danger) + '18' }]}>
-                      <Text style={[tp.flowTypeT, { color: isCall ? C.accent : C.danger }]}>{isCall ? 'CALL' : 'PUT'}</Text>
+        {assetMode !== 'crypto' && (
+          <>
+            <View style={st.secRow}><Text style={st.sec}>Options Flow</Text><TouchableOpacity onPress={() => router.push('/heatmap')}><Text style={st.seeAll}>Scanner →</Text></TouchableOpacity></View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }} contentContainerStyle={{ gap: 10 }}>
+              {(optionsFlow as any[]).slice(0, 5).map((f: any, i: number) => {
+                const isCall = (f.type ?? f.optionType ?? '').toLowerCase().includes('call');
+                return (
+                  <View key={f.id ?? i} style={tp.flowCard}>
+                    <View style={[tp.flowAccent, { backgroundColor: isCall ? C.accent : C.danger }]} />
+                    <View style={tp.flowBody}>
+                      <View style={tp.flowTop}>
+                        <Text style={tp.flowSym}>{f.symbol ?? '—'}</Text>
+                        <View style={[tp.flowTypeBadge, { backgroundColor: (isCall ? C.accent : C.danger) + '18' }]}>
+                          <Text style={[tp.flowTypeT, { color: isCall ? C.accent : C.danger }]}>{isCall ? 'CALL' : 'PUT'}</Text>
+                        </View>
+                      </View>
+                      <Text style={tp.flowStrike}>${(f.strike ?? 0).toFixed(0)} · {f.expiry ? new Date(f.expiry).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</Text>
+                      <View style={tp.flowMetrics}>
+                        <View><Text style={tp.flowML}>Vol</Text><Text style={tp.flowMV}>{((f.volume ?? 0) / 1000).toFixed(1)}K</Text></View>
+                        <View><Text style={tp.flowML}>Prem</Text><Text style={[tp.flowMV, { color: C.warning }]}>${((f.premium ?? 0) / 1000000).toFixed(1)}M</Text></View>
+                        <View><Text style={tp.flowML}>IV</Text><Text style={[tp.flowMV, { color: C.purple }]}>{((f.impliedVolatility ?? 0) * 100).toFixed(0)}%</Text></View>
+                      </View>
+                      {f.isUnusual && <View style={tp.flowUnusual}><Ionicons name="alert-circle" size={10} color={C.warning} /><Text style={tp.flowUnusualT}>UNUSUAL</Text></View>}
                     </View>
                   </View>
-                  <Text style={tp.flowStrike}>${(f.strike ?? 0).toFixed(0)} · {f.expiry ? new Date(f.expiry).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}</Text>
-                  <View style={tp.flowMetrics}>
-                    <View><Text style={tp.flowML}>Vol</Text><Text style={tp.flowMV}>{((f.volume ?? 0) / 1000).toFixed(1)}K</Text></View>
-                    <View><Text style={tp.flowML}>Prem</Text><Text style={[tp.flowMV, { color: C.warning }]}>${((f.premium ?? 0) / 1000000).toFixed(1)}M</Text></View>
-                    <View><Text style={tp.flowML}>IV</Text><Text style={[tp.flowMV, { color: C.purple }]}>{((f.impliedVolatility ?? 0) * 100).toFixed(0)}%</Text></View>
-                  </View>
-                  {f.isUnusual && <View style={tp.flowUnusual}><Ionicons name="alert-circle" size={10} color={C.warning} /><Text style={tp.flowUnusualT}>UNUSUAL</Text></View>}
-                </View>
-              </View>
-            );
-          })}
-        </ScrollView>
+                );
+              })}
+            </ScrollView>
+          </>
+        )}
 
         {/* Smart Money Flow */}
         <Text style={st.sec}>Smart Money Flow</Text>
         <View style={tp.smartCard}>
-          {(Array.isArray(smartMoney) ? smartMoney : [
+          {(Array.isArray(smartMoney) ? smartMoney : assetMode === 'crypto' ? [
+            { symbol: 'BTC', flow: 142, signal: 'Strong Accumulation', direction: 'Bullish' },
+            { symbol: 'ETH', flow: 87, signal: 'Moderate Buying', direction: 'Bullish' },
+            { symbol: 'SOL', flow: -56, signal: 'Distribution', direction: 'Bearish' },
+            { symbol: 'XRP', flow: 93, signal: 'Accumulation', direction: 'Bullish' },
+          ] : [
             { symbol: 'NVDA', flow: 142, signal: 'Strong Accumulation', direction: 'Bullish' },
             { symbol: 'AAPL', flow: 87, signal: 'Moderate Buying', direction: 'Bullish' },
             { symbol: 'TSLA', flow: -56, signal: 'Distribution', direction: 'Bearish' },
@@ -366,7 +406,7 @@ export default function Dashboard() {
         {/* Watchlist with more data */}
         <View style={st.secRow}><Text style={st.sec}>Watchlist</Text><TouchableOpacity onPress={() => router.push('/watchlist')}><Text style={st.seeAll}>Manage →</Text></TouchableOpacity></View>
         {wl.length === 0 ? (
-          <View style={st.empty}><Ionicons name="star-outline" size={24} color={C.textMuted} /><Text style={st.emptyT}>Add stocks to watchlist</Text></View>
+          <View style={st.empty}><Ionicons name="star-outline" size={24} color={C.textMuted} /><Text style={st.emptyT}>{assetMode === 'crypto' ? 'Add coins to watchlist' : 'Add stocks to watchlist'}</Text></View>
         ) : (
           <View style={{ marginBottom: 16 }}>
             {wl.slice(0, 6).map((w: any) => {
@@ -473,10 +513,21 @@ export default function Dashboard() {
 
         {/* Indices */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }} contentContainerStyle={{ gap: 10 }}>
-          <IdxCard n="S&P 500" v="5,248" ch={0.85} up />
-          <IdxCard n="NASDAQ" v="16,892" ch={1.12} up />
-          <IdxCard n="DOW" v="39,145" ch={0.42} up />
-          <IdxCard n="VIX" v="14.82" ch={-3.25} up={false} />
+          {assetMode === 'crypto' ? (
+            <>
+              <IdxCard n="BTC" v="65K" ch={2.1} up />
+              <IdxCard n="ETH" v="3.5K" ch={1.5} up />
+              <IdxCard n="SOL" v="150" ch={3.2} up />
+              <IdxCard n="BNB" v="580" ch={0.8} up />
+            </>
+          ) : (
+            <>
+              <IdxCard n="S&P 500" v="5,248" ch={0.85} up />
+              <IdxCard n="NASDAQ" v="16,892" ch={1.12} up />
+              <IdxCard n="DOW" v="39,145" ch={0.42} up />
+              <IdxCard n="VIX" v="14.82" ch={-3.25} up={false} />
+            </>
+          )}
         </ScrollView>
 
         {/* Fear & Greed + Signal Split - Default only */}
@@ -569,7 +620,7 @@ export default function Dashboard() {
         {/* Watchlist */}
         <View style={st.secRow}><Text style={st.sec}>Watchlist</Text><TouchableOpacity onPress={() => router.push('/watchlist')}><Text style={st.seeAll}>Manage →</Text></TouchableOpacity></View>
         {wl.length === 0 ? (
-          <View style={st.empty}><Ionicons name="star-outline" size={24} color={C.textMuted} /><Text style={st.emptyT}>Add stocks to watchlist</Text></View>
+          <View style={st.empty}><Ionicons name="star-outline" size={24} color={C.textMuted} /><Text style={st.emptyT}>{assetMode === 'crypto' ? 'Add coins to watchlist' : 'Add stocks to watchlist'}</Text></View>
         ) : (
           <View style={st.wGrid}>
             {wl.slice(0, 6).map((w: any) => {

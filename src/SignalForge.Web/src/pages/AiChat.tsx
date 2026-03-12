@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Bot, Send, User, Sparkles } from 'lucide-react';
 import { chatApi } from '../api/backtest';
+import { useAssetModeStore } from '../stores/assetModeStore';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -9,8 +10,12 @@ interface Message {
 }
 
 export default function AiChat() {
+  const { mode } = useAssetModeStore();
+  const isCrypto = mode === 'crypto';
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: "Hello! I'm SignalForge AI, your personal stock market analyst. Ask me about any stock, market trends, or trading strategies. Try: \"Analyze NVDA\" or \"What's the market sentiment?\"", timestamp: new Date().toISOString() },
+    { role: 'assistant', content: isCrypto
+      ? "Hello! I'm SignalForge AI, your personal crypto analyst. Ask me about any coin, market trends, or trading strategies. Try: \"Analyze BTC\" or \"What's the crypto sentiment?\""
+      : "Hello! I'm SignalForge AI, your personal stock market analyst. Ask me about any stock, market trends, or trading strategies. Try: \"Analyze NVDA\" or \"What's the market sentiment?\"", timestamp: new Date().toISOString() },
   ]);
   const [input, setInput] = useState('');
   const [symbol, setSymbol] = useState('');
@@ -41,7 +46,9 @@ export default function AiChat() {
     }
   };
 
-  const suggestions = ['Analyze AAPL', 'Compare NVDA vs AMD', "What's the market outlook?", 'Best stocks to buy now'];
+  const suggestions = isCrypto
+    ? ['Analyze BTC', 'Compare ETH vs SOL', "What's the crypto outlook?", 'Best coins to buy now']
+    : ['Analyze AAPL', 'Compare NVDA vs AMD', "What's the market outlook?", 'Best stocks to buy now'];
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
@@ -118,7 +125,7 @@ export default function AiChat() {
         <input value={input} onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleSend()}
           className="flex-1 bg-surface border border-border rounded-xl px-4 py-3 text-sm text-text-primary placeholder-text-muted/50 focus:outline-none focus:border-accent/40"
-          placeholder="Ask about any stock or market trend..." disabled={loading} />
+          placeholder={isCrypto ? "Ask about any coin or crypto trend..." : "Ask about any stock or market trend..."} disabled={loading} />
         <button onClick={handleSend} disabled={loading || !input.trim()}
           className="px-5 rounded-xl bg-accent text-bg font-bold hover:bg-accent-dim transition-all disabled:opacity-30 btn-shine">
           <Send className="w-5 h-5" />

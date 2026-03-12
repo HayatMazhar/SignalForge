@@ -9,8 +9,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
+import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { insightsApi } from '../src/api/stocks';
+import api from '../src/api/client';
+import { useAssetModeStore } from '../src/stores/assetModeStore';
 import { useState, useCallback } from 'react';
 
 const C = {
@@ -63,11 +66,16 @@ const DEFAULT_INDICATORS = [
 ];
 
 export default function InsightsScreen() {
+  const { mode } = useAssetModeStore();
+  const isCrypto = mode === 'crypto';
   const [refreshing, setRefreshing] = useState(false);
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['fearGreed'],
-    queryFn: () => insightsApi.getFearGreed() as Promise<FearGreedData>,
+    queryKey: ['fearGreed', mode],
+    queryFn: () =>
+      isCrypto
+        ? api.get('/crypto/fear-greed').then(r => r.data) as Promise<FearGreedData>
+        : insightsApi.getFearGreed() as Promise<FearGreedData>,
   });
 
   const onRefresh = useCallback(async () => {
@@ -91,6 +99,7 @@ export default function InsightsScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+      <Stack.Screen options={{ headerTitle: isCrypto ? 'Crypto Insights' : 'AI Insights' }} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.content}
@@ -100,7 +109,7 @@ export default function InsightsScreen() {
       >
       {/* Fear & Greed Gauge */}
       <View style={styles.gaugeCard}>
-        <Text style={styles.gaugeTitle}>Fear & Greed Index</Text>
+        <Text style={styles.gaugeTitle}>{isCrypto ? 'Crypto Fear & Greed Index' : 'Fear & Greed Index'}</Text>
         <View style={[styles.scoreCircle, { borderColor: color }]}>
           <Ionicons name={getScoreIcon(score)} size={28} color={color} />
           <Text style={[styles.scoreNumber, { color }]}>{Math.round(score)}</Text>

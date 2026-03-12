@@ -3,13 +3,17 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Star, Plus, Trash2, TrendingUp, TrendingDown, Search, AlertCircle } from 'lucide-react';
 import { watchlistApi } from '../api/watchlist';
 import { stocksApi } from '../api/stocks';
+import api from '../api/client';
 import { usePriceStore } from '../stores/priceStore';
+import { useAssetModeStore } from '../stores/assetModeStore';
 import { useNavigate } from 'react-router-dom';
 import SparkLine from '../components/charts/SparkLine';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import type { Stock } from '../types';
 
 export default function Watchlist() {
+  const { mode } = useAssetModeStore();
+  const isCrypto = mode === 'crypto';
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Stock[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -25,13 +29,15 @@ export default function Watchlist() {
     if (searchQuery.length < 1) { setSearchResults([]); return; }
     const timer = setTimeout(async () => {
       try {
-        const results = await stocksApi.search(searchQuery);
+        const results = isCrypto
+          ? await api.get<Stock[]>('/crypto/search', { params: { q: searchQuery } }).then(r => r.data)
+          : await stocksApi.search(searchQuery);
         setSearchResults(results);
         setShowDropdown(true);
       } catch { setSearchResults([]); }
     }, 250);
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, isCrypto]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -79,7 +85,7 @@ export default function Watchlist() {
         <div className="flex items-center gap-3">
           <Star className="w-8 h-8 text-accent" />
           <h1 className="text-2xl font-bold text-text-primary">Watchlist</h1>
-          {watchlist && <span className="text-sm text-text-muted">({watchlist.length} stocks)</span>}
+          {watchlist && <span className="text-sm text-text-muted">({watchlist.length} {isCrypto ? 'coins' : 'stocks'})</span>}
         </div>
 
         {/* Add with autocomplete */}
@@ -91,7 +97,7 @@ export default function Watchlist() {
                 onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && searchQuery.trim()) handleAdd(searchQuery.trim()); }}
                 className="bg-surface border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent w-52"
-                placeholder="Search & add stock..." />
+                placeholder={isCrypto ? "Search & add coin..." : "Search & add stock..."} />
             </div>
             <button onClick={() => searchQuery.trim() && handleAdd(searchQuery.trim())}
               disabled={addMutation.isPending || !searchQuery.trim()}
@@ -167,7 +173,7 @@ export default function Watchlist() {
           {(!watchlist || watchlist.length === 0) && (
             <div className="text-center py-16">
               <Star className="w-12 h-12 text-text-muted mx-auto mb-3" />
-              <p className="text-text-muted text-sm">Your watchlist is empty. Search and add stocks above.</p>
+              <p className="text-text-muted text-sm">Your watchlist is empty. Search and add {isCrypto ? 'coins' : 'stocks'} above.</p>
             </div>
           )}
         </div>

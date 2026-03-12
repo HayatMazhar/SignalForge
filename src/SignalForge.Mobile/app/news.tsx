@@ -11,9 +11,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
+import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { newsApi } from '../src/api/stocks';
 import type { NewsArticle } from '../src/api/stocks';
+import { useAssetModeStore } from '../src/stores/assetModeStore';
+import api from '../src/api/client';
 
 const C = {
   bg: '#06060B',
@@ -59,6 +62,8 @@ function timeAgo(dateStr: string): string {
 }
 
 export default function NewsScreen() {
+  const { mode } = useAssetModeStore();
+  const isCrypto = mode === 'crypto';
   const [refreshing, setRefreshing] = useState(false);
 
   const {
@@ -66,8 +71,11 @@ export default function NewsScreen() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ['marketNews'],
-    queryFn: () => newsApi.getMarketNews(30),
+    queryKey: ['marketNews', mode],
+    queryFn: () =>
+      isCrypto
+        ? api.get<NewsArticle[]>('/crypto/news', { params: { limit: 30 } }).then(r => r.data)
+        : newsApi.getMarketNews(30),
   });
 
   const onRefresh = useCallback(async () => {
@@ -125,6 +133,7 @@ export default function NewsScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+      <Stack.Screen options={{ headerTitle: isCrypto ? 'Crypto News' : 'News' }} />
       <FlatList
         style={styles.container}
         contentContainerStyle={styles.list}
