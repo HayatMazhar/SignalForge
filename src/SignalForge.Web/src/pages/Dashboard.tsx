@@ -28,7 +28,7 @@ export default function Dashboard() {
   const setSymbols = useWatchlistStore((s) => s.setSymbols);
   const watchlistSymbols = useWatchlistStore((s) => s.symbols);
   const prices = usePriceStore((s) => s.prices);
-  const { mode, apiPrefix } = useAssetModeStore();
+  const { mode } = useAssetModeStore();
 
   const { data: watchlist } = useQuery({ queryKey: ['watchlist'], queryFn: watchlistApi.get });
   const { data: signals } = useQuery({ queryKey: ['signals-dash'], queryFn: () => signalsApi.getSignals(undefined, 20), refetchInterval: 60000 });

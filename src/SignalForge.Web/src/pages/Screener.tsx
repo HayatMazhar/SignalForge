@@ -35,15 +35,15 @@ export default function Screener() {
         : stocksApi.getTopMovers(),
   });
 
-  const filtered = results?.filter(s => {
+  const filtered = (results as any[])?.filter((s: any) => {
     if (sector !== 'All' && s.sector !== sector) return false;
     if (exchange !== 'All' && s.exchange !== exchange) return false;
     if (query && !s.symbol.toUpperCase().includes(query.toUpperCase()) && !(s.name ?? '').toUpperCase().includes(query.toUpperCase())) return false;
     return true;
-  }).sort((a, b) => {
+  }).sort((a: any, b: any) => {
     if (sortBy === 'symbol') return a.symbol.localeCompare(b.symbol);
     if (sortBy === 'name') return a.name.localeCompare(b.name);
-    return a.sector.localeCompare(b.sector);
+    return (a.sector ?? '').localeCompare(b.sector ?? '');
   }) ?? [];
 
   return (
@@ -79,7 +79,7 @@ export default function Screener() {
       {/* Quick Movers */}
       {movers && movers.length > 0 && (
         <div className="flex gap-2 overflow-x-auto pb-2">
-          {movers.slice(0, 10).map(m => (
+          {movers.slice(0, 10).map((m: any) => (
             <button key={m.symbol} onClick={() => navigate(`/stocks/${m.symbol}`)}
               className="flex items-center gap-2 px-3 py-2 bg-surface border border-border rounded-lg hover:bg-surface-light transition-colors flex-shrink-0">
               <span className="text-xs font-bold text-text-primary">{m.symbol}</span>
@@ -111,7 +111,7 @@ export default function Screener() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((s) => (
+              {filtered.map((s: any) => (
                 <tr key={s.id} onClick={() => navigate(`/stocks/${s.symbol}`)}
                   className="border-b border-border/50 hover:bg-bg cursor-pointer transition-colors">
                   <td className="py-3 px-5 font-bold text-accent">{s.symbol}</td>
