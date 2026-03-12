@@ -78,7 +78,7 @@ export default function HelpCenterScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         {FAQ_CATEGORIES.map((cat) => (
           <View key={cat.id} style={styles.category}>

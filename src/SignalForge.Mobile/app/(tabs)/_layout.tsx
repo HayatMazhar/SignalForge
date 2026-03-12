@@ -1,6 +1,7 @@
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Redirect, Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../src/stores/authStore';
 import { router } from 'expo-router';
 
@@ -11,8 +12,9 @@ const C = {
 
 function TopHeader() {
   const user = useAuthStore((s) => s.user);
+  const insets = useSafeAreaInsets();
   return (
-    <View style={h.container}>
+    <View style={[h.container, { paddingTop: insets.top + 10 }]}>
       <TouchableOpacity onPress={() => router.push('/settings')} style={h.menuBtn}>
         <Ionicons name="menu" size={22} color={C.textPrimary} />
       </TouchableOpacity>

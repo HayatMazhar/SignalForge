@@ -108,7 +108,7 @@ export default function SwipeSignalsScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container} edges={['top']}>
+      <SafeAreaView style={styles.container} edges={['bottom']}>
         <View style={styles.center}>
           <ActivityIndicator size="large" color={COLORS.accent} />
           <Text style={styles.loadingText}>Loading signals...</Text>
@@ -118,7 +118,7 @@ export default function SwipeSignalsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Signal Swiper</Text>
         <View style={styles.statsRow}>

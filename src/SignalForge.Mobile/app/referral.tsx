@@ -53,7 +53,7 @@ export default function ReferralScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         <View style={styles.codeCard}>
           <Text style={styles.codeLabel}>Your Referral Code</Text>

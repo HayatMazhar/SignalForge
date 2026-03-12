@@ -76,7 +76,7 @@ export default function MorningBriefingScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container} edges={['top']}>
+      <SafeAreaView style={styles.container} edges={['bottom']}>
         <View style={styles.center}>
           <ActivityIndicator size="large" color={COLORS.accent} />
           <Text style={styles.loadingText}>Loading briefing...</Text>
@@ -90,7 +90,7 @@ export default function MorningBriefingScreen() {
   const pulseEvents = marketPulse.slice(0, 3);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Morning Briefing</Text>
       </View>

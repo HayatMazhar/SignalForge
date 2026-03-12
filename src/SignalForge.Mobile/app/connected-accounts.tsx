@@ -67,7 +67,7 @@ export default function ConnectedAccountsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         <Text style={styles.sectionTitle}>Broker Connections</Text>
         {BROKERS.map((broker) => {

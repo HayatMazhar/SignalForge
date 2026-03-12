@@ -93,7 +93,7 @@ export default function ActivityLogScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.filterRow}>
         {FILTERS.map((f) => (
           <TouchableOpacity

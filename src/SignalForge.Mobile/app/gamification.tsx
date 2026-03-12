@@ -102,7 +102,7 @@ export default function GamificationScreen() {
   const progress = xpInLevel / 100;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Achievements</Text>
       </View>

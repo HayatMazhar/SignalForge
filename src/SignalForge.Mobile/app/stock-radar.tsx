@@ -90,7 +90,7 @@ export default function StockRadarScreen() {
   });
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>AI Stock Radar</Text>
         {scanCount > 0 && (

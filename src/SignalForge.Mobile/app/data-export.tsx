@@ -80,7 +80,7 @@ export default function DataExportScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <Text style={styles.subtitle}>Export your data as CSV and share</Text>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         {EXPORT_CARDS.map((card) => (

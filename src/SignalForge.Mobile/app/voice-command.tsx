@@ -89,7 +89,7 @@ export default function VoiceCommandScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.header}>
         <Ionicons name="mic" size={24} color={COLORS.accent} />
         <Text style={styles.headerTitle}>AI Voice Command</Text>

@@ -69,7 +69,7 @@ export default function FeedbackScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         <Text style={styles.label}>How would you rate your experience?</Text>
         <View style={styles.starsRow}>
