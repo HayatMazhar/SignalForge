@@ -3,6 +3,7 @@ import { Redirect, Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../src/stores/authStore';
+import { useAssetModeStore } from '../../src/stores/assetModeStore';
 import { router } from 'expo-router';
 
 const C = {
@@ -12,6 +13,7 @@ const C = {
 
 function TopHeader() {
   const user = useAuthStore((s) => s.user);
+  const { mode, toggle } = useAssetModeStore();
   const insets = useSafeAreaInsets();
   return (
     <View style={[h.container, { paddingTop: insets.top + 10 }]}>
@@ -22,6 +24,17 @@ function TopHeader() {
         <Ionicons name="pulse" size={20} color={C.accent} />
         <Text style={h.logoText}>SignalForge</Text>
       </View>
+      <TouchableOpacity onPress={toggle} style={{
+        flexDirection: 'row', alignItems: 'center', gap: 4,
+        backgroundColor: mode === 'crypto' ? '#A78BFA20' : '#00FF9420',
+        paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12,
+      }}>
+        <Ionicons name={mode === 'crypto' ? 'logo-bitcoin' : 'trending-up'} size={14}
+          color={mode === 'crypto' ? '#A78BFA' : '#00FF94'} />
+        <Text style={{ fontSize: 11, fontWeight: '700', color: mode === 'crypto' ? '#A78BFA' : '#00FF94' }}>
+          {mode === 'crypto' ? 'Crypto' : 'Stocks'}
+        </Text>
+      </TouchableOpacity>
       <View style={h.rightRow}>
         <TouchableOpacity onPress={() => router.push('/settings')} style={h.avatarBtn}>
           <View style={h.avatar}>

@@ -12,6 +12,7 @@ import { useMarketHub } from '../hooks/useMarketHub';
 import { useWatchlistStore } from '../stores/watchlistStore';
 import { usePriceStore } from '../stores/priceStore';
 import { useAuthStore } from '../stores/authStore';
+import { useAssetModeStore } from '../stores/assetModeStore';
 import { getSignalLabel } from '../utils/signalType';
 import SignalCard from '../components/SignalCard';
 
@@ -27,10 +28,11 @@ export default function Dashboard() {
   const setSymbols = useWatchlistStore((s) => s.setSymbols);
   const watchlistSymbols = useWatchlistStore((s) => s.symbols);
   const prices = usePriceStore((s) => s.prices);
+  const { mode, apiPrefix } = useAssetModeStore();
 
   const { data: watchlist } = useQuery({ queryKey: ['watchlist'], queryFn: watchlistApi.get });
   const { data: signals } = useQuery({ queryKey: ['signals-dash'], queryFn: () => signalsApi.getSignals(undefined, 20), refetchInterval: 60000 });
-  const { data: topMovers } = useQuery({ queryKey: ['top-movers'], queryFn: stocksApi.getTopMovers, refetchInterval: 120000 });
+  const { data: topMovers } = useQuery({ queryKey: ['top-movers', mode], queryFn: () => mode === 'crypto' ? api.get('/crypto/top-movers').then(r => r.data) : stocksApi.getTopMovers(), refetchInterval: 120000 });
   const { data: portfolio } = useQuery({ queryKey: ['portfolio-dash'], queryFn: portfolioApi.get });
   const { data: fearGreed } = useQuery({ queryKey: ['fear-greed-dash'], queryFn: () => api.get('/insights/fear-greed').then(r => r.data) });
   const { data: pulse } = useQuery({ queryKey: ['pulse-dash'], queryFn: () => api.get('/insights/market-pulse').then(r => r.data), refetchInterval: 120000 });
@@ -67,6 +69,7 @@ export default function Dashboard() {
           <div>
             <p className="text-sm text-text-muted">{greeting},</p>
             <h1 className="text-2xl font-black text-text-primary">{user?.fullName ?? 'Trader'}</h1>
+            <p className="text-xs text-text-muted mt-0.5">{mode === 'crypto' ? 'Crypto' : 'Stocks'} Dashboard</p>
             <div className="flex items-center gap-3 mt-2">
               <span className="text-xs text-text-muted flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-accent/10 text-accent font-bold flex items-center gap-1">
@@ -84,10 +87,21 @@ export default function Dashboard() {
 
       {/* Market Indices Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <IndexCard name="S&P 500" value="5,248.32" change={0.85} data={MINI_CHART_DATA(1, 1)} />
-        <IndexCard name="NASDAQ" value="16,892" change={1.12} data={MINI_CHART_DATA(2, 1.5)} />
-        <IndexCard name="DOW" value="39,145" change={0.42} data={MINI_CHART_DATA(3, 0.8)} />
-        <IndexCard name="VIX" value="14.82" change={-3.25} data={MINI_CHART_DATA(4, -0.5)} />
+        {mode === 'stocks' ? (
+          <>
+            <IndexCard name="S&P 500" value="5,248.32" change={0.85} data={MINI_CHART_DATA(1, 1)} />
+            <IndexCard name="NASDAQ" value="16,892" change={1.12} data={MINI_CHART_DATA(2, 1.5)} />
+            <IndexCard name="DOW" value="39,145" change={0.42} data={MINI_CHART_DATA(3, 0.8)} />
+            <IndexCard name="VIX" value="14.82" change={-3.25} data={MINI_CHART_DATA(4, -0.5)} />
+          </>
+        ) : (
+          <>
+            <CryptoIndexCard symbol="BTC" name="Bitcoin" />
+            <CryptoIndexCard symbol="ETH" name="Ethereum" />
+            <CryptoIndexCard symbol="SOL" name="Solana" />
+            <CryptoIndexCard symbol="BNB" name="BNB" />
+          </>
+        )}
       </div>
 
       {/* Main Grid */}
@@ -324,5 +338,43 @@ function QuickAction({ icon: Icon, label, to, color }: { icon: typeof Target; la
       <Icon className={`w-5 h-5 ${color} mx-auto mb-1 group-hover:scale-110 transition-transform`} />
       <span className="text-[10px] font-semibold text-text-muted group-hover:text-text-primary transition-colors">{label}</span>
     </button>
+  );
+}
+
+function CryptoIndexCard({ symbol, name }: { symbol: string; name: string }) {
+  const { data: quote } = useQuery({
+    queryKey: ['crypto-index', symbol],
+    queryFn: () => api.get(`/crypto/${symbol}/quote`).then(r => r.data),
+    refetchInterval: 60000,
+  });
+
+  const price = quote?.price != null ? `$${Number(quote.price).toLocaleString()}` : '—';
+  const change = quote?.changePercent ?? 0;
+  const positive = change >= 0;
+
+  return (
+    <div className="bg-surface border border-border rounded-2xl p-4 card-hover cursor-pointer">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">{name}</span>
+        {positive ? <TrendingUp className="w-3 h-3 text-accent" /> : <TrendingDown className="w-3 h-3 text-danger" />}
+      </div>
+      <div className="text-lg font-black text-text-primary font-mono">{price}</div>
+      <div className={`text-xs font-bold ${positive ? 'text-accent' : 'text-danger'}`}>
+        {positive ? '+' : ''}{change.toFixed(2)}%
+      </div>
+      <div className="mt-2 h-8">
+        <ResponsiveContainer width="100%" height={32} minWidth={0}>
+          <AreaChart data={MINI_CHART_DATA(symbol.charCodeAt(0), positive ? 1 : -0.5)}>
+            <defs>
+              <linearGradient id={`g-${symbol}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={positive ? '#00FF94' : '#FF3B5C'} stopOpacity={0.3} />
+                <stop offset="100%" stopColor={positive ? '#00FF94' : '#FF3B5C'} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <Area type="monotone" dataKey="v" stroke={positive ? '#00FF94' : '#FF3B5C'} fill={`url(#g-${symbol})`} strokeWidth={1.5} dot={false} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 }

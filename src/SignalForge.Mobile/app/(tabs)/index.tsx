@@ -8,6 +8,7 @@ import Svg, { Path, Circle, Line, Rect, Defs, LinearGradient, Stop } from 'react
 import api from '../../src/api/client';
 import { signalsApi, watchlistApi, stocksApi } from '../../src/api/stocks';
 import { useAuthStore } from '../../src/stores/authStore';
+import { useAssetModeStore } from '../../src/stores/assetModeStore';
 import { usePriceStore } from '../../src/stores/priceStore';
 import { getSignalLabel } from '../../src/utils/signalType';
 
@@ -31,12 +32,13 @@ const SECTORS = [
 export default function Dashboard() {
   const [refreshing, setRefreshing] = useState(false);
   const [mode, setMode] = useState<DashMode>('default');
+  const { mode: assetMode } = useAssetModeStore();
   const user = useAuthStore((s) => s.user);
   const prices = usePriceStore((s) => s.prices);
 
   const { data: signals = [], refetch: rS } = useQuery({ queryKey: ['d-sig'], queryFn: () => signalsApi.getSignals(undefined, 10) });
   const { data: watchlist = [], refetch: rW } = useQuery({ queryKey: ['d-wl'], queryFn: () => watchlistApi.get() });
-  const { data: movers = [], refetch: rM } = useQuery({ queryKey: ['d-mov'], queryFn: () => stocksApi.getTopMovers() });
+  const { data: movers = [], refetch: rM } = useQuery({ queryKey: ['d-mov', assetMode], queryFn: () => assetMode === 'crypto' ? api.get('/crypto/top-movers').then(r => Array.isArray(r.data) ? r.data : []) : stocksApi.getTopMovers() });
   const { data: fg } = useQuery({ queryKey: ['d-fg'], queryFn: () => api.get('/insights/fear-greed').then(r => r.data) });
   const { data: pulse } = useQuery({ queryKey: ['d-pulse'], queryFn: () => api.get('/insights/market-pulse').then(r => r.data) });
   const { data: news = [] } = useQuery({ queryKey: ['d-news'], queryFn: () => api.get('/news/market?limit=6').then(r => r.data).catch(() => []) });
@@ -120,6 +122,7 @@ export default function Dashboard() {
                 <Text style={tp.heroGreet}>{greeting}</Text>
               </View>
               <Text style={tp.heroName}>{user?.fullName ?? 'Trader'}</Text>
+              <Text style={{ fontSize: 10, color: C.textMuted, marginTop: 2 }}>{assetMode === 'crypto' ? 'Crypto' : 'Stock'} Mode</Text>
             </View>
             <View style={tp.heroMeta}>
               <View style={tp.livePulse}><View style={tp.livePulseDot} /><Text style={tp.livePulseT}>LIVE</Text></View>
@@ -443,7 +446,7 @@ export default function Dashboard() {
       {mode !== 'trader' && (<>
         {/* Hero */}
         <View style={st.hero}>
-          <View><Text style={st.greet}>{greeting},</Text><Text style={st.name}>{user?.fullName ?? 'Trader'}</Text></View>
+          <View><Text style={st.greet}>{greeting},</Text><Text style={st.name}>{user?.fullName ?? 'Trader'}</Text><Text style={{ fontSize: 10, color: C.textMuted, marginTop: 2 }}>{assetMode === 'crypto' ? 'Crypto' : 'Stock'} Mode</Text></View>
           <View style={st.heroRight}>
             <View style={st.liveBadge}><View style={st.liveDot} /><Text style={st.liveText}>Live</Text></View>
             <Text style={st.dateText}>{new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</Text>

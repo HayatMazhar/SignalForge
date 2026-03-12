@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Filter, Search, TrendingUp, TrendingDown, ArrowUpDown } from 'lucide-react';
 import { stocksApi } from '../api/stocks';
+import api from '../api/client';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useAssetModeStore } from '../stores/assetModeStore';
 
 const sectors = ['All', 'Technology', 'Healthcare', 'Financial Services', 'Consumer Cyclical', 'Consumer Defensive', 'Energy', 'Industrials', 'Communication Services'];
 const exchanges = ['All', 'NASDAQ', 'NYSE'];
@@ -14,16 +16,23 @@ export default function Screener() {
   const [exchange, setExchange] = useState('All');
   const [sortBy, setSortBy] = useState<'symbol' | 'name' | 'sector'>('symbol');
   const navigate = useNavigate();
+  const { mode } = useAssetModeStore();
 
   const { data: results, isLoading } = useQuery({
-    queryKey: ['stock-search', query],
-    queryFn: () => stocksApi.search(query || 'A'),
+    queryKey: ['stock-search', query, mode],
+    queryFn: () =>
+      mode === 'crypto'
+        ? api.get('/crypto/search', { params: { q: query || 'A' } }).then(r => r.data)
+        : stocksApi.search(query || 'A'),
     enabled: true,
   });
 
   const { data: movers } = useQuery({
-    queryKey: ['top-movers-screener'],
-    queryFn: stocksApi.getTopMovers,
+    queryKey: ['top-movers-screener', mode],
+    queryFn: () =>
+      mode === 'crypto'
+        ? api.get('/crypto/top-movers').then(r => r.data)
+        : stocksApi.getTopMovers(),
   });
 
   const filtered = results?.filter(s => {
@@ -42,8 +51,8 @@ export default function Screener() {
       <div className="flex items-center gap-3">
         <Filter className="w-8 h-8 text-accent" />
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Stock Screener</h1>
-          <p className="text-sm text-text-muted">{filtered.length} stocks found</p>
+          <h1 className="text-2xl font-bold text-text-primary">{mode === 'crypto' ? 'Crypto Screener' : 'Stock Screener'}</h1>
+          <p className="text-sm text-text-muted">{filtered.length} {mode === 'crypto' ? 'assets' : 'stocks'} found</p>
         </div>
       </div>
 

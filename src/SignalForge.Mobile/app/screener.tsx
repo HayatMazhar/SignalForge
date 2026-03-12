@@ -15,13 +15,19 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { stocksApi, Stock } from '../src/api/stocks';
+import api from '../src/api/client';
+import { useAssetModeStore } from '../src/stores/assetModeStore';
 
 export default function ScreenerScreen() {
   const router = useRouter();
   const [query, setQuery] = useState('');
+  const { mode } = useAssetModeStore();
   const { data: results = [], isLoading } = useQuery({
-    queryKey: ['stocks-search', query],
-    queryFn: () => stocksApi.search(query),
+    queryKey: ['stocks-search', query, mode],
+    queryFn: () =>
+      mode === 'crypto'
+        ? api.get<Stock[]>('/crypto/search', { params: { q: query } }).then(r => r.data)
+        : stocksApi.search(query),
     enabled: query.length >= 1,
   });
 

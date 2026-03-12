@@ -60,6 +60,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
 
         services.AddHttpClient<IMarketDataService, PolygonMarketDataService>();
+        services.AddHttpClient<ICryptoDataService, CryptoDataService>();
         services.AddHttpClient<INewsService, NewsApiService>();
         services.AddHttpClient<IOptionsFlowService, UnusualWhalesService>();
         services.AddHttpClient<Core42ChatClient>()

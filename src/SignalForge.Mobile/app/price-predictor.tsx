@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMutation } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../src/api/client';
+import { useAssetModeStore } from '../src/stores/assetModeStore';
 
 const C = {
   bg: '#06060B',
@@ -50,10 +51,13 @@ const DIRECTION_CONFIG = {
 
 export default function PricePredictorScreen() {
   const [symbol, setSymbol] = useState('');
+  const { mode } = useAssetModeStore();
 
   const { mutate, data, isPending, reset } = useMutation({
     mutationFn: async (sym: string) => {
-      const res = await api.get(`/ai/predict/${sym.toUpperCase().trim()}`);
+      const upper = sym.toUpperCase().trim();
+      const endpoint = mode === 'crypto' ? `/crypto/predict/${upper}` : `/ai/predict/${upper}`;
+      const res = await api.get(endpoint);
       return res.data as PredictionResult;
     },
   });
@@ -163,7 +167,11 @@ export default function PricePredictorScreen() {
         {!data && !isPending && (
           <View style={styles.placeholder}>
             <Ionicons name="analytics-outline" size={64} color={C.border} />
-            <Text style={styles.placeholderText}>Enter a stock symbol to get AI price predictions</Text>
+            <Text style={styles.placeholderText}>
+              {mode === 'crypto'
+                ? 'Enter a crypto symbol to get AI price predictions'
+                : 'Enter a stock symbol to get AI price predictions'}
+            </Text>
           </View>
         )}
       </ScrollView>

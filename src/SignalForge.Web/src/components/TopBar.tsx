@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, X, TrendingUp, TrendingDown, ChevronRight, Sun, Moon } from 'lucide-react';
+import { Search, Bell, X, TrendingUp, TrendingDown, ChevronRight, Sun, Moon, Zap } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { useSignalStore } from '../stores/signalStore';
 import { useThemeStore } from '../stores/themeStore';
+import { useAssetModeStore } from '../stores/assetModeStore';
 import { getSignalLabel } from '../utils/signalType';
 import { stocksApi } from '../api/stocks';
 import type { Stock } from '../types';
@@ -11,6 +12,7 @@ import type { Stock } from '../types';
 export default function TopBar() {
   const user = useAuthStore((s) => s.user);
   const signals = useSignalStore((s) => s.signals);
+  const { mode, toggle: toggleAssetMode } = useAssetModeStore();
   const navigate = useNavigate();
 
   const [query, setQuery] = useState('');
@@ -62,6 +64,17 @@ export default function TopBar() {
           </div>
         )}
       </div>
+
+      {/* Asset Mode Toggle */}
+      <button onClick={toggleAssetMode}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-bold transition-all"
+        style={mode === 'crypto'
+          ? { borderColor: 'var(--color-warning)', background: 'rgba(var(--warning-rgb, 245,158,11), 0.1)', color: 'var(--color-warning)' }
+          : { borderColor: 'var(--color-accent)', background: 'rgba(var(--accent-rgb, 99,102,241), 0.1)', color: 'var(--color-accent)' }
+        }>
+        {mode === 'stocks' ? <TrendingUp className="w-3.5 h-3.5" /> : <Zap className="w-3.5 h-3.5" />}
+        {mode === 'stocks' ? 'Stocks' : 'Crypto'}
+      </button>
 
       <div className="flex items-center gap-2">
         {/* Theme Toggle */}

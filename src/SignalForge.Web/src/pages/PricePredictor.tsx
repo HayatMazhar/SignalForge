@@ -4,6 +4,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import { Brain, Search, TrendingUp, TrendingDown, Minus, Zap } from 'lucide-react';
 import api from '../api/client';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useAssetModeStore } from '../stores/assetModeStore';
 
 interface RawPrediction {
   horizon?: string;
@@ -91,10 +92,13 @@ const impactColors: Record<string, string> = {
 export default function PricePredictor() {
   const [symbol, setSymbol] = useState('');
   const [activeSymbol, setActiveSymbol] = useState('');
+  const { mode } = useAssetModeStore();
+
+  const endpoint = mode === 'crypto' ? `/crypto/predict/${activeSymbol}` : `/ai/predict/${activeSymbol}`;
 
   const { data: result, isLoading, error } = useQuery({
-    queryKey: ['price-prediction', activeSymbol],
-    queryFn: () => api.get(`/ai/predict/${activeSymbol}`).then(r => normalizePredictions(r.data as RawPredictionResult)),
+    queryKey: ['price-prediction', activeSymbol, mode],
+    queryFn: () => api.get(endpoint).then(r => normalizePredictions(r.data as RawPredictionResult)),
     enabled: !!activeSymbol,
   });
 
@@ -114,7 +118,7 @@ export default function PricePredictor() {
           <Brain className="w-6 h-6 text-purple" />
         </div>
         <div>
-          <h1 className="text-2xl font-black text-text-primary">AI Price Predictor</h1>
+          <h1 className="text-2xl font-black text-text-primary">{mode === 'crypto' ? 'AI Crypto Predictor' : 'AI Price Predictor'}</h1>
           <p className="text-xs text-text-muted">Machine learning-powered price forecasting</p>
         </div>
       </div>
