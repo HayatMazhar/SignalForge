@@ -6,8 +6,9 @@ using Microsoft.Extensions.Configuration;
 namespace SignalForge.Infrastructure.Services;
 
 /// <summary>
-/// REST client for OpenAI-compatible chat/completions API (e.g. Core42 AI).
-/// POST {baseUrl}chat/completions with api-key header.
+/// REST client for OpenAI-compatible chat/completions API.
+/// Supports Azure OpenAI (api-version query param + deployment-based URL) and
+/// other OpenAI-compatible providers (Core42, OpenAI, etc.).
 /// </summary>
 public sealed class Core42ChatClient
 {
@@ -15,13 +16,28 @@ public sealed class Core42ChatClient
     private readonly string _model;
     private readonly int _maxTokens;
     private readonly double _temperature;
+    private readonly string _completionsPath;
 
     public Core42ChatClient(HttpClient http, IConfiguration config)
     {
         _http = http;
-        _model = config["Core42Ai:ModelName"] ?? "gpt-4o";
+        _model = config["Core42Ai:ModelName"] ?? "gpt-4o-mini";
         _maxTokens = config.GetValue("Core42Ai:MaxTokens", 512);
         _temperature = config.GetValue("Core42Ai:Temperature", 0.7);
+
+        var apiVersion = config["Core42Ai:ApiVersion"];
+        var deploymentName = config["Core42Ai:DeploymentName"] ?? _model;
+        var endpoint = config["Core42Ai:ApiEndpoint"] ?? "";
+
+        if (!string.IsNullOrEmpty(apiVersion) || endpoint.Contains(".cognitive.microsoft.com", StringComparison.OrdinalIgnoreCase))
+        {
+            var ver = apiVersion ?? "2024-12-01-preview";
+            _completionsPath = $"openai/deployments/{deploymentName}/chat/completions?api-version={ver}";
+        }
+        else
+        {
+            _completionsPath = "chat/completions";
+        }
     }
 
     public static void Configure(HttpClient client, string baseUrl, string apiKey)
@@ -31,9 +47,6 @@ public sealed class Core42ChatClient
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
-    /// <param name="messages">Role + content; role is "system", "user", or "assistant"</param>
-    /// <param name="jsonResponse">When true, sends response_format: { "type": "json_object" }</param>
-    /// <param name="maxTokensOverride">Optional override for this request</param>
     public async Task<string> CompleteAsync(
         IReadOnlyList<(string Role, string Content)> messages,
         bool jsonResponse = false,
@@ -52,7 +65,7 @@ public sealed class Core42ChatClient
 
         var json = JsonSerializer.Serialize(payload);
         using var content = new StringContent(json, Encoding.UTF8, "application/json");
-        using var response = await _http.PostAsync("chat/completions", content, cancellationToken).ConfigureAwait(false);
+        using var response = await _http.PostAsync(_completionsPath, content, cancellationToken).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
 
         var responseJson = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
