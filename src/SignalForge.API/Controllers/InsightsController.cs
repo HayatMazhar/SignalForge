@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SignalForge.Application.DTOs;
@@ -29,13 +30,13 @@ public class InsightsController : ControllerBase
         var sym = symbol.ToUpperInvariant();
         var quote = await _marketData.GetQuote(sym, ct);
         var technicals = await _marketData.GetTechnicalIndicators(sym, ct);
-        var news = await _news.GetNews(sym, 5, ct);
+        var newsItems = await _news.GetNews(sym, 5, ct);
         var flow = await _options.GetSymbolFlow(sym, ct);
 
         if (quote is null) return NotFound();
 
-        var sentiment = news.Count > 0
-            ? await _ai.AnalyzeSentiment(news.Select(n => n.Title).ToList(), ct)
+        var sentiment = newsItems.Count > 0
+            ? await _ai.AnalyzeSentiment(newsItems.Select(n => n.Title).ToList(), ct)
             : new SentimentResultDto(0, "Neutral", 0);
 
         var price = quote.Price;
@@ -43,6 +44,7 @@ public class InsightsController : ControllerBase
         var trend = technicals?.Trend ?? "Neutral";
         var callVol = flow.Where(f => f.Type == Domain.Enums.OptionType.Call).Sum(f => f.Volume);
         var putVol = flow.Where(f => f.Type == Domain.Enums.OptionType.Put).Sum(f => f.Volume);
+        var unusualCount = flow.Count(f => f.IsUnusual);
 
         var techScore = CalculateScore(rsi, trend);
         var sentScore = NormalizeScore(sentiment.Score);
@@ -59,11 +61,29 @@ public class InsightsController : ControllerBase
         var reward = Math.Abs(target - entry);
         var rrRatio = risk > 0 ? Math.Round(reward / risk, 2) : 0;
 
+        var aiThesisJson = await _ai.GenerateThesisAsync(
+            sym, price, technicals, sentiment, callVol, putVol, unusualCount, ct);
+
+        string aiThesis, aiBullCase, aiBearCase;
+        try
+        {
+            var parsed = JsonSerializer.Deserialize<JsonElement>(aiThesisJson);
+            aiThesis = parsed.TryGetProperty("thesis", out var t) ? t.GetString() ?? "" : "";
+            aiBullCase = parsed.TryGetProperty("bullCase", out var b) ? b.GetString() ?? "" : "";
+            aiBearCase = parsed.TryGetProperty("bearCase", out var bc) ? bc.GetString() ?? "" : "";
+        }
+        catch
+        {
+            aiThesis = $"{sym} presents a {verdict.ToLower()} setup with {confidence:F0}% confidence.";
+            aiBullCase = GenerateBullCase(sym, price, technicals, sentiment, callVol);
+            aiBearCase = GenerateBearCase(sym, price, technicals, sentiment, putVol);
+        }
+
         var thesis = new TradeThesisDto(
             sym, verdict, Math.Round(confidence, 1),
-            $"{sym} presents a {verdict.ToLower()} setup with {confidence:F0}% confidence. Technical analysis shows a {trend.ToLower()} trend with RSI at {rsi:F0}, while sentiment analysis of {sentiment.ArticlesAnalyzed} recent articles indicates a {sentiment.Label.ToLower()} outlook. Options flow shows {(callVol > putVol ? "bullish" : "bearish")} institutional positioning.",
-            GenerateBullCase(sym, price, technicals, sentiment, callVol),
-            GenerateBearCase(sym, price, technicals, sentiment, putVol),
+            aiThesis,
+            aiBullCase,
+            aiBearCase,
             entry, stop, target, rrRatio,
             confidence >= 65 || confidence <= 35 ? "2-4 Weeks" : "1-2 Weeks",
             [

@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { HubConnectionBuilder, LogLevel, HubConnection } from '@microsoft/signalr';
+import { useEffect, useRef, useMemo } from 'react';
+import { HubConnectionBuilder, LogLevel, HubConnection, HubConnectionState } from '@microsoft/signalr';
 import { useAuthStore } from '../stores/authStore';
 import { usePriceStore } from '../stores/priceStore';
 import { useSignalStore } from '../stores/signalStore';
@@ -12,9 +12,12 @@ export function useMarketHub(symbols: string[]) {
   const updatePrice = usePriceStore((s) => s.updatePrice);
   const addSignal = useSignalStore((s) => s.addSignal);
   const addToast = useToastStore((s) => s.add);
+  const symbolsKey = useMemo(() => symbols.join(','), [symbols]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token || !symbolsKey) return;
+
+    let cancelled = false;
 
     const connection = new HubConnectionBuilder()
       .withUrl('/hubs/market', { accessTokenFactory: () => token })
@@ -49,18 +52,25 @@ export function useMarketHub(symbols: string[]) {
     connection
       .start()
       .then(() => {
+        if (cancelled) {
+          connection.stop();
+          return;
+        }
         symbols.forEach((symbol) => {
-          connection.invoke('SubscribeToStock', symbol);
+          connection.invoke('SubscribeToStock', symbol).catch(() => {});
         });
       })
-      .catch(console.error);
+      .catch(() => {});
 
     connectionRef.current = connection;
 
     return () => {
-      connection.stop();
+      cancelled = true;
+      if (connection.state !== HubConnectionState.Disconnected) {
+        connection.stop().catch(() => {});
+      }
     };
-  }, [token, symbols.join(',')]);
+  }, [token, symbolsKey]);
 
   return connectionRef;
 }

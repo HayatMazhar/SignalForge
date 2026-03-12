@@ -98,7 +98,7 @@ export default function SectorRotation() {
             ))}
           </div>
         </div>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={300} minWidth={0}>
           <BarChart data={chartData} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" stroke="#1A1F35" horizontal={false} />
             <XAxis
@@ -195,7 +195,7 @@ export default function SectorRotation() {
         {/* Pie chart */}
         <div className="bg-surface border border-border rounded-xl p-5">
           <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-4">Current Sector Weights</h3>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={300} minWidth={0}>
             <PieChart>
               <Pie
                 data={pieData}

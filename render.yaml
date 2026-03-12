@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: signalforge-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: Jwt__Key
+        generateValue: true
+      - key: Jwt__Issuer
+        value: signalforge
+      - key: Core42Ai__ApiEndpoint
+        value: https://api.core42.ai/v1/
+      - key: Core42Ai__ApiKey
+        sync: false
+      - key: Core42Ai__ModelName
+        value: gpt-4o
+      - key: Core42Ai__MaxTokens
+        value: 512
+      - key: Core42Ai__Temperature
+        value: 0.7
+      - key: Polygon__ApiKey
+        sync: false
+      - key: Cors__Origins
+        sync: false

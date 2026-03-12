@@ -117,7 +117,7 @@ export default function SentimentTrend() {
             <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-4">
               Sentiment Over 30 Days — {data.symbol}
             </h3>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={300} minWidth={0}>
               <AreaChart data={data.points}>
                 <defs>
                   <linearGradient id="sentPos" x1="0" y1="0" x2="0" y2="1">

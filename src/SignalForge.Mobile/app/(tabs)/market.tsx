@@ -1,0 +1,102 @@
+import React, { useCallback, useState } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+  StyleSheet,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import { stocksApi } from '../../src/api/stocks';
+import { formatPrice, formatPercent } from '../../src/utils/format';
+
+const COLORS = {
+  bg: '#06060B',
+  surface: '#0C0F1A',
+  accent: '#00FF94',
+  danger: '#FF3B5C',
+  textPrimary: '#F0F4F8',
+  textMuted: '#5B6378',
+  border: '#1A1F35',
+};
+
+export default function MarketScreen() {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const { data: movers = [], refetch, isFetching } = useQuery({
+    queryKey: ['topMovers'],
+    queryFn: () => stocksApi.getTopMovers(),
+  });
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
+  const gainers = movers.filter((m) => m.changePercent > 0);
+  const losers = movers.filter((m) => m.changePercent < 0);
+
+  const MoverRow = ({ item }: { item: typeof movers[0] }) => (
+    <TouchableOpacity
+      style={styles.moverRow}
+      onPress={() => router.push(`/stocks/${item.symbol}`)}
+      activeOpacity={0.7}
+    >
+      <View>
+        <Text style={styles.moverSymbol}>{item.symbol}</Text>
+        <Text style={styles.moverName} numberOfLines={1}>{item.name || item.symbol}</Text>
+      </View>
+      <View style={styles.moverRight}>
+        <Text style={styles.moverPrice}>{formatPrice(item.price)}</Text>
+        <Text style={[styles.moverChange, { color: item.changePercent >= 0 ? COLORS.accent : COLORS.danger }]}>
+          {formatPercent(item.changePercent)}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={<RefreshControl refreshing={refreshing || isFetching} onRefresh={onRefresh} tintColor={COLORS.accent} />}
+      >
+        <Text style={styles.sectionTitle}>Top Movers</Text>
+
+        <Text style={styles.subsectionTitle}>Gainers</Text>
+        {gainers.length === 0 ? (
+          <Text style={styles.emptyText}>No gainers</Text>
+        ) : (
+          gainers.map((item) => <MoverRow key={item.symbol} item={item} />)
+        )}
+
+        <Text style={styles.subsectionTitle}>Losers</Text>
+        {losers.length === 0 ? (
+          <Text style={styles.emptyText}>No losers</Text>
+        ) : (
+          losers.map((item) => <MoverRow key={item.symbol} item={item} />)
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: COLORS.bg },
+  scroll: { flex: 1 },
+  scrollContent: { padding: 16, paddingBottom: 32 },
+  sectionTitle: { fontSize: 24, fontWeight: '700', color: COLORS.textPrimary, marginBottom: 20 },
+  subsectionTitle: { fontSize: 18, fontWeight: '600', color: COLORS.textPrimary, marginBottom: 12, marginTop: 8 },
+  moverRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, backgroundColor: COLORS.surface, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border, marginBottom: 8 },
+  moverSymbol: { fontSize: 16, fontWeight: '700', color: COLORS.textPrimary },
+  moverName: { fontSize: 12, color: COLORS.textMuted, marginTop: 2 },
+  moverRight: { alignItems: 'flex-end' },
+  moverPrice: { fontSize: 15, fontWeight: '600', color: COLORS.textPrimary },
+  moverChange: { fontSize: 13, marginTop: 2 },
+  emptyText: { fontSize: 14, color: COLORS.textMuted, marginBottom: 16 },
+});

@@ -25,7 +25,7 @@ public class ChatController : ControllerBase
     public async Task<IActionResult> Chat([FromBody] ChatRequestDto request, CancellationToken ct)
     {
         var symbol = request.Symbol?.ToUpperInvariant();
-        var context = "";
+        var contextParts = new List<string>();
         var suggestions = new List<string>();
 
         if (!string.IsNullOrEmpty(symbol))
@@ -35,11 +35,11 @@ public class ChatController : ControllerBase
             var newsItems = await _news.GetNews(symbol, 5, ct);
 
             if (quote != null)
-                context += $"\n{symbol} current price: ${quote.Price}, change: {quote.ChangePercent}%, volume: {quote.Volume}";
+                contextParts.Add($"{symbol} current price: ${quote.Price}, change: {quote.ChangePercent}%, volume: {quote.Volume}");
             if (technicals != null)
-                context += $"\nTechnicals - RSI: {technicals.Rsi:F1}, MACD: {technicals.Macd:F2}, Trend: {technicals.Trend}, SMA20: ${technicals.Sma20:F2}, SMA50: ${technicals.Sma50:F2}";
+                contextParts.Add($"Technicals — RSI: {technicals.Rsi:F1}, MACD: {technicals.Macd:F2}, Trend: {technicals.Trend}, SMA20: ${technicals.Sma20:F2}, SMA50: ${technicals.Sma50:F2}");
             if (newsItems.Count > 0)
-                context += $"\nRecent headlines: {string.Join("; ", newsItems.Take(3).Select(n => n.Title))}";
+                contextParts.Add($"Recent headlines: {string.Join("; ", newsItems.Take(3).Select(n => n.Title))}");
 
             suggestions.AddRange(["Generate AI Signal", "View Trade Thesis", "Check Options Flow"]);
         }
@@ -51,24 +51,18 @@ public class ChatController : ControllerBase
         var systemPrompt = $"""
             You are SignalForge AI, an expert stock market analyst assistant.
             Be concise (2-4 sentences). Use data when available. Give actionable insights.
-            {(context.Length > 0 ? $"Current market data:\n{context}" : "No specific stock selected.")}
+            {(contextParts.Count > 0 ? $"Current market data:\n{string.Join("\n", contextParts)}" : "No specific stock selected.")}
             """;
 
-        var headlines = new List<string> { $"System: {systemPrompt}", $"User: {request.Message}" };
+        var messages = new List<(string Role, string Content)>();
         if (request.History != null)
         {
             foreach (var h in request.History.TakeLast(5))
-                headlines.Add($"{h.Role}: {h.Content}");
+                messages.Add((h.Role, h.Content));
         }
+        messages.Add(("user", request.Message));
 
-        var sentiment = await _ai.AnalyzeSentiment(headlines, ct);
-        var response = await _ai.GenerateSignalReasoning(
-            symbol ?? "MARKET",
-            new TechnicalDataDto(50, 0, 0, 0, 0, 0, 0, 0, 0, "Neutral"),
-            sentiment,
-            [],
-            ct
-        );
+        var response = await _ai.ChatAsync(systemPrompt, messages, ct);
 
         return Ok(new ChatResponseDto(response, symbol, suggestions));
     }

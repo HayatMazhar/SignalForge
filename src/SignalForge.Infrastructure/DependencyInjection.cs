@@ -62,6 +62,15 @@ public static class DependencyInjection
         services.AddHttpClient<IMarketDataService, PolygonMarketDataService>();
         services.AddHttpClient<INewsService, NewsApiService>();
         services.AddHttpClient<IOptionsFlowService, UnusualWhalesService>();
+        services.AddHttpClient<Core42ChatClient>()
+            .ConfigureHttpClient((sp, client) =>
+            {
+                var cfg = sp.GetRequiredService<IConfiguration>();
+                Core42ChatClient.Configure(
+                    client,
+                    cfg["Core42Ai:ApiEndpoint"] ?? "https://api.core42.ai/v1/",
+                    cfg["Core42Ai:ApiKey"] ?? "");
+            });
         services.AddScoped<IAISignalService, OpenAISignalService>();
 
         services.AddHostedService<SignalGeneratorService>();

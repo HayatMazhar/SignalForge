@@ -45,7 +45,7 @@ export default function PortfolioChart({ positions }: PortfolioChartProps) {
           <div className="text-xs">{change >= 0 ? '+' : ''}${change.toFixed(2)} (30d)</div>
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={200} minWidth={0}>
         <AreaChart data={data}>
           <defs>
             <linearGradient id="portfolioGrad" x1="0" y1="0" x2="0" y2="1">

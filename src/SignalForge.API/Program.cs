@@ -104,8 +104,17 @@ builder.Services.AddRateLimiter(options =>
 
 builder.Services.AddCors(options =>
 {
+    var allowedOrigins = new List<string>
+    {
+        "http://localhost:5173", "http://localhost:8081", "http://localhost:8082",
+        "http://10.40.50.72:8081", "http://10.40.50.72:5173"
+    };
+    var extraOrigins = builder.Configuration["Cors:Origins"];
+    if (!string.IsNullOrEmpty(extraOrigins))
+        allowedOrigins.AddRange(extraOrigins.Split(',', StringSplitOptions.RemoveEmptyEntries));
+
     options.AddPolicy("AllowFrontend", policy =>
-        policy.WithOrigins("http://localhost:5173", "http://localhost:8081", "http://localhost:8082", "http://10.40.50.117:8081")
+        policy.WithOrigins(allowedOrigins.ToArray())
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials());

@@ -95,7 +95,7 @@ export default function Backtest() {
           {/* Equity Curve */}
           <div className="bg-surface border border-border rounded-xl p-5">
             <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-4">Equity Curve</h3>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={250} minWidth={0}>
               <AreaChart data={result.equityCurve}>
                 <defs>
                   <linearGradient id="eqGrad" x1="0" y1="0" x2="0" y2="1">

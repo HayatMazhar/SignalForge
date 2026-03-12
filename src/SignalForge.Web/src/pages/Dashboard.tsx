@@ -291,7 +291,7 @@ function IndexCard({ name, value, change, data }: { name: string; value: string;
         {positive ? '+' : ''}{change.toFixed(2)}%
       </div>
       <div className="mt-2 h-8">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height={32} minWidth={0}>
           <AreaChart data={data}>
             <defs>
               <linearGradient id={`g-${name}`} x1="0" y1="0" x2="0" y2="1">

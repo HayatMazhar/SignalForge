@@ -155,7 +155,7 @@ export default function MultiChart() {
             <>
               {/* Chart */}
               <div className="bg-surface border border-border rounded-xl p-5">
-                <ResponsiveContainer width="100%" height={400}>
+                <ResponsiveContainer width="100%" height={400} minWidth={0}>
                   <AreaChart data={chartData}>
                     <defs>
                       <linearGradient id="mcGrad" x1="0" y1="0" x2="0" y2="1">

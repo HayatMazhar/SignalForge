@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "SignalForge",
+    "slug": "signalforge",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "scheme": "signalforge",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#06060B"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.signalforge.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundColor": "#06060B"
+      },
+      "package": "com.signalforge.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-local-authentication",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#00FF94"
+        }
+      ]
+    ]
+  }
+}

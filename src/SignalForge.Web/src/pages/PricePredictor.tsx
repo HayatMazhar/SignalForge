@@ -5,6 +5,17 @@ import { Brain, Search, TrendingUp, TrendingDown, Minus, Zap } from 'lucide-reac
 import api from '../api/client';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
+interface RawPrediction {
+  horizon?: string;
+  period?: string;
+  price?: number;
+  predictedPrice?: number;
+  change?: number;
+  changePercent?: number;
+  confidence: number;
+  direction: string;
+}
+
 interface Prediction {
   period: string;
   days: number;
@@ -16,8 +27,15 @@ interface Prediction {
 
 interface Factor {
   name: string;
-  impact: 'Bullish' | 'Bearish' | 'Neutral';
+  impact: string;
   weight: number;
+}
+
+interface RawPredictionResult {
+  symbol: string;
+  currentPrice: number;
+  predictions: RawPrediction[];
+  factors: Factor[];
 }
 
 interface PredictionResult {
@@ -27,7 +45,38 @@ interface PredictionResult {
   factors: Factor[];
 }
 
-const directionConfig = {
+function normalizePredictions(raw: RawPredictionResult): PredictionResult {
+  return {
+    symbol: raw.symbol,
+    currentPrice: raw.currentPrice,
+    predictions: (raw.predictions ?? []).map(p => {
+      const period = p.horizon ?? p.period ?? '';
+      const daysMatch = period.match(/(\d+)/);
+      return {
+        period,
+        days: daysMatch ? parseInt(daysMatch[1]) : 0,
+        predictedPrice: p.price ?? p.predictedPrice ?? 0,
+        changePercent: p.change ?? p.changePercent ?? 0,
+        confidence: p.confidence ?? 0,
+        direction: normalizeDirection(p.direction),
+      };
+    }),
+    factors: (raw.factors ?? []).map(f => ({
+      ...f,
+      weight: f.weight > 1 ? f.weight / 100 : f.weight,
+    })),
+  };
+}
+
+function normalizeDirection(d: string | undefined): 'up' | 'down' | 'neutral' {
+  if (!d) return 'neutral';
+  const lower = d.toLowerCase();
+  if (lower === 'up' || lower === 'bullish') return 'up';
+  if (lower === 'down' || lower === 'bearish') return 'down';
+  return 'neutral';
+}
+
+const directionConfig: Record<string, { icon: typeof TrendingUp; color: string; bg: string }> = {
   up: { icon: TrendingUp, color: 'text-accent', bg: 'bg-accent/10' },
   down: { icon: TrendingDown, color: 'text-danger', bg: 'bg-danger/10' },
   neutral: { icon: Minus, color: 'text-warning', bg: 'bg-warning/10' },
@@ -45,7 +94,7 @@ export default function PricePredictor() {
 
   const { data: result, isLoading, error } = useQuery({
     queryKey: ['price-prediction', activeSymbol],
-    queryFn: () => api.get(`/ai/predict/${activeSymbol}`).then(r => r.data as PredictionResult),
+    queryFn: () => api.get(`/ai/predict/${activeSymbol}`).then(r => normalizePredictions(r.data as RawPredictionResult)),
     enabled: !!activeSymbol,
   });
 
@@ -102,7 +151,7 @@ export default function PricePredictor() {
         <div className="space-y-6 animate-fade-up">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {result.predictions.map(p => {
-              const config = directionConfig[p.direction];
+              const config = directionConfig[p.direction] ?? directionConfig.neutral;
               const DirIcon = config.icon;
               return (
                 <div key={p.days} className="bg-surface border border-border rounded-xl p-5 card-hover">
@@ -133,7 +182,7 @@ export default function PricePredictor() {
 
           <div className="bg-surface border border-border rounded-xl p-5">
             <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-4">Price Trajectory</h3>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={250} minWidth={0}>
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="predGrad" x1="0" y1="0" x2="0" y2="1">

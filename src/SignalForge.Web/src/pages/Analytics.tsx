@@ -114,7 +114,7 @@ export default function Analytics() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="bg-surface border border-border rounded-xl p-5 animate-fade-up">
               <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-4">Signal Distribution</h3>
-              <ResponsiveContainer width="100%" height={220}>
+              <ResponsiveContainer width="100%" height={220} minWidth={0}>
                 <PieChart>
                   <Pie data={stats.pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={4} dataKey="value">
                     {stats.pieData.map(entry => (
@@ -140,7 +140,7 @@ export default function Analytics() {
 
             <div className="lg:col-span-2 bg-surface border border-border rounded-xl p-5 animate-fade-up">
               <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-4">Signals Per Day (30D)</h3>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={250} minWidth={0}>
                 <BarChart data={stats.barData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
                   <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--color-text-muted)' }} interval="preserveStartEnd" />
@@ -157,7 +157,7 @@ export default function Analytics() {
 
           <div className="bg-surface border border-border rounded-xl p-5 animate-fade-up">
             <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-4">Confidence Trend</h3>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={250} minWidth={0}>
               <AreaChart data={stats.confidenceTrend}>
                 <defs>
                   <linearGradient id="confGradient" x1="0" y1="0" x2="0" y2="1">
