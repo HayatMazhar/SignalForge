@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { MessageCircle, X, Send, Minus } from 'lucide-react';
 
 interface ChatMessage {
@@ -83,10 +84,10 @@ export default function LiveChat() {
   };
 
   if (!open) {
-    return (
+    return createPortal(
       <button
         onClick={handleOpen}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-accent text-bg flex items-center justify-center shadow-2xl hover:scale-110 transition-transform glow-accent btn-shine"
+        className="fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full bg-accent text-bg flex items-center justify-center shadow-2xl hover:scale-110 transition-transform glow-accent btn-shine"
       >
         <MessageCircle className="w-6 h-6" />
         {unread > 0 && (
@@ -95,12 +96,13 @@ export default function LiveChat() {
           </span>
         )}
         <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-bg" />
-      </button>
+      </button>,
+      document.body
     );
   }
 
-  return (
-    <div className="fixed bottom-6 right-6 z-50 animate-fade-up">
+  return createPortal(
+    <div className="fixed bottom-6 right-6 z-[9999] animate-fade-up">
       <div
         className={`w-[380px] glass-strong rounded-2xl border border-border shadow-2xl flex flex-col overflow-hidden transition-all duration-300 ${
           minimized ? 'h-14' : 'h-[500px]'
@@ -185,6 +187,7 @@ export default function LiveChat() {
           </>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
