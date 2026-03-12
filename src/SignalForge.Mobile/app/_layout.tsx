@@ -38,6 +38,7 @@ const SCREENS: { name: string; title: string }[] = [
   { name: 'market-mood', title: 'Market Mood' },
   { name: 'price-alerts-map', title: 'Smart Alerts' },
   { name: 'ai-screener', title: 'AI Screener' },
+  { name: 'options-flow', title: 'Options Flow' },
   { name: 'trading-simulator', title: 'Simulator' },
   { name: 'streak-tracker', title: 'Streaks' },
   { name: 'admin/index', title: 'Admin' },
@@ -66,6 +67,7 @@ const SCREENS: { name: string; title: string }[] = [
   { name: 'help-center', title: 'Help' },
   { name: 'feedback', title: 'Feedback' },
   { name: 'connected-accounts', title: 'Brokers' },
+  { name: 'language-settings', title: 'Language' },
 ];
 
 export default function RootLayout() {

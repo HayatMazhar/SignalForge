@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { stocksApi } from '../../src/api/stocks';
+import api from '../../src/api/client';
 import { formatPrice, formatPercent } from '../../src/utils/format';
 
 const COLORS = {
@@ -31,6 +32,11 @@ export default function MarketScreen() {
     queryFn: () => stocksApi.getTopMovers(),
   });
 
+  const { data: losers } = useQuery({
+    queryKey: ['top-losers'],
+    queryFn: () => api.get('/stocks/movers/losers').then(r => Array.isArray(r.data) ? r.data : []),
+  });
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await refetch();
@@ -38,7 +44,7 @@ export default function MarketScreen() {
   }, [refetch]);
 
   const gainers = movers.filter((m) => (m.changePercent ?? 0) > 0);
-  const losers = movers.filter((m) => (m.changePercent ?? 0) < 0);
+  const moversLosers = movers.filter((m) => (m.changePercent ?? 0) < 0);
 
   const MoverRow = ({ item }: { item: typeof movers[0] }) => (
     <TouchableOpacity
@@ -76,10 +82,35 @@ export default function MarketScreen() {
         )}
 
         <Text style={styles.subsectionTitle}>Losers</Text>
-        {losers.length === 0 ? (
+        {moversLosers.length === 0 ? (
           <Text style={styles.emptyText}>No losers</Text>
         ) : (
-          losers.map((item) => <MoverRow key={item.symbol} item={item} />)
+          moversLosers.map((item) => <MoverRow key={item.symbol} item={item} />)
+        )}
+
+        <Text style={styles.sectionTitle}>Top Losers</Text>
+        {(losers ?? []).length === 0 ? (
+          <Text style={styles.emptyText}>No losers</Text>
+        ) : (
+          (losers ?? []).map((item) => (
+            <TouchableOpacity
+              key={item.symbol}
+              style={styles.moverRow}
+              onPress={() => router.push(`/stocks/${item.symbol}`)}
+              activeOpacity={0.7}
+            >
+              <View>
+                <Text style={styles.moverSymbol}>{item.symbol}</Text>
+                <Text style={styles.moverName} numberOfLines={1}>{item.name || item.symbol}</Text>
+              </View>
+              <View style={styles.moverRight}>
+                <Text style={styles.moverPrice}>{formatPrice(item.price)}</Text>
+                <Text style={[styles.moverChange, { color: COLORS.danger }]}>
+                  {formatPercent(item.changePercent ?? 0)}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))
         )}
       </ScrollView>
     </SafeAreaView>

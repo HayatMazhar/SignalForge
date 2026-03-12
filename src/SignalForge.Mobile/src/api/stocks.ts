@@ -21,7 +21,8 @@ export interface TopMover {
 
 export interface NewsArticle {
   id: string; symbol: string; title: string; url: string; source: string;
-  publishedAt: string; sentimentScore: number; summary: string;
+  publishedAt: string; sentimentScore?: number; summary: string;
+  sentiment?: string;
 }
 
 export const stocksApi = {

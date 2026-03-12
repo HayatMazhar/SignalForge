@@ -28,9 +28,23 @@ const C = {
   purple: '#A78BFA',
 };
 
-function getSentimentInfo(score: number) {
-  if (score >= 0.3) return { label: 'Bullish', color: C.accent };
-  if (score <= -0.3) return { label: 'Bearish', color: C.danger };
+function getSentimentInfo(
+  sentimentScore?: number | null,
+  sentiment?: string | null,
+) {
+  if (sentimentScore != null) {
+    if (sentimentScore > 0.3) return { label: 'Bullish', color: C.accent };
+    if (sentimentScore < -0.3) return { label: 'Bearish', color: C.danger };
+    return { label: 'Neutral', color: C.warning };
+  }
+
+  if (sentiment) {
+    const s = sentiment.toLowerCase();
+    if (s === 'bullish') return { label: 'Bullish', color: C.accent };
+    if (s === 'bearish') return { label: 'Bearish', color: C.danger };
+    return { label: sentiment.charAt(0).toUpperCase() + sentiment.slice(1), color: C.warning };
+  }
+
   return { label: 'Neutral', color: C.warning };
 }
 
@@ -63,7 +77,7 @@ export default function NewsScreen() {
   }, [refetch]);
 
   const renderArticle = ({ item }: { item: NewsArticle }) => {
-    const sentiment = getSentimentInfo(item.sentimentScore);
+    const sentiment = getSentimentInfo(item.sentimentScore, item.sentiment);
     return (
       <TouchableOpacity
         style={styles.card}
@@ -75,7 +89,7 @@ export default function NewsScreen() {
             <Ionicons name="newspaper-outline" size={14} color={C.textMuted} />
             <Text style={styles.source}>{item.source}</Text>
           </View>
-          <View style={[styles.sentimentBadge, { backgroundColor: sentiment.color + '18' }]}>
+          <View style={[styles.sentimentBadge, { backgroundColor: sentiment.color + '20' }]}>
             <Text style={[styles.sentimentText, { color: sentiment.color }]}>
               {sentiment.label}
             </Text>
@@ -160,8 +174,8 @@ const styles = StyleSheet.create({
   },
   sourceRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   source: { fontSize: 12, color: C.textMuted, fontWeight: '500' },
-  sentimentBadge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 10 },
-  sentimentText: { fontSize: 11, fontWeight: '700' },
+  sentimentBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 },
+  sentimentText: { fontSize: 10, fontWeight: '700' },
   title: { fontSize: 16, fontWeight: '600', color: C.textPrimary, lineHeight: 22, marginBottom: 6 },
   summary: { fontSize: 13, color: C.textMuted, lineHeight: 18, marginBottom: 10 },
   cardBottom: {

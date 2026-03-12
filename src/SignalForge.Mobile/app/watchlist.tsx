@@ -14,6 +14,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { watchlistApi } from '../src/api/stocks';
+import api from '../src/api/client';
 
 const C = {
   bg: '#06060B',
@@ -33,8 +34,16 @@ interface WatchlistItem {
   addedAt?: string;
 }
 
+interface WatchlistSignal {
+  symbol: string;
+  type: 'Buy' | 'Sell' | 'Hold';
+  confidence: number;
+  reasoning?: string;
+}
+
 export default function WatchlistScreen() {
   const queryClient = useQueryClient();
+  const [tab, setTab] = useState<'stocks' | 'signals'>('stocks');
   const [showAdd, setShowAdd] = useState(false);
   const [newSymbol, setNewSymbol] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -54,6 +63,16 @@ export default function WatchlistScreen() {
       )
     : (rawData as any)?.symbols?.map((s: string) => ({ symbol: s })) ?? [];
 
+  const {
+    data: signals = [],
+    isLoading: signalsLoading,
+    refetch: refetchSignals,
+  } = useQuery<WatchlistSignal[]>({
+    queryKey: ['watchlist-signals'],
+    queryFn: () => api.get('/signals/watchlist').then((r) => (Array.isArray(r.data) ? r.data : [])),
+    enabled: tab === 'signals',
+  });
+
   const addMutation = useMutation({
     mutationFn: (symbol: string) => watchlistApi.add(symbol),
     onSuccess: () => {
@@ -72,9 +91,9 @@ export default function WatchlistScreen() {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await refetch();
+    await (tab === 'signals' ? refetchSignals() : refetch());
     setRefreshing(false);
-  }, [refetch]);
+  }, [refetch, refetchSignals, tab]);
 
   const handleAdd = () => {
     const sym = newSymbol.trim().toUpperCase();
@@ -111,6 +130,33 @@ export default function WatchlistScreen() {
     </TouchableOpacity>
   );
 
+  const signalColor = (type: string) =>
+    type === 'Buy' ? C.accent : type === 'Sell' ? C.danger : C.warning;
+
+  const renderSignalItem = ({ item }: { item: WatchlistSignal }) => (
+    <View style={styles.signalCard}>
+      <View style={styles.signalHeader}>
+        <Text style={styles.symbol}>{item.symbol}</Text>
+        <View style={[styles.signalBadge, { backgroundColor: signalColor(item.type) + '22' }]}>
+          <Text style={[styles.signalBadgeText, { color: signalColor(item.type) }]}>
+            {item.type}
+          </Text>
+        </View>
+      </View>
+      <View style={styles.confidenceRow}>
+        <Text style={styles.confidenceLabel}>Confidence</Text>
+        <Text style={[styles.confidenceValue, { color: signalColor(item.type) }]}>
+          {Math.round(item.confidence * 100)}%
+        </Text>
+      </View>
+      {item.reasoning ? (
+        <Text style={styles.reasoning} numberOfLines={2}>
+          {item.reasoning}
+        </Text>
+      ) : null}
+    </View>
+  );
+
   if (isLoading) {
     return (
       <View style={styles.centered}>
@@ -121,56 +167,101 @@ export default function WatchlistScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Add bar */}
-      <View style={styles.topBar}>
-        {showAdd ? (
-          <View style={styles.addRow}>
-            <TextInput
-              style={styles.addInput}
-              value={newSymbol}
-              onChangeText={setNewSymbol}
-              placeholder="Symbol (e.g. AAPL)"
-              placeholderTextColor={C.textMuted}
-              autoCapitalize="characters"
-              autoFocus
-              onSubmitEditing={handleAdd}
-              returnKeyType="done"
-            />
-            <TouchableOpacity style={styles.addBtn} onPress={handleAdd} disabled={addMutation.isPending}>
-              {addMutation.isPending ? (
-                <ActivityIndicator color={C.bg} size="small" />
-              ) : (
-                <Ionicons name="checkmark" size={20} color={C.bg} />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.cancelBtn} onPress={() => { setShowAdd(false); setNewSymbol(''); }}>
-              <Ionicons name="close" size={20} color={C.textMuted} />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity style={styles.addToggle} onPress={() => setShowAdd(true)}>
-            <Ionicons name="add-circle" size={22} color={C.accent} />
-            <Text style={styles.addToggleText}>Add Symbol</Text>
-          </TouchableOpacity>
-        )}
+      {/* Tab bar */}
+      <View style={styles.tabBar}>
+        <TouchableOpacity
+          style={[styles.tabBtn, tab === 'stocks' && styles.tabBtnActive]}
+          onPress={() => setTab('stocks')}
+        >
+          <Text style={[styles.tabBtnText, tab === 'stocks' && styles.tabBtnTextActive]}>
+            Stocks
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tabBtn, tab === 'signals' && styles.tabBtnActive]}
+          onPress={() => setTab('signals')}
+        >
+          <Text style={[styles.tabBtnText, tab === 'signals' && styles.tabBtnTextActive]}>
+            Signals
+          </Text>
+        </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={items}
-        keyExtractor={(item) => item.symbol}
-        renderItem={renderItem}
-        contentContainerStyle={styles.list}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.accent} />
-        }
-        ListEmptyComponent={
-          <View style={styles.centered}>
-            <Ionicons name="eye-outline" size={48} color={C.textMuted} />
-            <Text style={styles.emptyText}>Your watchlist is empty</Text>
-            <Text style={styles.emptyHint}>Tap "Add Symbol" to start tracking stocks</Text>
+      {tab === 'stocks' ? (
+        <>
+          {/* Add bar */}
+          <View style={styles.topBar}>
+            {showAdd ? (
+              <View style={styles.addRow}>
+                <TextInput
+                  style={styles.addInput}
+                  value={newSymbol}
+                  onChangeText={setNewSymbol}
+                  placeholder="Symbol (e.g. AAPL)"
+                  placeholderTextColor={C.textMuted}
+                  autoCapitalize="characters"
+                  autoFocus
+                  onSubmitEditing={handleAdd}
+                  returnKeyType="done"
+                />
+                <TouchableOpacity style={styles.addBtn} onPress={handleAdd} disabled={addMutation.isPending}>
+                  {addMutation.isPending ? (
+                    <ActivityIndicator color={C.bg} size="small" />
+                  ) : (
+                    <Ionicons name="checkmark" size={20} color={C.bg} />
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.cancelBtn} onPress={() => { setShowAdd(false); setNewSymbol(''); }}>
+                  <Ionicons name="close" size={20} color={C.textMuted} />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity style={styles.addToggle} onPress={() => setShowAdd(true)}>
+                <Ionicons name="add-circle" size={22} color={C.accent} />
+                <Text style={styles.addToggleText}>Add Symbol</Text>
+              </TouchableOpacity>
+            )}
           </View>
-        }
-      />
+
+          <FlatList
+            data={items}
+            keyExtractor={(item) => item.symbol}
+            renderItem={renderItem}
+            contentContainerStyle={styles.list}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.accent} />
+            }
+            ListEmptyComponent={
+              <View style={styles.centered}>
+                <Ionicons name="eye-outline" size={48} color={C.textMuted} />
+                <Text style={styles.emptyText}>Your watchlist is empty</Text>
+                <Text style={styles.emptyHint}>Tap "Add Symbol" to start tracking stocks</Text>
+              </View>
+            }
+          />
+        </>
+      ) : signalsLoading ? (
+        <View style={styles.centered}>
+          <ActivityIndicator color={C.accent} size="large" />
+        </View>
+      ) : (
+        <FlatList
+          data={signals}
+          keyExtractor={(item) => item.symbol}
+          renderItem={renderSignalItem}
+          contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.accent} />
+          }
+          ListEmptyComponent={
+            <View style={styles.centered}>
+              <Ionicons name="pulse-outline" size={48} color={C.textMuted} />
+              <Text style={styles.emptyText}>No signals for your watchlist</Text>
+              <Text style={styles.emptyHint}>Add stocks to your watchlist to receive signals</Text>
+            </View>
+          }
+        />
+      )}
     </View>
   );
 }
@@ -242,4 +333,73 @@ const styles = StyleSheet.create({
   },
   emptyText: { fontSize: 16, color: C.textMuted, marginTop: 16 },
   emptyHint: { fontSize: 13, color: C.textMuted, marginTop: 4 },
+  tabBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    gap: 8,
+  },
+  tabBtn: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 10,
+    backgroundColor: C.surface,
+    borderWidth: 1,
+    borderColor: C.border,
+    alignItems: 'center',
+  },
+  tabBtnActive: {
+    backgroundColor: C.accent + '18',
+    borderColor: C.accent,
+  },
+  tabBtnText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: C.textMuted,
+  },
+  tabBtnTextActive: {
+    color: C.accent,
+  },
+  signalCard: {
+    backgroundColor: C.surface,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: C.border,
+    padding: 16,
+    marginBottom: 10,
+  },
+  signalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  signalBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  signalBadgeText: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  confidenceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  confidenceLabel: {
+    fontSize: 13,
+    color: C.textMuted,
+  },
+  confidenceValue: {
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  reasoning: {
+    fontSize: 13,
+    color: C.textMuted,
+    lineHeight: 18,
+  },
 });

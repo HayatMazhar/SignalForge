@@ -22,6 +22,7 @@ const SECTIONS = [
       { icon: 'search', label: 'Screener', route: '/screener', color: C.purple },
       { icon: 'swap-horizontal', label: 'Compare', route: '/compare', color: C.accent },
       { icon: 'apps', label: 'Heatmap', route: '/heatmap', color: C.warning },
+      { icon: 'analytics', label: 'Options Flow', route: '/options-flow', color: C.purple },
     ],
   },
   {
@@ -88,6 +89,7 @@ const SECTIONS = [
       { icon: 'chatbox-ellipses', label: 'Feedback', route: '/feedback', color: C.accent },
       { icon: 'notifications-circle', label: 'Alerts Log', route: '/notification-center', color: C.warning },
       { icon: 'list', label: 'Activity', route: '/activity-log', color: C.purple },
+      { icon: 'language', label: 'Language', route: '/language-settings', color: C.info },
     ],
   },
   {

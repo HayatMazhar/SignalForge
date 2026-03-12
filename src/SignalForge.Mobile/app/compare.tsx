@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { stocksApi } from '../src/api/stocks';
+import api from '../src/api/client';
 import { formatPrice, formatPercent } from '../src/utils/format';
 
 const C = {
@@ -27,23 +28,34 @@ const C = {
   purple: '#A78BFA',
 };
 
-function CompareCard({ symbol, onRemove }: { symbol: string; onRemove: () => void }) {
+interface CompareCardProps {
+  symbol: string;
+  onRemove: () => void;
+  batchData?: { quote?: any; indicators?: any };
+}
+
+function CompareCard({ symbol, onRemove, batchData }: CompareCardProps) {
   const { data: quote, isLoading: quoteLoading } = useQuery({
     queryKey: ['quote', symbol],
     queryFn: () => stocksApi.getQuote(symbol),
+    enabled: !batchData?.quote,
   });
 
   const { data: indicators, isLoading: indLoading } = useQuery({
     queryKey: ['indicators', symbol],
     queryFn: () => stocksApi.getIndicators(symbol),
+    enabled: !batchData?.indicators,
   });
 
-  const isPositive = (quote?.changePercent ?? 0) >= 0;
-  const loading = quoteLoading || indLoading;
+  const effectiveQuote = batchData?.quote ?? quote;
+  const effectiveIndicators = batchData?.indicators ?? indicators;
 
-  const rsi = (indicators as any)?.rsi ?? (indicators as any)?.RSI;
-  const macd = (indicators as any)?.macd ?? (indicators as any)?.MACD;
-  const trend = (indicators as any)?.trend ?? (indicators as any)?.trendDirection;
+  const isPositive = (effectiveQuote?.changePercent ?? 0) >= 0;
+  const loading = !batchData && (quoteLoading || indLoading);
+
+  const rsi = (effectiveIndicators as any)?.rsi ?? (effectiveIndicators as any)?.RSI;
+  const macd = (effectiveIndicators as any)?.macd ?? (effectiveIndicators as any)?.MACD;
+  const trend = (effectiveIndicators as any)?.trend ?? (effectiveIndicators as any)?.trendDirection;
 
   return (
     <View style={styles.compareCard}>
@@ -58,16 +70,16 @@ function CompareCard({ symbol, onRemove }: { symbol: string; onRemove: () => voi
         <ActivityIndicator color={C.accent} style={styles.cardLoader} />
       ) : (
         <>
-          {quote && (
+          {effectiveQuote && (
             <>
-              <Text style={styles.cardPrice}>{formatPrice(quote.price)}</Text>
+              <Text style={styles.cardPrice}>{formatPrice(effectiveQuote.price)}</Text>
               <Text
                 style={[
                   styles.cardChange,
                   { color: isPositive ? C.accent : C.danger },
                 ]}
               >
-                {formatPercent(quote.changePercent)}
+                {formatPercent(effectiveQuote.changePercent)}
               </Text>
             </>
           )}
@@ -142,6 +154,21 @@ export default function CompareScreen() {
   const [symbols, setSymbols] = useState<string[]>(['AAPL', 'MSFT']);
   const [newSymbol, setNewSymbol] = useState('');
 
+  const { data: batchCompare } = useQuery({
+    queryKey: ['compare-batch', symbols.join(',')],
+    queryFn: async () => {
+      try {
+        const res = await api.get('/compare', {
+          params: { symbols: symbols.join(',') },
+        });
+        return res.data as Record<string, { quote?: any; indicators?: any }>;
+      } catch {
+        return null;
+      }
+    },
+    enabled: symbols.length >= 2,
+  });
+
   const handleAdd = () => {
     const sym = newSymbol.trim().toUpperCase();
     if (!sym || symbols.includes(sym)) return;
@@ -189,6 +216,7 @@ export default function CompareScreen() {
               key={sym}
               symbol={sym}
               onRemove={() => handleRemove(sym)}
+              batchData={batchCompare?.[sym]}
             />
           ))}
         </ScrollView>

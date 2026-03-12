@@ -15,6 +15,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { chatApi } from '../src/api/stocks';
+import api from '../src/api/client';
 
 const C = {
   bg: '#06060B',
@@ -48,6 +49,7 @@ export default function ChatScreen() {
     },
   ]);
   const flatListRef = useRef<FlatList>(null);
+  const [translations, setTranslations] = useState<Record<number, string>>({});
 
   const sendMutation = useMutation({
     mutationFn: (message: string) => chatApi.send(message, symbol),
@@ -71,6 +73,13 @@ export default function ChatScreen() {
     },
   });
 
+  const translateMessage = async (index: number, text: string) => {
+    try {
+      const res = await api.post('/translate', { text, language: 'ar' });
+      setTranslations(prev => ({ ...prev, [index]: res.data.translatedText }));
+    } catch {}
+  };
+
   const handleSend = useCallback(() => {
     const trimmed = input.trim();
     if (!trimmed || sendMutation.isPending) return;
@@ -84,7 +93,7 @@ export default function ChatScreen() {
     sendMutation.mutate(trimmed);
   }, [input, sendMutation]);
 
-  const renderMessage = ({ item }: { item: Message }) => {
+  const renderMessage = ({ item, index }: { item: Message; index: number }) => {
     const isUser = item.role === 'user';
     return (
       <View
@@ -112,6 +121,18 @@ export default function ChatScreen() {
           >
             {item.text}
           </Text>
+          {translations[index] && (
+            <Text style={styles.translatedText}>{translations[index]}</Text>
+          )}
+          {!isUser && (
+            <TouchableOpacity
+              style={styles.translateBtn}
+              onPress={() => translateMessage(index, item.text)}
+              activeOpacity={0.6}
+            >
+              <Ionicons name="language-outline" size={16} color="#5B6378" />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     );
@@ -253,4 +274,16 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   sendBtnDisabled: { opacity: 0.4 },
+  translateBtn: {
+    alignSelf: 'flex-end',
+    marginTop: 6,
+    padding: 2,
+  },
+  translatedText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: C.textMuted,
+    fontStyle: 'italic',
+    marginTop: 8,
+  },
 });
