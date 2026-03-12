@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../src/api/client';
+import { useTheme } from '../src/constants/config';
 
 const COLORS = {
   bg: '#06060B',
@@ -44,6 +45,7 @@ type AnomaliesResponse = {
 };
 
 export default function AnomalyDetectorScreen() {
+  const COLORS = useTheme();
   const [symbol, setSymbol] = useState('');
   const [scanSymbol, setScanSymbol] = useState<string | null>(null);
   const [scanHistory, setScanHistory] = useState<string[]>([]);

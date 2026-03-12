@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../src/api/client';
+import { useTheme } from '../src/constants/config';
 
 const COLORS = {
   bg: '#06060B',
@@ -39,6 +40,7 @@ type LeaderboardTrader = {
 };
 
 export default function CopyTradingScreen() {
+  const COLORS = useTheme();
   const [following, setFollowing] = useState<Set<string>>(new Set());
   const [refreshing, setRefreshing] = useState(false);
 

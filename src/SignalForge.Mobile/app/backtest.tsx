@@ -14,6 +14,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { backtestApi } from '../src/api/stocks';
 import { formatPrice, formatPercent } from '../src/utils/format';
+import { useTheme } from '../src/constants/config';
 
 const C = {
   bg: '#06060B',
@@ -49,6 +50,7 @@ interface BacktestResult {
 }
 
 export default function BacktestScreen() {
+  const C = useTheme();
   const [symbol, setSymbol] = useState('AAPL');
   const [strategy, setStrategy] = useState('SMA Crossover');
   const [capital, setCapital] = useState('10000');
@@ -75,7 +77,7 @@ export default function BacktestScreen() {
   const isPositiveReturn = (result?.returnPercent ?? 0) >= 0;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={['bottom']}>
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Form */}
       <View style={styles.formCard}>

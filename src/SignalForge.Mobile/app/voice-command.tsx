@@ -19,6 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Speech from 'expo-speech';
 import * as Clipboard from 'expo-clipboard';
 import api from '../src/api/client';
+import { useTheme } from '../src/constants/config';
 
 const COLORS = {
   bg: '#06060B',
@@ -63,6 +64,7 @@ type HistoryEntry = {
 };
 
 export default function VoiceCommandScreen() {
+  const COLORS = useTheme();
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<QueryResult | null>(null);

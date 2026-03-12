@@ -17,6 +17,7 @@ import { router } from 'expo-router';
 import { portfolioApi, stocksApi } from '../../src/api/stocks';
 import { formatPrice } from '../../src/utils/format';
 import { useAssetModeStore } from '../../src/stores/assetModeStore';
+import { useTheme } from '../../src/constants/config';
 
 const COLORS = {
   bg: '#06060B',
@@ -43,6 +44,7 @@ interface Portfolio {
 }
 
 export default function PortfolioScreen() {
+  const COLORS = useTheme();
   const { mode } = useAssetModeStore();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);

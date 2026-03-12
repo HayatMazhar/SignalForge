@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAuthStore } from '../../src/stores/authStore';
+import { useTheme } from '../../src/constants/config';
 
 const { width } = Dimensions.get('window');
 const C = {
@@ -102,6 +103,7 @@ const SECTIONS = [
 ];
 
 export default function MoreScreen() {
+  const C = useTheme();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const [search, setSearch] = useState('');
@@ -118,7 +120,7 @@ export default function MoreScreen() {
   const handleLogout = () => { logout(); router.replace('/(auth)/login'); };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={['bottom']}>
     <ScrollView style={s.container} contentContainerStyle={s.content}>
       {/* Profile Card */}
       <TouchableOpacity style={s.profileCard} onPress={() => router.push('/settings')} activeOpacity={0.8}>

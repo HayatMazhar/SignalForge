@@ -13,6 +13,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../src/api/client';
 import { useAssetModeStore } from '../src/stores/assetModeStore';
+import { useTheme } from '../src/constants/config';
 
 const C = {
   bg: '#06060B',
@@ -51,6 +52,7 @@ const DIRECTION_CONFIG = {
 };
 
 export default function PricePredictorScreen() {
+  const C = useTheme();
   const [symbol, setSymbol] = useState('');
   const { mode } = useAssetModeStore();
 

@@ -17,8 +17,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { stocksApi, Stock } from '../src/api/stocks';
 import api from '../src/api/client';
 import { useAssetModeStore } from '../src/stores/assetModeStore';
+import { useTheme } from '../src/constants/config';
 
 export default function ScreenerScreen() {
+  const C = useTheme();
   const router = useRouter();
   const [query, setQuery] = useState('');
   const { mode } = useAssetModeStore();
@@ -36,7 +38,7 @@ export default function ScreenerScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={['bottom']}>
     <KeyboardAvoidingView
       style={s.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}

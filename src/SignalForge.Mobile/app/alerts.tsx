@@ -13,6 +13,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { alertsApi } from '../src/api/stocks';
+import { useTheme } from '../src/constants/config';
 
 const C = {
   bg: '#06060B',
@@ -43,6 +44,7 @@ interface AlertItem {
 }
 
 export default function AlertsScreen() {
+  const C = useTheme();
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [symbol, setSymbol] = useState('');

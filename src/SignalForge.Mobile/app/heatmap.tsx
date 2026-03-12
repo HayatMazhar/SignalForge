@@ -13,7 +13,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { marketApi } from '../src/api/stocks';
+import { stocksApi } from '../src/api/stocks';
+import { useAssetModeStore } from '../src/stores/assetModeStore';
+import api from '../src/api/client';
+import { useTheme } from '../src/constants/config';
 
 const COLORS = {
   bg: '#06060B',
@@ -30,21 +33,27 @@ const COLORS = {
 
 const { width } = Dimensions.get('window');
 const CELL_SIZE = (width - 48) / 5;
-const MIN_SIZE = 44;
-const MAX_SIZE = 80;
+const MIN_SIZE = 52;
+const MAX_SIZE = 72;
 
-function getCellSize(marketCap: number) {
-  const minCap = 50e9;
-  const maxCap = 3e12;
-  const ratio = Math.log(marketCap) / Math.log(maxCap);
-  return Math.max(MIN_SIZE, Math.min(MAX_SIZE, MIN_SIZE + ratio * (MAX_SIZE - MIN_SIZE)));
+function getCellSize(changePct: number) {
+  const absChange = Math.abs(changePct);
+  const ratio = Math.min(absChange / 5, 1);
+  return MIN_SIZE + ratio * (MAX_SIZE - MIN_SIZE);
 }
 
 export default function HeatmapScreen() {
+  const COLORS = useTheme();
+  const { mode: assetMode } = useAssetModeStore();
   const [refreshing, setRefreshing] = useState(false);
   const { data: stocks = [], isLoading, refetch } = useQuery({
-    queryKey: ['heatmap'],
-    queryFn: () => marketApi.getHeatmap(),
+    queryKey: ['heatmap', assetMode],
+    queryFn: async () => {
+      const movers = assetMode === 'crypto'
+        ? await api.get('/crypto/top-movers').then(r => Array.isArray(r.data) ? r.data : [])
+        : await stocksApi.getTopMovers();
+      return movers.slice(0, 20);
+    },
   });
 
   const onRefresh = useCallback(async () => {
@@ -72,7 +81,7 @@ export default function HeatmapScreen() {
             <View style={[styles.legendDot, { backgroundColor: COLORS.danger }]} />
             <Text style={styles.legendText}>Down</Text>
           </View>
-          <Text style={styles.legendHint}>Size = market cap</Text>
+          <Text style={styles.legendHint}>Size = change magnitude</Text>
         </View>
 
         {isLoading ? (
@@ -80,8 +89,8 @@ export default function HeatmapScreen() {
         ) : (
           <View style={styles.grid}>
             {stocks.map((s: any) => {
-              const isPositive = s.changePercent >= 0;
-              const size = getCellSize(s.marketCap);
+              const isPositive = (s.changePercent ?? 0) >= 0;
+              const size = getCellSize(s.changePercent ?? 0);
               return (
                 <TouchableOpacity
                   key={s.symbol}
@@ -106,8 +115,8 @@ export default function HeatmapScreen() {
                       { color: isPositive ? COLORS.accent : COLORS.danger },
                     ]}
                   >
-                    {s.changePercent >= 0 ? '+' : ''}
-                    {s.changePercent.toFixed(1)}%
+                    {(s.changePercent ?? 0) >= 0 ? '+' : ''}
+                    {(s.changePercent ?? 0).toFixed(1)}%
                   </Text>
                 </TouchableOpacity>
               );

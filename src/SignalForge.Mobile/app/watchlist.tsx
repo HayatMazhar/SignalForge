@@ -17,6 +17,7 @@ import { watchlistApi } from '../src/api/stocks';
 import api from '../src/api/client';
 import { useAssetModeStore } from '../src/stores/assetModeStore';
 import { usePriceStore } from '../src/stores/priceStore';
+import { useTheme } from '../src/constants/config';
 
 const C = {
   bg: '#06060B',
@@ -44,6 +45,7 @@ interface WatchlistSignal {
 }
 
 export default function WatchlistScreen() {
+  const C = useTheme();
   const { mode } = useAssetModeStore();
   const isCrypto = mode === 'crypto';
   const queryClient = useQueryClient();

@@ -69,4 +69,79 @@ public class StocksController : ControllerBase
         var indicators = await _marketData.GetTechnicalIndicators(symbol.ToUpperInvariant(), ct);
         return indicators is null ? NotFound() : Ok(indicators);
     }
+
+    [HttpGet("data-source")]
+    public IActionResult GetDataSource()
+    {
+        return Ok(new { isMockData = _marketData.IsMockMode, source = _marketData.IsMockMode ? "mock" : "polygon" });
+    }
+
+    [HttpGet("indices")]
+    public async Task<IActionResult> GetIndices(CancellationToken ct)
+    {
+        var indexEtfs = new (string Symbol, string DisplayName)[]
+        {
+            ("SPY", "S&P 500"), ("QQQ", "NASDAQ"), ("DIA", "DOW"), ("VIXY", "VIX"),
+        };
+
+        var tasks = indexEtfs.Select(async etf =>
+        {
+            var quote = await _marketData.GetQuote(etf.Symbol, ct);
+            return quote is null ? null : new
+            {
+                symbol = etf.Symbol,
+                name = etf.DisplayName,
+                price = quote.Price,
+                change = quote.Change,
+                changePercent = quote.ChangePercent,
+                volume = quote.Volume,
+            };
+        });
+
+        var results = (await Task.WhenAll(tasks)).Where(r => r is not null).ToList();
+        return Ok(results);
+    }
+
+    [HttpGet("sectors")]
+    public async Task<IActionResult> GetSectors(CancellationToken ct)
+    {
+        var sectorEtfs = new (string Symbol, string Sector)[]
+        {
+            ("XLK", "Tech"), ("XLV", "Health"), ("XLF", "Finance"),
+            ("XLE", "Energy"), ("XLY", "Consumer"), ("XLI", "Industrial"),
+            ("XLC", "Telecom"), ("XLRE", "Real Est"), ("XLB", "Materials"),
+            ("XLU", "Utilities"),
+        };
+
+        var tasks = sectorEtfs.Select(async etf =>
+        {
+            var quote = await _marketData.GetQuote(etf.Symbol, ct);
+            return quote is null ? null : new
+            {
+                symbol = etf.Symbol,
+                sector = etf.Sector,
+                price = quote.Price,
+                changePercent = quote.ChangePercent,
+            };
+        });
+
+        var results = (await Task.WhenAll(tasks)).Where(r => r is not null).ToList();
+        return Ok(results);
+    }
+
+    [HttpGet("snapshot")]
+    public async Task<IActionResult> GetSnapshot(CancellationToken ct)
+    {
+        var movers = await _mediator.Send(new GetTopMoversQuery(), ct);
+
+        var results = movers.Select(m => new
+        {
+            symbol = m.Symbol,
+            name = m.Name,
+            price = m.Price,
+            changePercent = m.ChangePercent,
+        }).ToList();
+
+        return Ok(results);
+    }
 }

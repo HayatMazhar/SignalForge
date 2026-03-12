@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../src/api/client';
+import { useTheme } from '../src/constants/config';
 
 const C = {
   bg: '#06060B',
@@ -34,6 +35,7 @@ interface Signal {
 }
 
 export default function AnalyticsScreen() {
+  const C = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const { data: signals = [], isLoading, refetch } = useQuery<Signal[]>({
     queryKey: ['analytics-signals'],

@@ -15,6 +15,7 @@ import { stocksApi } from '../../src/api/stocks';
 import api from '../../src/api/client';
 import { formatPrice, formatPercent } from '../../src/utils/format';
 import { useAssetModeStore } from '../../src/stores/assetModeStore';
+import { useTheme } from '../../src/constants/config';
 
 const COLORS = {
   bg: '#06060B',
@@ -27,6 +28,7 @@ const COLORS = {
 };
 
 export default function MarketScreen() {
+  const COLORS = useTheme();
   const { mode } = useAssetModeStore();
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

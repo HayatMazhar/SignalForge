@@ -12,6 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { socialApi } from '../src/api/stocks';
 import { formatPercent } from '../src/utils/format';
+import { useTheme } from '../src/constants/config';
 
 const C = {
   bg: '#06060B',
@@ -40,6 +41,7 @@ interface Trader {
 }
 
 export default function LeaderboardScreen() {
+  const C = useTheme();
   const [refreshing, setRefreshing] = useState(false);
 
   const { data: traders = [], isLoading, refetch } = useQuery({
@@ -116,7 +118,7 @@ export default function LeaderboardScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={['bottom']}>
       <FlatList
         style={styles.container}
         contentContainerStyle={styles.list}

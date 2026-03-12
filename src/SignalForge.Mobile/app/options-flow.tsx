@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import api from '../src/api/client';
+import { useTheme } from '../src/constants/config';
 
 const C = {
   bg: '#06060B', surface: '#0C0F1A', accent: '#00FF94', danger: '#FF3B5C',
@@ -18,6 +19,7 @@ type OptionsFlow = {
 };
 
 export default function OptionsFlowScreen() {
+  const C = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState<'all' | 'calls' | 'puts'>('all');
 

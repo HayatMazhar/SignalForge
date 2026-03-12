@@ -15,6 +15,7 @@ import { signalsApi } from '../../src/api/stocks';
 import { getSignalLabel } from '../../src/utils/signalType';
 import { useAssetModeStore } from '../../src/stores/assetModeStore';
 import api from '../../src/api/client';
+import { useTheme } from '../../src/constants/config';
 
 const COLORS = {
   bg: '#06060B',
@@ -37,6 +38,7 @@ const FILTERS: { label: string; value: FilterType }[] = [
 ];
 
 export default function SignalsScreen() {
+  const COLORS = useTheme();
   const { mode } = useAssetModeStore();
   const [activeFilter, setActiveFilter] = useState<FilterType>(undefined);
   const [refreshing, setRefreshing] = useState(false);

@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import api from '../src/api/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '../src/constants/config';
 
 const C = {
   bg: '#06060B',
@@ -50,6 +51,7 @@ const SUGGESTIONS = [
 ];
 
 export default function NaturalQueryScreen() {
+  const C = useTheme();
   const [query, setQuery] = useState('');
   const [history, setHistory] = useState<string[]>([]);
   const HISTORY_KEY = 'sf-natural-query-history';

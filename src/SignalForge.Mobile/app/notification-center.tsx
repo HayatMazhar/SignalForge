@@ -183,6 +183,11 @@ export default function NotificationCenterScreen() {
         ))}
       </View>
 
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FFB02018', padding: 12, borderRadius: 12, marginHorizontal: 16, marginBottom: 12, borderWidth: 1, borderColor: '#FFB02040' }}>
+        <Ionicons name="information-circle" size={16} color="#FFB020" />
+        <Text style={{ fontSize: 12, color: '#FFB020', fontWeight: '600', flex: 1 }}>Demo Data — Illustrative only, not real market data</Text>
+      </View>
+
       {isLoading ? (
         <View style={styles.empty}>
           <ActivityIndicator size="large" color={COLORS.accent} />

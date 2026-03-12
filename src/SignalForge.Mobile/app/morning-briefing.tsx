@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../src/api/client';
 import { format } from 'date-fns';
+import { useTheme } from '../src/constants/config';
 
 const COLORS = {
   bg: '#06060B',
@@ -33,6 +34,7 @@ type Signal = { id: string; symbol: string; type: string; confidenceScore?: numb
 type PulseEvent = { title?: string; description?: string; impact?: string };
 
 export default function MorningBriefingScreen() {
+  const COLORS = useTheme();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [fearGreed, setFearGreed] = useState<FearGreed | null>(null);

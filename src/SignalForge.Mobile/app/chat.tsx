@@ -18,6 +18,7 @@ import { chatApi } from '../src/api/stocks';
 import api from '../src/api/client';
 import { useAssetModeStore } from '../src/stores/assetModeStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '../src/constants/config';
 
 const C = {
   bg: '#06060B',
@@ -39,6 +40,7 @@ interface Message {
 }
 
 export default function ChatScreen() {
+  const C = useTheme();
   const { mode } = useAssetModeStore();
   const isCrypto = mode === 'crypto';
   const { symbol } = useLocalSearchParams<{ symbol?: string }>();
@@ -159,7 +161,7 @@ export default function ChatScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={['bottom']}>
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}

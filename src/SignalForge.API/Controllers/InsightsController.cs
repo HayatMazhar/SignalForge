@@ -101,15 +101,15 @@ public class InsightsController : ControllerBase
     [HttpGet("fear-greed")]
     public async Task<IActionResult> GetFearGreedIndex(CancellationToken ct)
     {
+        var movers = await _marketData.GetTopMovers(ct);
+        var gainers = movers.Count(m => m.ChangePercent > 0);
+        var losers = movers.Count(m => m.ChangePercent < 0);
+        var avgChange = movers.Count > 0 ? movers.Average(m => m.ChangePercent) : 0;
+        var topGain = movers.Count > 0 ? movers.Max(m => m.ChangePercent) : 0;
+        var topLoss = movers.Count > 0 ? movers.Min(m => m.ChangePercent) : 0;
+
         try
         {
-            var movers = await _marketData.GetTopMovers(ct);
-            var gainers = movers.Count(m => m.ChangePercent > 0);
-            var losers = movers.Count(m => m.ChangePercent < 0);
-            var avgChange = movers.Count > 0 ? movers.Average(m => m.ChangePercent) : 0;
-            var topGain = movers.Count > 0 ? movers.Max(m => m.ChangePercent) : 0;
-            var topLoss = movers.Count > 0 ? movers.Min(m => m.ChangePercent) : 0;
-
             var prompt = "You are a market sentiment analyst. Based on the following market data, compute a Fear & Greed Index.\n\n"
                 + $"Market Data:\n"
                 + $"- Top movers: {gainers} gainers vs {losers} losers\n"

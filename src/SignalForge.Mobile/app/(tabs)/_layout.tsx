@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '../../src/stores/authStore';
 import { useAssetModeStore } from '../../src/stores/assetModeStore';
+import { useThemeStore } from '../../src/stores/themeStore';
 import { router } from 'expo-router';
 
 const C = {
@@ -15,35 +16,36 @@ function TopHeader() {
   const user = useAuthStore((s) => s.user);
   const { mode, toggle } = useAssetModeStore();
   const insets = useSafeAreaInsets();
+  const colors = useThemeStore((s) => s.colors);
   return (
-    <View style={[h.container, { paddingTop: insets.top + 10 }]}>
+    <View style={[h.container, { paddingTop: insets.top + 10, backgroundColor: colors.bg, borderBottomColor: colors.border }]}>
       <TouchableOpacity onPress={() => router.push('/settings')} style={h.menuBtn}>
-        <Ionicons name="menu" size={22} color={C.textPrimary} />
+        <Ionicons name="menu" size={22} color={colors.textPrimary} />
       </TouchableOpacity>
       <View style={h.logoRow}>
-        <Ionicons name="pulse" size={20} color={C.accent} />
-        <Text style={h.logoText}>SignalForge</Text>
+        <Ionicons name="pulse" size={20} color={colors.accent} />
+        <Text style={[h.logoText, { color: colors.accent }]}>SignalForge</Text>
       </View>
       <TouchableOpacity onPress={toggle} style={{
         flexDirection: 'row', alignItems: 'center', gap: 4,
-        backgroundColor: mode === 'crypto' ? '#A78BFA20' : '#00FF9420',
+        backgroundColor: mode === 'crypto' ? colors.purple + '20' : colors.accent + '20',
         paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12,
       }}>
         <Ionicons name={mode === 'crypto' ? 'logo-bitcoin' : 'trending-up'} size={14}
-          color={mode === 'crypto' ? '#A78BFA' : '#00FF94'} />
-        <Text style={{ fontSize: 11, fontWeight: '700', color: mode === 'crypto' ? '#A78BFA' : '#00FF94' }}>
+          color={mode === 'crypto' ? colors.purple : colors.accent} />
+        <Text style={{ fontSize: 11, fontWeight: '700', color: mode === 'crypto' ? colors.purple : colors.accent }}>
           {mode === 'crypto' ? 'Crypto' : 'Stocks'}
         </Text>
       </TouchableOpacity>
       <View style={h.rightRow}>
         <TouchableOpacity onPress={() => router.push('/settings')} style={h.avatarBtn}>
-          <View style={h.avatar}>
-            <Text style={h.avatarText}>{user?.fullName?.charAt(0) ?? 'U'}</Text>
+          <View style={[h.avatar, { borderColor: colors.accent + '40' }]}>
+            <Text style={[h.avatarText, { color: colors.accent }]}>{user?.fullName?.charAt(0) ?? 'U'}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => router.push('/notification-center')} style={h.bellBtn}>
-          <Ionicons name="notifications" size={20} color={C.textPrimary} />
-          <View style={h.bellDot} />
+          <Ionicons name="notifications" size={20} color={colors.textPrimary} />
+          <View style={[h.bellDot, { backgroundColor: colors.accent, borderColor: colors.bg }]} />
         </TouchableOpacity>
       </View>
     </View>
@@ -66,6 +68,7 @@ const h = StyleSheet.create({
 export default function TabLayout() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const isLoading = useAuthStore((s) => s.isLoading);
+  const colors = useThemeStore((s) => s.colors);
 
   if (isLoading) return null;
   if (!isAuthenticated) return <Redirect href="/(auth)/login" />;
@@ -80,10 +83,10 @@ export default function TabLayout() {
         right: 20,
         height: 64,
         borderRadius: 24,
-        backgroundColor: '#0C0F1Ae6',
+        backgroundColor: colors.surface + 'e6',
         borderTopWidth: 0,
         borderWidth: 1,
-        borderColor: '#1A1F35',
+        borderColor: colors.border,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.4,
@@ -92,15 +95,15 @@ export default function TabLayout() {
         paddingBottom: 0,
         paddingTop: 0,
       },
-      tabBarActiveTintColor: '#00FF94',
-      tabBarInactiveTintColor: '#5B6378',
+      tabBarActiveTintColor: colors.accent,
+      tabBarInactiveTintColor: colors.textMuted,
       tabBarLabelStyle: { fontSize: 9, fontWeight: '700', marginTop: -2, marginBottom: 8, letterSpacing: 0.3 },
       tabBarIconStyle: { marginTop: 8 },
     }}>
       <Tabs.Screen name="index" options={{
         title: 'Home',
         tabBarIcon: ({ color, focused }) => (
-          <View style={focused ? t.activeWrap : undefined}>
+          <View style={focused ? { backgroundColor: colors.accent + '15', borderRadius: 12, padding: 6, marginTop: -4 } : undefined}>
             <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={color} />
           </View>
         ),
@@ -108,7 +111,7 @@ export default function TabLayout() {
       <Tabs.Screen name="signals" options={{
         title: 'Signals',
         tabBarIcon: ({ color, focused }) => (
-          <View style={focused ? t.activeWrap : undefined}>
+          <View style={focused ? { backgroundColor: colors.accent + '15', borderRadius: 12, padding: 6, marginTop: -4 } : undefined}>
             <Ionicons name={focused ? 'pulse' : 'pulse-outline'} size={22} color={color} />
           </View>
         ),
@@ -116,7 +119,7 @@ export default function TabLayout() {
       <Tabs.Screen name="market" options={{
         title: 'Market',
         tabBarIcon: ({ color, focused }) => (
-          <View style={focused ? t.activeWrap : undefined}>
+          <View style={focused ? { backgroundColor: colors.accent + '15', borderRadius: 12, padding: 6, marginTop: -4 } : undefined}>
             <Ionicons name={focused ? 'stats-chart' : 'stats-chart-outline'} size={22} color={color} />
           </View>
         ),
@@ -124,7 +127,7 @@ export default function TabLayout() {
       <Tabs.Screen name="portfolio" options={{
         title: 'Portfolio',
         tabBarIcon: ({ color, focused }) => (
-          <View style={focused ? t.activeWrap : undefined}>
+          <View style={focused ? { backgroundColor: colors.accent + '15', borderRadius: 12, padding: 6, marginTop: -4 } : undefined}>
             <Ionicons name={focused ? 'briefcase' : 'briefcase-outline'} size={22} color={color} />
           </View>
         ),
@@ -132,7 +135,7 @@ export default function TabLayout() {
       <Tabs.Screen name="more" options={{
         title: 'More',
         tabBarIcon: ({ color, focused }) => (
-          <View style={focused ? t.activeWrap : undefined}>
+          <View style={focused ? { backgroundColor: colors.accent + '15', borderRadius: 12, padding: 6, marginTop: -4 } : undefined}>
             <Ionicons name={focused ? 'grid' : 'grid-outline'} size={22} color={color} />
           </View>
         ),

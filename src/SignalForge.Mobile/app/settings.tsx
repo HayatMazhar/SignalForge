@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../src/stores/authStore';
+import { useThemeStore, THEME_LIST, type ThemeMode } from '../src/stores/themeStore';
 
 const C = {
   bg: '#06060B',
@@ -31,6 +32,7 @@ const APP_VERSION = '1.0.0';
 export default function SettingsScreen() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
+  const { mode: themeMode, setMode: setThemeMode, colors } = useThemeStore();
 
   const [pushSignals, setPushSignals] = useState(true);
   const [pushAlerts, setPushAlerts] = useState(true);
@@ -52,113 +54,173 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }} edges={['bottom']}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.bg }]} contentContainerStyle={styles.content}>
       {/* Profile */}
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <View style={styles.profileRow}>
-          <View style={styles.avatar}>
-            <Ionicons name="person" size={28} color={C.accent} />
+          <View style={[styles.avatar, { backgroundColor: colors.accent + '14' }]}>
+            <Ionicons name="person" size={28} color={colors.accent} />
           </View>
           <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>
+            <Text style={[styles.profileName, { color: colors.textPrimary }]}>
               {user?.fullName ?? 'User'}
             </Text>
-            <Text style={styles.profileEmail}>{user?.email ?? '—'}</Text>
+            <Text style={[styles.profileEmail, { color: colors.textMuted }]}>{user?.email ?? '—'}</Text>
           </View>
         </View>
       </View>
 
-      {/* Subscription */}
-      <View style={styles.card}>
+      {/* Appearance */}
+      <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <View style={styles.sectionHeader}>
-          <Ionicons name="diamond-outline" size={18} color={C.purple} />
-          <Text style={styles.sectionLabel}>Subscription</Text>
+          <Ionicons name="color-palette-outline" size={18} color={colors.accent} />
+          <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>Appearance</Text>
+        </View>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+          {THEME_LIST.map((t) => {
+            const active = themeMode === t.id;
+            return (
+              <TouchableOpacity
+                key={t.id}
+                onPress={() => setThemeMode(t.id)}
+                activeOpacity={0.7}
+                style={{
+                  width: '30.5%',
+                  alignItems: 'center',
+                  paddingVertical: 14,
+                  paddingHorizontal: 6,
+                  borderRadius: 14,
+                  backgroundColor: active ? colors.accent + '14' : colors.bg,
+                  borderWidth: 1.5,
+                  borderColor: active ? colors.accent : colors.border,
+                }}
+              >
+                <View style={{
+                  width: 40, height: 40, borderRadius: 12, marginBottom: 8,
+                  backgroundColor: t.preview[0], borderWidth: 1, borderColor: t.preview[2] + '40',
+                  alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
+                }}>
+                  <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 14, backgroundColor: t.preview[1] }} />
+                  <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: t.preview[2], zIndex: 1 }} />
+                </View>
+                <Ionicons
+                  name={t.icon as any}
+                  size={16}
+                  color={active ? colors.accent : colors.textMuted}
+                />
+                <Text style={{
+                  fontSize: 10, fontWeight: '700', marginTop: 4, letterSpacing: 0.3,
+                  color: active ? colors.accent : colors.textMuted,
+                }}>
+                  {t.label}
+                </Text>
+                {active && (
+                  <View style={{
+                    position: 'absolute', top: 6, right: 6,
+                    width: 16, height: 16, borderRadius: 8,
+                    backgroundColor: colors.accent,
+                    alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <Ionicons name="checkmark" size={10} color={colors.bg} />
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+
+      {/* Subscription */}
+      <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="diamond-outline" size={18} color={colors.purple} />
+          <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>Subscription</Text>
         </View>
         <View style={styles.tierRow}>
-          <View style={[styles.tierBadge, { backgroundColor: C.purple + '18' }]}>
-            <Text style={[styles.tierText, { color: C.purple }]}>Pro</Text>
+          <View style={[styles.tierBadge, { backgroundColor: colors.purple + '18' }]}>
+            <Text style={[styles.tierText, { color: colors.purple }]}>Pro</Text>
           </View>
-          <Text style={styles.tierDesc}>
+          <Text style={[styles.tierDesc, { color: colors.textMuted }]}>
             Unlimited signals, AI chat, and backtesting
           </Text>
         </View>
       </View>
 
       {/* Notifications */}
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <View style={styles.sectionHeader}>
-          <Ionicons name="notifications-outline" size={18} color={C.info} />
-          <Text style={styles.sectionLabel}>Notifications</Text>
+          <Ionicons name="notifications-outline" size={18} color={colors.info} />
+          <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>Notifications</Text>
         </View>
 
         <View style={styles.toggleRow}>
           <View style={styles.toggleInfo}>
-            <Text style={styles.toggleLabel}>Signal Alerts</Text>
-            <Text style={styles.toggleDesc}>New AI signals for watchlist</Text>
+            <Text style={[styles.toggleLabel, { color: colors.textPrimary }]}>Signal Alerts</Text>
+            <Text style={[styles.toggleDesc, { color: colors.textMuted }]}>New AI signals for watchlist</Text>
           </View>
           <Switch
             value={pushSignals}
             onValueChange={setPushSignals}
-            trackColor={{ false: C.border, true: C.accent + '55' }}
-            thumbColor={pushSignals ? C.accent : C.textMuted}
+            trackColor={{ false: colors.border, true: colors.accent + '55' }}
+            thumbColor={pushSignals ? colors.accent : colors.textMuted}
           />
         </View>
 
-        <View style={styles.separator} />
+        <View style={[styles.separator, { backgroundColor: colors.border }]} />
 
         <View style={styles.toggleRow}>
           <View style={styles.toggleInfo}>
-            <Text style={styles.toggleLabel}>Price Alerts</Text>
-            <Text style={styles.toggleDesc}>Price target notifications</Text>
+            <Text style={[styles.toggleLabel, { color: colors.textPrimary }]}>Price Alerts</Text>
+            <Text style={[styles.toggleDesc, { color: colors.textMuted }]}>Price target notifications</Text>
           </View>
           <Switch
             value={pushAlerts}
             onValueChange={setPushAlerts}
-            trackColor={{ false: C.border, true: C.accent + '55' }}
-            thumbColor={pushAlerts ? C.accent : C.textMuted}
+            trackColor={{ false: colors.border, true: colors.accent + '55' }}
+            thumbColor={pushAlerts ? colors.accent : colors.textMuted}
           />
         </View>
 
-        <View style={styles.separator} />
+        <View style={[styles.separator, { backgroundColor: colors.border }]} />
 
         <View style={styles.toggleRow}>
           <View style={styles.toggleInfo}>
-            <Text style={styles.toggleLabel}>Market News</Text>
-            <Text style={styles.toggleDesc}>Breaking news and sentiment</Text>
+            <Text style={[styles.toggleLabel, { color: colors.textPrimary }]}>Market News</Text>
+            <Text style={[styles.toggleDesc, { color: colors.textMuted }]}>Breaking news and sentiment</Text>
           </View>
           <Switch
             value={pushNews}
             onValueChange={setPushNews}
-            trackColor={{ false: C.border, true: C.accent + '55' }}
-            thumbColor={pushNews ? C.accent : C.textMuted}
+            trackColor={{ false: colors.border, true: colors.accent + '55' }}
+            thumbColor={pushNews ? colors.accent : colors.textMuted}
           />
         </View>
 
-        <View style={styles.separator} />
+        <View style={[styles.separator, { backgroundColor: colors.border }]} />
 
         <View style={styles.toggleRow}>
           <View style={styles.toggleInfo}>
-            <Text style={styles.toggleLabel}>Portfolio Updates</Text>
-            <Text style={styles.toggleDesc}>Daily portfolio summary</Text>
+            <Text style={[styles.toggleLabel, { color: colors.textPrimary }]}>Portfolio Updates</Text>
+            <Text style={[styles.toggleDesc, { color: colors.textMuted }]}>Daily portfolio summary</Text>
           </View>
           <Switch
             value={pushPortfolio}
             onValueChange={setPushPortfolio}
-            trackColor={{ false: C.border, true: C.accent + '55' }}
-            thumbColor={pushPortfolio ? C.accent : C.textMuted}
+            trackColor={{ false: colors.border, true: colors.accent + '55' }}
+            thumbColor={pushPortfolio ? colors.accent : colors.textMuted}
           />
         </View>
       </View>
 
       {/* Logout */}
-      <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.7}>
-        <Ionicons name="log-out-outline" size={20} color={C.danger} />
-        <Text style={styles.logoutText}>Logout</Text>
+      <TouchableOpacity style={[styles.logoutBtn, { backgroundColor: colors.danger + '14', borderColor: colors.danger + '33' }]} onPress={handleLogout} activeOpacity={0.7}>
+        <Ionicons name="log-out-outline" size={20} color={colors.danger} />
+        <Text style={[styles.logoutText, { color: colors.danger }]}>Logout</Text>
       </TouchableOpacity>
 
       {/* Version */}
-      <Text style={styles.version}>SignalForge v{APP_VERSION}</Text>
+      <Text style={[styles.version, { color: colors.textMuted }]}>SignalForge v{APP_VERSION}</Text>
     </ScrollView>
     </SafeAreaView>
   );

@@ -121,6 +121,10 @@ export default function ActivityLogScreen() {
       </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FFB02018', padding: 12, borderRadius: 12, marginBottom: 12, borderWidth: 1, borderColor: '#FFB02040' }}>
+          <Ionicons name="information-circle" size={16} color="#FFB020" />
+          <Text style={{ fontSize: 12, color: '#FFB020', fontWeight: '600', flex: 1 }}>Demo Data — Illustrative only, not real market data</Text>
+        </View>
         {isLoading && <ActivityIndicator color={COLORS.accent} size="large" style={{ marginTop: 32 }} />}
         {!isLoading && filtered.length === 0 && <Text style={{ color: COLORS.textMuted, textAlign: 'center', marginTop: 32, fontSize: 14 }}>No activity yet</Text>}
         {filtered.map((entry, index) => (

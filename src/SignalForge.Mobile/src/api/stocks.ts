@@ -53,6 +53,10 @@ export const stocksApi = {
     }
   },
   getIndicators: (symbol: string) => api.get(`/stocks/${symbol}/indicators`).then(r => r.data),
+  getIndices: () => api.get('/stocks/indices').then(r => r.data),
+  getSectors: () => api.get('/stocks/sectors').then(r => r.data),
+  getSnapshot: () => api.get('/stocks/snapshot').then(r => r.data),
+  getDataSource: () => api.get<{ isMockData: boolean; source: string }>('/stocks/data-source').then(r => r.data),
 };
 
 export const signalsApi = {
@@ -129,11 +133,11 @@ export const socialApi = {
   getLeaderboard: () => api.get('/social/leaderboard').then(r => r.data),
 };
 
-export const marketApi = {
-  getIndices: () => api.get('/market/indices').then(r => r.data),
-  getBreadth: () => api.get('/market/breadth').then(r => r.data),
-  getSectors: () => api.get('/market/sectors').then(r => r.data),
-  getHeatmap: () => api.get('/market/heatmap').then(r => r.data),
-  getCorrelation: (symbols?: string) =>
-    api.get('/market/correlation', { params: symbols ? { symbols } : undefined }).then(r => r.data),
-};
+export interface IndexQuote {
+  symbol: string; name: string; price: number;
+  change: number; changePercent: number; volume: number;
+}
+
+export interface SectorData {
+  symbol: string; sector: string; price: number; changePercent: number;
+}

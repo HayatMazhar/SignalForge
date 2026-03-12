@@ -17,6 +17,7 @@ import { newsApi } from '../src/api/stocks';
 import type { NewsArticle } from '../src/api/stocks';
 import { useAssetModeStore } from '../src/stores/assetModeStore';
 import api from '../src/api/client';
+import { useTheme } from '../src/constants/config';
 
 const C = {
   bg: '#06060B',
@@ -62,6 +63,7 @@ function timeAgo(dateStr: string): string {
 }
 
 export default function NewsScreen() {
+  const C = useTheme();
   const { mode } = useAssetModeStore();
   const isCrypto = mode === 'crypto';
   const [refreshing, setRefreshing] = useState(false);
@@ -132,7 +134,7 @@ export default function NewsScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={['bottom']}>
       <Stack.Screen options={{ headerTitle: isCrypto ? 'Crypto News' : 'News' }} />
       <FlatList
         style={styles.container}

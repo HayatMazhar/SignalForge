@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMutation } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../src/api/client';
+import { useTheme } from '../src/constants/config';
 
 const C = {
   bg: '#06060B',
@@ -64,6 +65,7 @@ const ACTION_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
 };
 
 export default function PortfolioOptimizerScreen() {
+  const C = useTheme();
   const { mutate, data, isPending, reset } = useMutation({
     mutationFn: async () => {
       const res = await api.post('/ai/optimize-portfolio');

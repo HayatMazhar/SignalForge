@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { useThemeStore, type ThemeColors } from '../stores/themeStore';
 
 const AZURE_API = 'https://signalforge-api.ambitiouscliff-f7080230.eastus.azurecontainerapps.io';
 
@@ -8,6 +9,10 @@ export const API_BASE_URL = Platform.select({
   web: AZURE_API,
   default: AZURE_API,
 });
+
+export function useTheme(): ThemeColors {
+  return useThemeStore((s) => s.colors);
+}
 
 export const COLORS = {
   bg: '#06060B',

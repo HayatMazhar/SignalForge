@@ -59,20 +59,7 @@ public class SocialController : ControllerBase
 
     private static List<LeaderboardEntryDto> GenerateFallbackLeaderboard()
     {
-        var rng = new Random(DateTime.UtcNow.DayOfYear);
-        var names = new[] { "AlphaTrader", "TechBull", "OptionsKing", "ValueHunter", "MomentumPro", "SwingMaster", "DayTraderX", "QuantBot9", "WallStWolf", "DeepValue", "GrowthSeeker", "RiskManager", "TrendFollower", "ContrarianAce", "DividendKing" };
-
-        return names.Select((name, i) =>
-        {
-            var totalSignals = 50 + rng.Next(200);
-            var winRate = 45 + rng.Next(35);
-            var winningSignals = (int)(totalSignals * winRate / 100.0);
-            return new LeaderboardEntryDto(
-                Guid.NewGuid().ToString(), name, name[..2].ToUpper(),
-                totalSignals, winningSignals, winRate,
-                55 + rng.Next(30), -10 + rng.Next(80), rng.Next(5, 500), i + 1
-            );
-        }).OrderByDescending(e => e.TotalReturn).Select((e, i) => e with { Rank = i + 1 }).ToList();
+        return [];
     }
 }
 

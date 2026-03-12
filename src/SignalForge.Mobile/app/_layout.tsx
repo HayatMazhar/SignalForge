@@ -5,13 +5,17 @@ import { StatusBar } from 'expo-status-bar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAuthStore } from '../src/stores/authStore';
+import { useThemeStore } from '../src/stores/themeStore';
 import { ErrorBoundary } from '../src/components/ErrorBoundary';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30000, retry: 1 } },
 });
 
-const H = { headerShown: true, headerStyle: { backgroundColor: '#0C0F1A' }, headerTintColor: '#F0F4F8' };
+function useHeaderOptions() {
+  const colors = useThemeStore((s) => s.colors);
+  return { headerShown: true, headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.textPrimary };
+}
 
 const SCREENS: { name: string; title: string }[] = [
   { name: 'chat', title: 'AI Chat' },
@@ -73,14 +77,17 @@ const SCREENS: { name: string; title: string }[] = [
 
 export default function RootLayout() {
   const loadToken = useAuthStore((s) => s.loadToken);
-  useEffect(() => { loadToken(); }, []);
+  const loadTheme = useThemeStore((s) => s.loadTheme);
+  const colors = useThemeStore((s) => s.colors);
+  const H = useHeaderOptions();
+  useEffect(() => { loadToken(); loadTheme(); }, []);
 
   return (
     <ErrorBoundary>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <StatusBar style="light" />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#06060B' }, headerBackTitle: 'Back' }}>
+          <StatusBar style={colors.isDark ? 'light' : 'dark'} />
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, headerBackTitle: 'Back' }}>
             <Stack.Screen name="(auth)" />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="stocks/[symbol]" options={{ ...H, headerTitle: '', headerBackTitle: 'Back' }} />

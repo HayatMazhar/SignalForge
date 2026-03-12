@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { stocksApi } from '../src/api/stocks';
 import api from '../src/api/client';
 import { formatPrice, formatPercent } from '../src/utils/format';
+import { useTheme } from '../src/constants/config';
 
 const C = {
   bg: '#06060B',
@@ -151,6 +152,7 @@ function CompareCard({ symbol, onRemove, batchData }: CompareCardProps) {
 }
 
 export default function CompareScreen() {
+  const C = useTheme();
   const [symbols, setSymbols] = useState<string[]>(['AAPL', 'MSFT']);
   const [newSymbol, setNewSymbol] = useState('');
 
@@ -181,7 +183,7 @@ export default function CompareScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={['bottom']}>
     <View style={styles.container}>
       {/* Add symbol */}
       <View style={styles.addBar}>

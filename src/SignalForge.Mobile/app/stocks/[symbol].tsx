@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { stocksApi, signalsApi, insightsApi, newsApi, watchlistApi } from '../../src/api/stocks';
 import { formatPrice, formatPercent, formatVolume } from '../../src/utils/format';
 import { getSignalLabel } from '../../src/utils/signalType';
+import { useTheme } from '../../src/constants/config';
 
 const C = {
   bg: '#06060B',
@@ -32,6 +33,7 @@ const C = {
 };
 
 export default function StockDetailScreen() {
+  const C = useTheme();
   const { symbol } = useLocalSearchParams<{ symbol: string }>();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
@@ -125,7 +127,7 @@ export default function StockDetailScreen() {
   return (
     <>
       <Stack.Screen options={{ headerTitle: symbol ?? '' }} />
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={['bottom']}>
         <ScrollView
         style={styles.container}
         contentContainerStyle={styles.content}

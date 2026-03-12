@@ -18,6 +18,8 @@ public class PolygonMarketDataService : IMarketDataService
     private Dictionary<string, List<MockBar>>? _historyCache;
     private MockMoversData? _moversCache;
 
+    public bool IsMockMode => _useMockData;
+
     public PolygonMarketDataService(HttpClient httpClient, IConfiguration config, ILogger<PolygonMarketDataService> logger)
     {
         _httpClient = httpClient;

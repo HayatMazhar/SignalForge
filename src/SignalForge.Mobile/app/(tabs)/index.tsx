@@ -6,11 +6,12 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path, Circle, Line, Rect, Defs, LinearGradient, Stop } from 'react-native-svg';
 import api from '../../src/api/client';
-import { signalsApi, watchlistApi, stocksApi, newsApi, marketApi } from '../../src/api/stocks';
+import { signalsApi, watchlistApi, stocksApi, newsApi } from '../../src/api/stocks';
 import { useAuthStore } from '../../src/stores/authStore';
 import { useAssetModeStore } from '../../src/stores/assetModeStore';
 import { usePriceStore } from '../../src/stores/priceStore';
 import { getSignalLabel } from '../../src/utils/signalType';
+import { useTheme } from '../../src/constants/config';
 
 const { width } = Dimensions.get('window');
 const C = { bg: '#06060B', surface: '#0C0F1A', surfaceHi: '#111729', accent: '#00FF94', danger: '#FF3B5C', warning: '#FFB020', info: '#38BDF8', purple: '#A78BFA', cyan: '#06B6D4', textPrimary: '#F0F4F8', textMuted: '#5B6378', border: '#1A1F35' };
@@ -30,11 +31,15 @@ const formatTimeAgo = (ts: string) => {
 };
 
 export default function Dashboard() {
+  const C = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const [mode, setMode] = useState<DashMode>('default');
   const { mode: assetMode } = useAssetModeStore();
   const user = useAuthStore((s) => s.user);
   const prices = usePriceStore((s) => s.prices);
+
+  const { data: dataSource } = useQuery({ queryKey: ['data-source'], queryFn: () => stocksApi.getDataSource().catch(() => ({ isMockData: false, source: 'unknown' })), staleTime: 300000 });
+  const isMock = dataSource?.isMockData ?? false;
 
   const { data: signals = [], refetch: rS } = useQuery({ queryKey: ['d-sig', assetMode], queryFn: () => assetMode === 'crypto' ? api.get('/crypto/signals').then(r => Array.isArray(r.data) ? r.data : []) : signalsApi.getSignals(undefined, 20) });
   const { data: watchlist = [], refetch: rW } = useQuery({ queryKey: ['d-wl'], queryFn: () => watchlistApi.get() });
@@ -85,18 +90,22 @@ export default function Dashboard() {
     });
   }, [signals, prices]);
 
-  const { data: indices = [] } = useQuery({ queryKey: ['d-idx', assetMode], queryFn: () => assetMode === 'crypto' ? api.get('/crypto/market-overview').then(r => r.data) : marketApi.getIndices() });
-  const { data: breadthData } = useQuery({ queryKey: ['d-breadth'], queryFn: () => marketApi.getBreadth(), enabled: assetMode !== 'crypto' });
-  const { data: sectorData = [] } = useQuery({ queryKey: ['d-sectors'], queryFn: () => marketApi.getSectors(), enabled: assetMode !== 'crypto' });
+  const { data: indices = [] } = useQuery({ queryKey: ['d-idx', assetMode], queryFn: () => assetMode === 'crypto' ? api.get('/crypto/market-overview').then(r => r.data) : stocksApi.getIndices() });
+  const { data: sectorData = [] } = useQuery({ queryKey: ['d-sectors'], queryFn: () => stocksApi.getSectors(), enabled: assetMode !== 'crypto' });
 
-  const breadth = useMemo(() => ({
-    advancing: breadthData?.advancing ?? 0,
-    declining: breadthData?.declining ?? 0,
-    newHighs: breadthData?.newHighs ?? 0,
-    newLows: breadthData?.newLows ?? 0,
-    aboveSMA200: breadthData?.aboveSMA200 ?? 0,
-    putCall: String(breadthData?.putCall ?? 0),
-  }), [breadthData]);
+  const breadth = useMemo(() => {
+    const advancing = gainers.length;
+    const declining = losers.length;
+    const total = movers.length || 1;
+    return {
+      advancing,
+      declining,
+      newHighs: movers.filter((m: any) => (m.changePercent ?? 0) > 3).length,
+      newLows: movers.filter((m: any) => (m.changePercent ?? 0) < -3).length,
+      aboveSMA200: total > 0 ? Math.round((advancing / total) * 100) : 0,
+      putCall: '—',
+    };
+  }, [movers, gainers, losers]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={['bottom']}>
@@ -112,6 +121,13 @@ export default function Dashboard() {
           </TouchableOpacity>
         ))}
       </View>
+
+      {isMock && (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FFB02018', padding: 10, borderRadius: 12, marginBottom: 12, borderWidth: 1, borderColor: '#FFB02040' }}>
+          <Ionicons name="information-circle" size={16} color="#FFB020" />
+          <Text style={{ fontSize: 11, color: '#FFB020', fontWeight: '600', flex: 1 }}>Sample data — Connect live API keys for real market data</Text>
+        </View>
+      )}
 
       {/* ══════════════════════════════════════════════════════════════ */}
       {/* TRADER PRO MODE */}
@@ -149,7 +165,7 @@ export default function Dashboard() {
             </>
           ) : (
             <>
-              <TermCell label="VIX" value={(() => { const vix = (indices as any[]).find?.((idx: any) => (idx.symbol ?? idx.name ?? '').toUpperCase().includes('VIX')); return vix?.value ?? '—'; })()} color={C.accent} />
+              <TermCell label="VIX" value={(() => { const vix = (indices as any[]).find?.((idx: any) => (idx.name ?? idx.symbol ?? '').toUpperCase().includes('VIX')); return vix?.price ? vix.price.toFixed(2) : '—'; })()} color={C.accent} />
               <View style={tp.termDiv} />
               <TermCell label="P/C" value={breadth.putCall} color={parseFloat(breadth.putCall) > 1 ? C.danger : C.accent} />
               <View style={tp.termDiv} />
@@ -231,7 +247,10 @@ export default function Dashboard() {
                 { n: 'ETH', v: indices.ethPrice ? `$${(indices.ethPrice / 1000).toFixed(1)}K` : '—', ch: indices.ethChange ?? 0, up: (indices.ethChange ?? 0) >= 0 },
               ]
             : (indices as any[]).map((idx: any) => ({
-                n: idx.name ?? idx.symbol, v: idx.value ?? '—', ch: idx.change ?? 0, up: idx.up ?? true
+                n: idx.name ?? idx.symbol,
+                v: idx.price ? (idx.price >= 1000 ? `${(idx.price / 1).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : `${idx.price.toFixed(2)}`) : '—',
+                ch: idx.changePercent ?? 0,
+                up: (idx.changePercent ?? 0) >= 0,
               }))
           ).map((item: any, i: number) => (
             <IdxCard key={i} n={item.n} v={item.v} ch={item.ch} up={item.up} />
@@ -269,8 +288,8 @@ export default function Dashboard() {
                 const intensity = Math.min(Math.abs(ch) / 1.5, 1);
                 const bg = pos ? `rgba(0,255,148,${0.08 + intensity * 0.15})` : `rgba(255,59,92,${0.08 + intensity * 0.15})`;
                 return (
-                  <View key={s.name} style={[tp.sectorCell, { backgroundColor: bg }]}>
-                    <Text style={tp.sectorName}>{s.name}</Text>
+                  <View key={s.sector ?? s.symbol} style={[tp.sectorCell, { backgroundColor: bg }]}>
+                    <Text style={tp.sectorName}>{s.sector ?? s.name}</Text>
                     <Text style={[tp.sectorCh, { color: pos ? C.accent : C.danger }]}>{pos ? '+' : ''}{ch.toFixed(2)}%</Text>
                   </View>
                 );
@@ -314,17 +333,7 @@ export default function Dashboard() {
         {/* Smart Money Flow */}
         <Text style={st.sec}>Smart Money Flow</Text>
         <View style={tp.smartCard}>
-          {(Array.isArray(smartMoney) ? smartMoney : assetMode === 'crypto' ? [
-            { symbol: 'BTC', flow: 142, signal: 'Strong Accumulation', direction: 'Bullish' },
-            { symbol: 'ETH', flow: 87, signal: 'Moderate Buying', direction: 'Bullish' },
-            { symbol: 'SOL', flow: -56, signal: 'Distribution', direction: 'Bearish' },
-            { symbol: 'XRP', flow: 93, signal: 'Accumulation', direction: 'Bullish' },
-          ] : [
-            { symbol: 'NVDA', flow: 142, signal: 'Strong Accumulation', direction: 'Bullish' },
-            { symbol: 'AAPL', flow: 87, signal: 'Moderate Buying', direction: 'Bullish' },
-            { symbol: 'TSLA', flow: -56, signal: 'Distribution', direction: 'Bearish' },
-            { symbol: 'META', flow: 93, signal: 'Accumulation', direction: 'Bullish' },
-          ]).slice(0, 4).map((s: any, i: number) => {
+          {(Array.isArray(smartMoney) ? smartMoney : []).slice(0, 4).map((s: any, i: number) => {
             const bullish = (s.direction ?? '').includes('Bullish');
             const flowPct = Math.min(Math.abs(s.flow ?? 50) / 150, 1) * 100;
             return (
@@ -523,7 +532,10 @@ export default function Dashboard() {
                 { n: 'ETH', v: indices.ethPrice ? `$${(indices.ethPrice / 1000).toFixed(1)}K` : '—', ch: indices.ethChange ?? 0, up: (indices.ethChange ?? 0) >= 0 },
               ]
             : (indices as any[]).map((idx: any) => ({
-                n: idx.name ?? idx.symbol, v: idx.value ?? '—', ch: idx.change ?? 0, up: idx.up ?? true
+                n: idx.name ?? idx.symbol,
+                v: idx.price ? (idx.price >= 1000 ? `${(idx.price / 1).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : `${idx.price.toFixed(2)}`) : '—',
+                ch: idx.changePercent ?? 0,
+                up: (idx.changePercent ?? 0) >= 0,
               }))
           ).map((item: any, i: number) => (
             <IdxCard key={i} n={item.n} v={item.v} ch={item.ch} up={item.up} />

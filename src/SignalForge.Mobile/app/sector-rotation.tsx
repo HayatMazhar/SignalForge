@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { marketApi } from '../src/api/stocks';
+import { useTheme } from '../src/constants/config';
 
 const COLORS = {
   bg: '#06060B',
@@ -44,6 +45,7 @@ function Bar({ value, max }: { value: number; max: number }) {
 }
 
 export default function SectorRotationScreen() {
+  const COLORS = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const { data: sectors = [], isLoading, refetch } = useQuery({
     queryKey: ['sectors'],
@@ -76,6 +78,11 @@ export default function SectorRotationScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#00FF94" />
         }
       >
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FFB02018', padding: 12, borderRadius: 12, marginBottom: 12, borderWidth: 1, borderColor: '#FFB02040' }}>
+          <Ionicons name="information-circle" size={16} color="#FFB020" />
+          <Text style={{ fontSize: 12, color: '#FFB020', fontWeight: '600', flex: 1 }}>Demo Data — Illustrative only, not real market data</Text>
+        </View>
+
         {isLoading ? (
           <ActivityIndicator size="large" color={COLORS.accent} style={{ marginTop: 48 }} />
         ) : (
