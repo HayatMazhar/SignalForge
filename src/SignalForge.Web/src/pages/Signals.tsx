@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Radar, ArrowUpDown, Clock } from 'lucide-react';
 import { signalsApi } from '../api/signals';
+import api from '../api/client';
+import { useAssetModeStore } from '../stores/assetModeStore';
 import SignalCard from '../components/SignalCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { getSignalLabel } from '../utils/signalType';
@@ -27,13 +29,17 @@ const timeRanges = [
 ];
 
 export default function Signals() {
+  const { mode } = useAssetModeStore();
   const [activeFilter, setActiveFilter] = useState<string | undefined>(undefined);
   const [sortBy, setSortBy] = useState('recent');
   const [timeRange, setTimeRange] = useState(0);
 
   const { data: signals, isLoading } = useQuery({
-    queryKey: ['signals', activeFilter],
-    queryFn: () => signalsApi.getSignals(activeFilter, 100),
+    queryKey: ['signals', mode, activeFilter],
+    queryFn: () =>
+      mode === 'crypto'
+        ? api.get<Signal[]>('/crypto/signals', { params: { type: activeFilter, limit: 100 } }).then(r => r.data)
+        : signalsApi.getSignals(activeFilter, 100),
     refetchInterval: 30000,
   });
 
@@ -58,7 +64,7 @@ export default function Signals() {
         <div className="flex items-center gap-3">
           <Radar className="w-8 h-8 text-accent" />
           <div>
-            <h1 className="text-2xl font-bold text-text-primary">AI Signals</h1>
+            <h1 className="text-2xl font-bold text-text-primary">{mode === 'crypto' ? 'Crypto Signals' : 'AI Signals'}</h1>
             <p className="text-sm text-text-muted">{filteredSignals.length} signals</p>
           </div>
         </div>

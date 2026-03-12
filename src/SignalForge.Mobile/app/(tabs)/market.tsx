@@ -13,6 +13,7 @@ import { router } from 'expo-router';
 import { stocksApi } from '../../src/api/stocks';
 import api from '../../src/api/client';
 import { formatPrice, formatPercent } from '../../src/utils/format';
+import { useAssetModeStore } from '../../src/stores/assetModeStore';
 
 const COLORS = {
   bg: '#06060B',
@@ -25,16 +26,23 @@ const COLORS = {
 };
 
 export default function MarketScreen() {
+  const { mode } = useAssetModeStore();
   const [refreshing, setRefreshing] = useState(false);
 
   const { data: movers = [], refetch, isFetching } = useQuery({
-    queryKey: ['topMovers'],
-    queryFn: () => stocksApi.getTopMovers(),
+    queryKey: ['topMovers', mode],
+    queryFn: () =>
+      mode === 'crypto'
+        ? api.get('/crypto/top-movers').then(r => Array.isArray(r.data) ? r.data : [])
+        : stocksApi.getTopMovers(),
   });
 
   const { data: losers } = useQuery({
-    queryKey: ['top-losers'],
-    queryFn: () => api.get('/stocks/movers/losers').then(r => Array.isArray(r.data) ? r.data : []),
+    queryKey: ['top-losers', mode],
+    queryFn: () =>
+      mode === 'crypto'
+        ? api.get('/crypto/movers/losers').then(r => Array.isArray(r.data) ? r.data : [])
+        : api.get('/stocks/movers/losers').then(r => Array.isArray(r.data) ? r.data : []),
   });
 
   const onRefresh = useCallback(async () => {
@@ -72,7 +80,7 @@ export default function MarketScreen() {
         contentContainerStyle={styles.scrollContent}
         refreshControl={<RefreshControl refreshing={refreshing || isFetching} onRefresh={onRefresh} tintColor={COLORS.accent} />}
       >
-        <Text style={styles.sectionTitle}>Top Movers</Text>
+        <Text style={styles.sectionTitle}>{mode === 'crypto' ? 'Crypto Movers' : 'Top Movers'}</Text>
 
         <Text style={styles.subsectionTitle}>Gainers</Text>
         {gainers.length === 0 ? (
@@ -88,7 +96,7 @@ export default function MarketScreen() {
           moversLosers.map((item) => <MoverRow key={item.symbol} item={item} />)
         )}
 
-        <Text style={styles.sectionTitle}>Top Losers</Text>
+        <Text style={styles.sectionTitle}>{mode === 'crypto' ? 'Crypto Losers' : 'Top Losers'}</Text>
         {(losers ?? []).length === 0 ? (
           <Text style={styles.emptyText}>No losers</Text>
         ) : (

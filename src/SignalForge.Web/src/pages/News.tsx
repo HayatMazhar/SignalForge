@@ -1,8 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { Newspaper, ExternalLink, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { newsApi } from '../api/news';
+import api from '../api/client';
+import { useAssetModeStore } from '../stores/assetModeStore';
 import { formatDistanceToNow } from 'date-fns';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import type { NewsArticle } from '../types';
 
 function getSentimentConfig(score: number) {
   if (score >= 0.3) return { label: 'Bullish', color: 'text-accent', bg: 'bg-accent/10', icon: TrendingUp };
@@ -11,9 +14,14 @@ function getSentimentConfig(score: number) {
 }
 
 export default function News() {
+  const { mode } = useAssetModeStore();
+
   const { data: news, isLoading } = useQuery({
-    queryKey: ['market-news'],
-    queryFn: () => newsApi.getMarketNews(30),
+    queryKey: ['market-news', mode],
+    queryFn: () =>
+      mode === 'crypto'
+        ? api.get<NewsArticle[]>('/crypto/news', { params: { limit: 30 } }).then(r => r.data)
+        : newsApi.getMarketNews(30),
     refetchInterval: 300000,
   });
 
@@ -22,7 +30,7 @@ export default function News() {
       <div className="flex items-center gap-3">
         <Newspaper className="w-8 h-8 text-accent" />
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Market News</h1>
+          <h1 className="text-2xl font-bold text-text-primary">{mode === 'crypto' ? 'Crypto News' : 'Market News'}</h1>
           <p className="text-sm text-text-muted">{news?.length ?? 0} articles</p>
         </div>
       </div>

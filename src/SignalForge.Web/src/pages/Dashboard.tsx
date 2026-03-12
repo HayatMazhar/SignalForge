@@ -31,17 +31,22 @@ export default function Dashboard() {
   const { mode } = useAssetModeStore();
 
   const { data: watchlist } = useQuery({ queryKey: ['watchlist'], queryFn: watchlistApi.get });
-  const { data: signals } = useQuery({ queryKey: ['signals-dash'], queryFn: () => signalsApi.getSignals(undefined, 20), refetchInterval: 60000 });
+  const { data: signals } = useQuery({ queryKey: ['signals-dash', mode], queryFn: mode === 'crypto' ? () => api.get('/crypto/signals').then(r => r.data) : () => signalsApi.getSignals(undefined, 20), refetchInterval: 60000 });
   const { data: topMovers } = useQuery({ queryKey: ['top-movers', mode], queryFn: () => mode === 'crypto' ? api.get('/crypto/top-movers').then(r => r.data) : stocksApi.getTopMovers(), refetchInterval: 120000 });
   const { data: portfolio } = useQuery({ queryKey: ['portfolio-dash'], queryFn: portfolioApi.get });
-  const { data: fearGreed } = useQuery({ queryKey: ['fear-greed-dash'], queryFn: () => api.get('/insights/fear-greed').then(r => r.data) });
-  const { data: pulse } = useQuery({ queryKey: ['pulse-dash'], queryFn: () => api.get('/insights/market-pulse').then(r => r.data), refetchInterval: 120000 });
+  const { data: cryptoLosers } = useQuery({ queryKey: ['crypto-losers'], queryFn: () => api.get('/crypto/movers/losers').then(r => r.data), enabled: mode === 'crypto', refetchInterval: 120000 });
+  const { data: fearGreed } = useQuery({ queryKey: ['fear-greed-dash', mode], queryFn: () => api.get(mode === 'crypto' ? '/crypto/fear-greed' : '/insights/fear-greed').then(r => r.data) });
+  const { data: pulse } = useQuery({ queryKey: ['pulse-dash', mode], queryFn: () => api.get(mode === 'crypto' ? '/crypto/market-pulse' : '/insights/market-pulse').then(r => r.data), refetchInterval: 120000 });
 
   useEffect(() => { if (watchlist) setSymbols(watchlist.map((w: any) => w.symbol)); }, [watchlist, setSymbols]);
   useMarketHub(watchlistSymbols);
 
-  const gainers = topMovers?.filter((m: any) => m.changePercent > 0).slice(0, 5) ?? [];
-  const losers = topMovers?.filter((m: any) => m.changePercent < 0).sort((a: any, b: any) => a.changePercent - b.changePercent).slice(0, 5) ?? [];
+  const gainers = mode === 'crypto'
+    ? (topMovers?.slice(0, 5) ?? [])
+    : (topMovers?.filter((m: any) => m.changePercent > 0).slice(0, 5) ?? []);
+  const losers = mode === 'crypto'
+    ? (cryptoLosers?.slice(0, 5) ?? [])
+    : (topMovers?.filter((m: any) => m.changePercent < 0).sort((a: any, b: any) => a.changePercent - b.changePercent).slice(0, 5) ?? []);
   const buySignals = signals?.filter((s: any) => getSignalLabel(s.type) === 'Buy').length ?? 0;
   const sellSignals = signals?.filter((s: any) => getSignalLabel(s.type) === 'Sell').length ?? 0;
   const holdSignals = signals?.filter((s: any) => getSignalLabel(s.type) === 'Hold').length ?? 0;
@@ -73,7 +78,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-3 mt-2">
               <span className="text-xs text-text-muted flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-accent/10 text-accent font-bold flex items-center gap-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" /> Market Open
+                <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" /> {mode === 'crypto' ? 'Crypto Market 24/7' : 'Market Open'}
               </span>
             </div>
           </div>
@@ -218,7 +223,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-accent" />
-                <h2 className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Latest AI Signals</h2>
+                <h2 className="text-[10px] font-bold text-text-muted uppercase tracking-widest">{mode === 'crypto' ? 'Latest Crypto Signals' : 'Latest AI Signals'}</h2>
               </div>
               <button onClick={() => navigate('/signals')} className="text-[10px] text-accent font-bold flex items-center gap-0.5 hover:underline">All Signals <ArrowRight className="w-3 h-3" /></button>
             </div>

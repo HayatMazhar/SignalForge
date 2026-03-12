@@ -13,6 +13,8 @@ import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { signalsApi } from '../../src/api/stocks';
 import { getSignalLabel } from '../../src/utils/signalType';
+import { useAssetModeStore } from '../../src/stores/assetModeStore';
+import api from '../../src/api/client';
 
 const COLORS = {
   bg: '#06060B',
@@ -35,12 +37,16 @@ const FILTERS: { label: string; value: FilterType }[] = [
 ];
 
 export default function SignalsScreen() {
+  const { mode } = useAssetModeStore();
   const [activeFilter, setActiveFilter] = useState<FilterType>(undefined);
   const [refreshing, setRefreshing] = useState(false);
 
   const { data: signals = [], refetch, isFetching } = useQuery({
-    queryKey: ['signals', activeFilter],
-    queryFn: () => signalsApi.getSignals(activeFilter, 50),
+    queryKey: ['signals', mode, activeFilter],
+    queryFn: () =>
+      mode === 'crypto'
+        ? api.get('/crypto/signals', { params: { type: activeFilter, limit: 50 } }).then(r => r.data)
+        : signalsApi.getSignals(activeFilter, 50),
   });
 
   const onRefresh = useCallback(async () => {
@@ -99,6 +105,7 @@ export default function SignalsScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      <Text style={styles.pageTitle}>{mode === 'crypto' ? 'Crypto Signals' : 'AI Signals'}</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -129,6 +136,7 @@ export default function SignalsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg },
+  pageTitle: { fontSize: 24, fontWeight: '700', color: COLORS.textPrimary, paddingHorizontal: 16, paddingTop: 12 },
   filterContainer: { maxHeight: 44 },
   filterScroll: { paddingHorizontal: 16, paddingVertical: 12, gap: 8, flexDirection: 'row', alignItems: 'center' },
   filterChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border, marginRight: 8 },

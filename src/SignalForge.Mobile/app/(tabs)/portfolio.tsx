@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { portfolioApi } from '../../src/api/stocks';
 import { formatPrice } from '../../src/utils/format';
+import { useAssetModeStore } from '../../src/stores/assetModeStore';
 
 const COLORS = {
   bg: '#06060B',
@@ -40,10 +41,11 @@ interface Portfolio {
 }
 
 export default function PortfolioScreen() {
+  const { mode } = useAssetModeStore();
   const [refreshing, setRefreshing] = useState(false);
 
   const { data: portfolio = {} as Portfolio, refetch, isFetching } = useQuery({
-    queryKey: ['portfolio'],
+    queryKey: ['portfolio', mode],
     queryFn: () => portfolioApi.get(),
   });
 
@@ -85,6 +87,7 @@ export default function PortfolioScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      <Text style={styles.pageTitle}>{mode === 'crypto' ? 'Crypto Portfolio' : 'Portfolio'}</Text>
       <View style={styles.summary}>
         <View style={styles.summaryCard}>
           <Text style={styles.summaryLabel}>Total Value</Text>
@@ -114,6 +117,7 @@ export default function PortfolioScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg },
+  pageTitle: { fontSize: 24, fontWeight: '700', color: COLORS.textPrimary, paddingHorizontal: 16, paddingTop: 12 },
   summary: { flexDirection: 'row', padding: 16, gap: 12 },
   summaryCard: { flex: 1, padding: 16, backgroundColor: COLORS.surface, borderRadius: 16, borderWidth: 1, borderColor: COLORS.border },
   summaryLabel: { fontSize: 12, color: COLORS.textMuted },

@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path, Circle, Line, Rect, Defs, LinearGradient, Stop } from 'react-native-svg';
 import api from '../../src/api/client';
-import { signalsApi, watchlistApi, stocksApi } from '../../src/api/stocks';
+import { signalsApi, watchlistApi, stocksApi, newsApi } from '../../src/api/stocks';
 import { useAuthStore } from '../../src/stores/authStore';
 import { useAssetModeStore } from '../../src/stores/assetModeStore';
 import { usePriceStore } from '../../src/stores/priceStore';
@@ -36,13 +36,13 @@ export default function Dashboard() {
   const user = useAuthStore((s) => s.user);
   const prices = usePriceStore((s) => s.prices);
 
-  const { data: signals = [], refetch: rS } = useQuery({ queryKey: ['d-sig'], queryFn: () => signalsApi.getSignals(undefined, 10) });
+  const { data: signals = [], refetch: rS } = useQuery({ queryKey: ['d-sig', assetMode], queryFn: () => assetMode === 'crypto' ? api.get('/crypto/signals').then(r => Array.isArray(r.data) ? r.data : []) : signalsApi.getSignals(undefined, 20) });
   const { data: watchlist = [], refetch: rW } = useQuery({ queryKey: ['d-wl'], queryFn: () => watchlistApi.get() });
   const { data: movers = [], refetch: rM } = useQuery({ queryKey: ['d-mov', assetMode], queryFn: () => assetMode === 'crypto' ? api.get('/crypto/top-movers').then(r => Array.isArray(r.data) ? r.data : []) : stocksApi.getTopMovers() });
-  const { data: fg } = useQuery({ queryKey: ['d-fg'], queryFn: () => api.get('/insights/fear-greed').then(r => r.data) });
-  const { data: pulse } = useQuery({ queryKey: ['d-pulse'], queryFn: () => api.get('/insights/market-pulse').then(r => r.data) });
-  const { data: news = [] } = useQuery({ queryKey: ['d-news'], queryFn: () => api.get('/news/market?limit=6').then(r => r.data).catch(() => []) });
-  const { data: optionsFlow = [] } = useQuery({ queryKey: ['d-flow'], queryFn: () => api.get('/options/unusual').then(r => r.data).catch(() => []) });
+  const { data: fg } = useQuery({ queryKey: ['d-fg', assetMode], queryFn: () => api.get(assetMode === 'crypto' ? '/crypto/fear-greed' : '/insights/fear-greed').then(r => r.data) });
+  const { data: pulse } = useQuery({ queryKey: ['d-pulse', assetMode], queryFn: () => api.get(assetMode === 'crypto' ? '/crypto/market-pulse' : '/insights/market-pulse').then(r => r.data) });
+  const { data: news = [] } = useQuery({ queryKey: ['d-news', assetMode], queryFn: () => assetMode === 'crypto' ? api.get('/crypto/news').then(r => Array.isArray(r.data) ? r.data : []) : newsApi.getMarketNews() });
+  const { data: optionsFlow = [] } = useQuery({ queryKey: ['d-flow', assetMode], queryFn: () => assetMode === 'crypto' ? Promise.resolve([]) : api.get('/options/unusual').then(r => r.data).catch(() => []) });
   const { data: smartMoney } = useQuery({ queryKey: ['d-smart'], queryFn: () => api.get('/insights/smart-money').then(r => r.data).catch(() => null) });
 
   const onRefresh = useCallback(async () => { setRefreshing(true); await Promise.all([rS(), rW(), rM()]); setRefreshing(false); }, []);

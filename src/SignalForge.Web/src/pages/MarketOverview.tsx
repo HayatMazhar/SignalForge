@@ -1,16 +1,23 @@
 import { useQuery } from '@tanstack/react-query';
 import { Globe, TrendingUp, TrendingDown } from 'lucide-react';
 import { stocksApi } from '../api/stocks';
+import api from '../api/client';
+import { useAssetModeStore } from '../stores/assetModeStore';
 import { useNavigate } from 'react-router-dom';
 import SectorHeatmap from '../components/charts/SectorHeatmap';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import type { TopMover } from '../types';
 
 export default function MarketOverview() {
+  const { mode } = useAssetModeStore();
   const navigate = useNavigate();
 
   const { data: topMovers, isLoading } = useQuery({
-    queryKey: ['top-movers'],
-    queryFn: stocksApi.getTopMovers,
+    queryKey: ['top-movers', mode],
+    queryFn: () =>
+      mode === 'crypto'
+        ? api.get<TopMover[]>('/crypto/top-movers').then(r => r.data)
+        : stocksApi.getTopMovers(),
     refetchInterval: 60000,
   });
 
@@ -21,19 +28,23 @@ export default function MarketOverview() {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Globe className="w-8 h-8 text-accent" />
-        <h1 className="text-2xl font-bold text-text-primary">Market Overview</h1>
+        <h1 className="text-2xl font-bold text-text-primary">{mode === 'crypto' ? 'Crypto Overview' : 'Market Overview'}</h1>
       </div>
 
-      {/* Index Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <IndexCard name="S&P 500" value="5,248.32" change="+0.85%" positive />
-        <IndexCard name="NASDAQ" value="16,892.45" change="+1.12%" positive />
-        <IndexCard name="DOW" value="39,145.20" change="+0.42%" positive />
-        <IndexCard name="VIX" value="14.82" change="-3.25%" positive={false} />
-      </div>
+      {mode === 'stocks' && (
+        <>
+          {/* Index Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <IndexCard name="S&P 500" value="5,248.32" change="+0.85%" positive />
+            <IndexCard name="NASDAQ" value="16,892.45" change="+1.12%" positive />
+            <IndexCard name="DOW" value="39,145.20" change="+0.42%" positive />
+            <IndexCard name="VIX" value="14.82" change="-3.25%" positive={false} />
+          </div>
 
-      {/* Sector Heatmap */}
-      <SectorHeatmap />
+          {/* Sector Heatmap */}
+          <SectorHeatmap />
+        </>
+      )}
 
       {/* Gainers + Losers */}
       {isLoading ? (
@@ -49,7 +60,7 @@ export default function MarketOverview() {
               {gainers.slice(0, 15).map((m, i) => (
                 <div
                   key={m.symbol}
-                  onClick={() => navigate(`/stocks/${m.symbol}`)}
+                  onClick={() => navigate(mode === 'crypto' ? `/crypto/${m.symbol}` : `/stocks/${m.symbol}`)}
                   className="flex items-center justify-between p-2.5 rounded-lg hover:bg-bg cursor-pointer transition-colors"
                 >
                   <div className="flex items-center gap-3">
@@ -75,7 +86,7 @@ export default function MarketOverview() {
               {losers.slice(0, 15).map((m, i) => (
                 <div
                   key={m.symbol}
-                  onClick={() => navigate(`/stocks/${m.symbol}`)}
+                  onClick={() => navigate(mode === 'crypto' ? `/crypto/${m.symbol}` : `/stocks/${m.symbol}`)}
                   className="flex items-center justify-between p-2.5 rounded-lg hover:bg-bg cursor-pointer transition-colors"
                 >
                   <div className="flex items-center gap-3">
