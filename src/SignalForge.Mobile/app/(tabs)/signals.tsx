@@ -64,11 +64,13 @@ export default function SignalsScreen() {
 
   const renderSignalCard = ({ item: signal }: { item: typeof signals[0] }) => {
     const badgeColor = getBadgeColor(signal.type);
-    const confidencePct = Math.round(signal.confidenceScore * 100);
+    const rawConf = signal.confidenceScore ?? 0;
+    const confidencePct = rawConf > 1 ? Math.round(rawConf) : Math.round(rawConf * 100);
+    const normalizeScore = (v: number) => v > 1 ? Math.min(v, 100) : Math.min(v * 100, 100);
     const scores = [
-      { label: 'Technical', value: signal.technicalScore },
-      { label: 'Sentiment', value: signal.sentimentScore },
-      { label: 'Options', value: signal.optionsScore },
+      { label: 'Technical', value: normalizeScore(signal.technicalScore ?? 0) },
+      { label: 'Sentiment', value: normalizeScore(signal.sentimentScore ?? 0) },
+      { label: mode === 'crypto' ? 'On-Chain' : 'Options', value: normalizeScore(signal.optionsScore ?? 0) },
     ];
 
     return (
@@ -89,7 +91,7 @@ export default function SignalsScreen() {
           {scores.map((s) => (
             <View key={s.label} style={styles.scoreBarWrap}>
               <View style={styles.scoreBar}>
-                <View style={[styles.scoreFill, { width: `${Math.min(100, s.value * 100)}%`, backgroundColor: COLORS.accent }]} />
+                <View style={[styles.scoreFill, { width: `${s.value}%`, backgroundColor: COLORS.accent }]} />
               </View>
               <Text style={styles.scoreLabel}>{s.label}</Text>
             </View>
@@ -97,7 +99,7 @@ export default function SignalsScreen() {
         </View>
         <Text style={styles.reasoning} numberOfLines={2}>{signal.reasoning || '—'}</Text>
         <TouchableOpacity style={styles.viewStockBtn} onPress={() => router.push(`/stocks/${signal.symbol}`)}>
-          <Text style={styles.viewStockText}>View Stock</Text>
+          <Text style={styles.viewStockText}>{mode === 'crypto' ? 'View Coin' : 'View Stock'}</Text>
         </TouchableOpacity>
       </View>
     );
