@@ -30,15 +30,19 @@ interface DataPoint {
   date: string;
   score: number;
   label: string;
-  articlesCount: number;
+  articlesCount?: number;
+  articles?: number;
+  articlesAnalyzed?: number;
 }
 
 interface SentimentResponse {
   symbol: string;
   averageScore: number;
-  trend: string;
+  trend?: string;
+  trendDirection?: string;
   totalArticles: number;
-  dataPoints: DataPoint[];
+  dataPoints?: DataPoint[];
+  points?: DataPoint[];
 }
 
 export default function SentimentTrendScreen() {
@@ -87,7 +91,7 @@ export default function SentimentTrendScreen() {
         </Text>
         <View style={s.articlesChip}>
           <Ionicons name="newspaper-outline" size={12} color={C.textMuted} />
-          <Text style={s.articlesChipText}>{item.articlesCount}</Text>
+          <Text style={s.articlesChipText}>{item.articles ?? item.articlesCount ?? item.articlesAnalyzed ?? 0}</Text>
         </View>
       </View>
     </View>
@@ -128,7 +132,7 @@ export default function SentimentTrendScreen() {
         </View>
       ) : (
         <FlatList
-          data={data.dataPoints}
+          data={data.points ?? data.dataPoints ?? []}
           keyExtractor={(_, i) => i.toString()}
           renderItem={renderDataPoint}
           contentContainerStyle={s.listContent}
@@ -141,9 +145,9 @@ export default function SentimentTrendScreen() {
               <Text style={s.avgLabel}>Average Sentiment Score</Text>
               <View style={s.summaryRow}>
                 <View style={[s.trendBadge, { backgroundColor: scoreColor(data.averageScore) + '18' }]}>
-                  <Ionicons name={trendIcon(data.trend)} size={16} color={scoreColor(data.averageScore)} />
+                  <Ionicons name={trendIcon(data.trendDirection ?? data.trend ?? 'Stable')} size={16} color={scoreColor(data.averageScore)} />
                   <Text style={[s.trendText, { color: scoreColor(data.averageScore) }]}>
-                    {data.trend}
+                    {data.trendDirection ?? data.trend ?? 'Stable'}
                   </Text>
                 </View>
                 <View style={s.articlesChip}>

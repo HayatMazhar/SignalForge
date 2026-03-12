@@ -38,7 +38,17 @@ type OptimizationResult = {
   totalValue: number;
   health: string;
   diversification: string;
+  diversificationScore?: number;
+  positions?: number;
+  concentrationRisk?: number;
   suggestions: Suggestion[];
+  summary?: {
+    totalValue?: number;
+    totalPositions?: number;
+    diversificationScore?: number;
+    concentrationRisk?: string;
+    overallHealth?: string;
+  };
 };
 
 const ACTION_COLORS: Record<string, string> = {
@@ -118,16 +128,16 @@ export default function PortfolioOptimizerScreen() {
                 <View style={styles.summaryCell}>
                   <Text style={styles.summaryLabel}>Total Value</Text>
                   <Text style={styles.summaryValue}>
-                    ${data.totalValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    ${(data.totalValue ?? data.summary?.totalValue ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </Text>
                 </View>
                 <View style={styles.summaryCell}>
                   <Text style={styles.summaryLabel}>Health</Text>
-                  <Text style={[styles.summaryValue, { color: C.accent }]}>{data.health}</Text>
+                  <Text style={[styles.summaryValue, { color: C.accent }]}>{data.health ?? data.summary?.overallHealth ?? 'Good'}</Text>
                 </View>
                 <View style={[styles.summaryCell, { width: '100%' }]}>
                   <Text style={styles.summaryLabel}>Diversification</Text>
-                  <Text style={[styles.summaryValue, { color: C.info }]}>{data.diversification}</Text>
+                  <Text style={[styles.summaryValue, { color: C.info }]}>{data.diversification ?? `${data.diversificationScore ?? data.summary?.diversificationScore ?? 50}/100`}</Text>
                 </View>
               </View>
             </View>

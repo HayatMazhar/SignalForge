@@ -71,6 +71,10 @@ public static class DependencyInjection
                     cfg["Core42Ai:ApiEndpoint"] ?? "https://api.core42.ai/v1/",
                     cfg["Core42Ai:ApiKey"] ?? "");
             });
+        services.AddSingleton<AzureTextAnalyticsService>();
+        services.AddSingleton<AzureSearchService>();
+        services.AddSingleton<ContentSafetyService>();
+        services.AddSingleton<TranslatorService>();
         services.AddScoped<IAISignalService, OpenAISignalService>();
 
         services.AddHostedService<SignalGeneratorService>();

@@ -99,19 +99,61 @@ public class InsightsController : ControllerBase
     }
 
     [HttpGet("fear-greed")]
-    public IActionResult GetFearGreedIndex()
+    public async Task<IActionResult> GetFearGreedIndex(CancellationToken ct)
     {
-        var rng = new Random(DateTime.UtcNow.DayOfYear);
-        var momentum = 40 + rng.Next(40);
-        var breadth = 35 + rng.Next(45);
-        var putCall = 30 + rng.Next(50);
-        var volatility = 25 + rng.Next(55);
-        var safeHaven = 35 + rng.Next(40);
-        var junkBond = 40 + rng.Next(35);
-        var composite = (int)(momentum * 0.2 + breadth * 0.2 + putCall * 0.15 + volatility * 0.2 + safeHaven * 0.15 + junkBond * 0.1);
-        var label = composite >= 75 ? "Extreme Greed" : composite >= 60 ? "Greed" : composite >= 45 ? "Neutral" : composite >= 25 ? "Fear" : "Extreme Fear";
+        try
+        {
+            var movers = await _marketData.GetTopMovers(ct);
+            var gainers = movers.Count(m => m.ChangePercent > 0);
+            var losers = movers.Count(m => m.ChangePercent < 0);
+            var avgChange = movers.Count > 0 ? movers.Average(m => m.ChangePercent) : 0;
+            var topGain = movers.Count > 0 ? movers.Max(m => m.ChangePercent) : 0;
+            var topLoss = movers.Count > 0 ? movers.Min(m => m.ChangePercent) : 0;
 
-        return Ok(new FearGreedDto(composite, label, momentum, breadth, putCall, volatility, safeHaven, junkBond, DateTime.UtcNow.ToString("o")));
+            var prompt = "You are a market sentiment analyst. Based on the following market data, compute a Fear & Greed Index.\n\n"
+                + $"Market Data:\n"
+                + $"- Top movers: {gainers} gainers vs {losers} losers\n"
+                + $"- Average change: {avgChange:F2}%\n"
+                + $"- Biggest gain: {topGain:F2}%, Biggest loss: {topLoss:F2}%\n\n"
+                + "Return a JSON object:\n"
+                + "{\n"
+                + "  \"score\": <0-100 composite score>,\n"
+                + "  \"label\": \"Extreme Fear|Fear|Neutral|Greed|Extreme Greed\",\n"
+                + "  \"momentum\": <0-100>,\n"
+                + "  \"breadth\": <0-100>,\n"
+                + "  \"putCallRatio\": <0-100>,\n"
+                + "  \"volatility\": <0-100>,\n"
+                + "  \"safeHaven\": <0-100>,\n"
+                + "  \"junkBondDemand\": <0-100>\n"
+                + "}\nReturn ONLY valid JSON.";
+
+            var aiJson = await _ai.ChatAsync("You are a market data analyst.", [("user", prompt)], ct);
+            var parsed = JsonSerializer.Deserialize<JsonElement>(aiJson);
+
+            var score = parsed.TryGetProperty("score", out var s) ? s.GetInt32() : 50;
+            var label = parsed.TryGetProperty("label", out var l) ? l.GetString() ?? "Neutral" : "Neutral";
+            var momentum = parsed.TryGetProperty("momentum", out var m) ? m.GetInt32() : 50;
+            var breadth = parsed.TryGetProperty("breadth", out var b) ? b.GetInt32() : 50;
+            var putCall = parsed.TryGetProperty("putCallRatio", out var p) ? p.GetInt32() : 50;
+            var volatility = parsed.TryGetProperty("volatility", out var v) ? v.GetInt32() : 50;
+            var safeHaven = parsed.TryGetProperty("safeHaven", out var sh) ? sh.GetInt32() : 50;
+            var junkBond = parsed.TryGetProperty("junkBondDemand", out var jb) ? jb.GetInt32() : 50;
+
+            return Ok(new FearGreedDto(score, label, momentum, breadth, putCall, volatility, safeHaven, junkBond, DateTime.UtcNow.ToString("o")));
+        }
+        catch
+        {
+            var rng = new Random(DateTime.UtcNow.DayOfYear);
+            var momentum = 40 + rng.Next(40);
+            var breadth = 35 + rng.Next(45);
+            var putCall = 30 + rng.Next(50);
+            var volatility = 25 + rng.Next(55);
+            var safeHaven = 35 + rng.Next(40);
+            var junkBond = 40 + rng.Next(35);
+            var composite = (int)(momentum * 0.2 + breadth * 0.2 + putCall * 0.15 + volatility * 0.2 + safeHaven * 0.15 + junkBond * 0.1);
+            var label = composite >= 75 ? "Extreme Greed" : composite >= 60 ? "Greed" : composite >= 45 ? "Neutral" : composite >= 25 ? "Fear" : "Extreme Fear";
+            return Ok(new FearGreedDto(composite, label, momentum, breadth, putCall, volatility, safeHaven, junkBond, DateTime.UtcNow.ToString("o")));
+        }
     }
 
     [HttpGet("market-pulse")]
@@ -126,24 +168,87 @@ public class InsightsController : ControllerBase
             events.Add(new MarketPulseEventDto(Guid.NewGuid().ToString(), "News", n.Symbol, n.Title, n.Summary, impact, n.PublishedAt.ToString("o")));
         }
 
-        events.AddRange([
-            new(Guid.NewGuid().ToString(), "Signal", "NVDA", "AI Buy Signal Generated", "NVDA triggered a strong buy signal with 78% confidence based on technical breakout and bullish options flow", "Bullish", DateTime.UtcNow.AddMinutes(-12).ToString("o")),
-            new(Guid.NewGuid().ToString(), "Alert", "SPY", "S&P 500 New Intraday High", "The S&P 500 index reached a new intraday high, breaking above the 5,250 resistance level", "Bullish", DateTime.UtcNow.AddMinutes(-28).ToString("o")),
-            new(Guid.NewGuid().ToString(), "Flow", "TSLA", "Unusual Options Activity", "$2.4M in TSLA call options swept at the ask, March 260 strike. Volume 15x normal", "Bullish", DateTime.UtcNow.AddMinutes(-45).ToString("o")),
-            new(Guid.NewGuid().ToString(), "Signal", "BA", "AI Sell Signal Generated", "BA triggered a sell signal with 68% confidence due to negative sentiment and put-heavy options flow", "Bearish", DateTime.UtcNow.AddHours(-1).ToString("o")),
-            new(Guid.NewGuid().ToString(), "Economic", "FED", "FOMC Minutes Released", "Fed officials signaled patience on rate cuts, maintaining current policy stance through mid-2026", "Neutral", DateTime.UtcNow.AddHours(-2).ToString("o")),
-        ]);
+        try
+        {
+            var recentSignals = await _marketData.GetTopMovers(ct);
+            foreach (var mover in recentSignals.Take(3))
+            {
+                var impact = mover.ChangePercent > 2 ? "Bullish" : mover.ChangePercent < -2 ? "Bearish" : "Neutral";
+                var desc = $"{mover.Symbol} ({mover.Name}) moved {(mover.ChangePercent > 0 ? "+" : "")}{mover.ChangePercent:F1}% to ${mover.Price:F2}";
+                events.Add(new MarketPulseEventDto(Guid.NewGuid().ToString(), "Signal", mover.Symbol, $"{mover.Symbol} Major Price Movement", desc, impact, DateTime.UtcNow.AddMinutes(-15).ToString("o")));
+            }
+        }
+        catch { }
+
+        if (events.Count < 5)
+        {
+            events.AddRange([
+                new(Guid.NewGuid().ToString(), "Signal", "NVDA", "AI Buy Signal Generated", "NVDA triggered a strong buy signal with 78% confidence based on technical breakout and bullish options flow", "Bullish", DateTime.UtcNow.AddMinutes(-12).ToString("o")),
+                new(Guid.NewGuid().ToString(), "Alert", "SPY", "S&P 500 New Intraday High", "The S&P 500 index reached a new intraday high, breaking above the 5,250 resistance level", "Bullish", DateTime.UtcNow.AddMinutes(-28).ToString("o")),
+                new(Guid.NewGuid().ToString(), "Economic", "FED", "FOMC Minutes Released", "Fed officials signaled patience on rate cuts, maintaining current policy stance through mid-2026", "Neutral", DateTime.UtcNow.AddHours(-2).ToString("o")),
+            ]);
+        }
 
         return Ok(events.OrderByDescending(e => e.Timestamp).Take(25));
     }
 
     [HttpGet("smart-money")]
-    public IActionResult GetSmartMoneyFlow()
+    public async Task<IActionResult> GetSmartMoneyFlow(CancellationToken ct)
     {
-        var rng = new Random(DateTime.UtcNow.DayOfYear + 42);
         var symbols = new[] { "AAPL", "MSFT", "NVDA", "TSLA", "AMZN", "META", "GOOGL", "AMD", "NFLX", "JPM", "CRM", "LLY", "BA", "XOM", "COIN" };
 
-        var flows = symbols.Select(s =>
+        try
+        {
+            var quoteData = new List<string>();
+            foreach (var sym in symbols.Take(8))
+            {
+                var q = await _marketData.GetQuote(sym, ct);
+                if (q != null)
+                    quoteData.Add($"{sym}: ${q.Price:F2}, change {q.ChangePercent:F2}%, vol {q.Volume:N0}");
+            }
+
+            var optionsData = new List<string>();
+            foreach (var sym in symbols.Take(8))
+            {
+                var flow = await _options.GetSymbolFlow(sym, ct);
+                var calls = flow.Where(f => f.Type == Domain.Enums.OptionType.Call).Sum(f => f.Volume);
+                var puts = flow.Where(f => f.Type == Domain.Enums.OptionType.Put).Sum(f => f.Volume);
+                var unusual = flow.Count(f => f.IsUnusual);
+                if (calls + puts > 0)
+                    optionsData.Add($"{sym}: calls={calls:N0}, puts={puts:N0}, unusual={unusual}");
+            }
+
+            var prompt = "Based on the following stock and options data, estimate smart money flows for each symbol.\n\n"
+                + $"Quotes:\n{string.Join("\n", quoteData)}\n\n"
+                + $"Options Flow:\n{string.Join("\n", optionsData)}\n\n"
+                + $"For ALL these symbols: {string.Join(", ", symbols)}\n"
+                + "Return a JSON array where each element has:\n"
+                + "{ \"symbol\": \"<ticker>\", \"institutionalBuy\": <number>, \"institutionalSell\": <number>, \"retailBuy\": <number>, \"retailSell\": <number>, \"netFlow\": <number>, \"signal\": \"Strong Accumulation|Accumulation|Distribution|Strong Distribution\", \"darkPoolPercent\": <30-55> }\n"
+                + "Make flows realistic (millions range). Return ONLY valid JSON array.";
+
+            var aiJson = await _ai.ChatAsync("You are an institutional flow analyst.", [("user", prompt)], ct);
+            var parsed = JsonSerializer.Deserialize<JsonElement>(aiJson);
+
+            if (parsed.ValueKind == JsonValueKind.Array)
+            {
+                var flows = parsed.EnumerateArray().Select(f => new SmartMoneyFlowDto(
+                    f.TryGetProperty("symbol", out var sym2) ? sym2.GetString() ?? "" : "",
+                    f.TryGetProperty("institutionalBuy", out var ib) ? ib.GetDecimal() : 0,
+                    f.TryGetProperty("institutionalSell", out var isl) ? isl.GetDecimal() : 0,
+                    f.TryGetProperty("retailBuy", out var rb) ? rb.GetDecimal() : 0,
+                    f.TryGetProperty("retailSell", out var rs) ? rs.GetDecimal() : 0,
+                    f.TryGetProperty("netFlow", out var nf) ? nf.GetDecimal() : 0,
+                    f.TryGetProperty("signal", out var sig) ? sig.GetString() ?? "Accumulation" : "Accumulation",
+                    f.TryGetProperty("darkPoolPercent", out var dp) ? dp.GetInt32() : 40
+                )).OrderByDescending(fl => fl.NetFlow).ToList();
+
+                return Ok(flows);
+            }
+        }
+        catch { }
+
+        var rng = new Random(DateTime.UtcNow.DayOfYear + 42);
+        var fallbackFlows = symbols.Select(s =>
         {
             var instBuy = rng.Next(50, 500) * 100000m;
             var instSell = rng.Next(30, 400) * 100000m;
@@ -152,11 +257,9 @@ public class InsightsController : ControllerBase
             var netFlow = (instBuy - instSell) + (retBuy - retSell);
             var darkPool = 30 + rng.Next(25);
             var signal = netFlow > 10000000 ? "Strong Accumulation" : netFlow > 0 ? "Accumulation" : netFlow < -10000000 ? "Strong Distribution" : "Distribution";
-
             return new SmartMoneyFlowDto(s, instBuy, instSell, retBuy, retSell, netFlow, signal, darkPool);
         }).OrderByDescending(f => f.NetFlow).ToList();
-
-        return Ok(flows);
+        return Ok(fallbackFlows);
     }
 
     private static decimal CalculateScore(decimal rsi, string trend)

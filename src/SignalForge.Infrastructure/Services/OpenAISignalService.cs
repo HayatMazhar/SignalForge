@@ -8,16 +8,25 @@ namespace SignalForge.Infrastructure.Services;
 public class OpenAISignalService : IAISignalService
 {
     private readonly Core42ChatClient _chat;
+    private readonly AzureTextAnalyticsService _textAnalytics;
     private readonly ILogger<OpenAISignalService> _logger;
 
-    public OpenAISignalService(Core42ChatClient chat, ILogger<OpenAISignalService> logger)
+    public OpenAISignalService(Core42ChatClient chat, AzureTextAnalyticsService textAnalytics, ILogger<OpenAISignalService> logger)
     {
         _chat = chat;
+        _textAnalytics = textAnalytics;
         _logger = logger;
     }
 
     public async Task<SentimentResultDto> AnalyzeSentiment(List<string> headlines, CancellationToken cancellationToken = default)
     {
+        if (_textAnalytics.IsAvailable)
+        {
+            var result = await _textAnalytics.AnalyzeSentimentAsync(headlines, cancellationToken);
+            if (result.Label != "Neutral" || result.Score != 0)
+                return result;
+        }
+
         try
         {
             var headlineList = string.Join("\n", headlines.Select((h, i) => $"{i + 1}. {h}"));
