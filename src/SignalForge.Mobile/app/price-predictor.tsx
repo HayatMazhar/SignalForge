@@ -33,14 +33,15 @@ type Prediction = {
   predictedPrice: number;
   changePercent: number;
   confidence: number;
-  direction: 'up' | 'down' | 'neutral';
+  direction: string;
 };
 
 type PredictionResult = {
   symbol: string;
   currentPrice: number;
   predictions: Prediction[];
-  factors: string[];
+  factors: any[];
+  summary?: string;
 };
 
 const DIRECTION_CONFIG = {
@@ -54,11 +55,21 @@ export default function PricePredictorScreen() {
   const { mode } = useAssetModeStore();
 
   const { mutate, data, isPending, reset } = useMutation({
-    mutationFn: async (sym: string) => {
+    mutationFn: async (sym: string): Promise<PredictionResult> => {
       const upper = sym.toUpperCase().trim();
       const endpoint = mode === 'crypto' ? `/crypto/predict/${upper}` : `/ai/predict/${upper}`;
       const res = await api.get(endpoint);
-      return res.data as PredictionResult;
+      const raw = res.data;
+      const predictions = (raw.predictions ?? []).map((p: any) => ({
+        period: p.period ?? p.horizon ?? '',
+        days: p.days ?? parseInt(p.horizon) || 0,
+        predictedPrice: p.predictedPrice ?? p.price ?? 0,
+        changePercent: p.changePercent ?? p.change ?? 0,
+        confidence: p.confidence ?? 50,
+        direction: (p.direction ?? 'neutral').toLowerCase().includes('bull') || (p.direction ?? '').toLowerCase() === 'up' ? 'up' : (p.direction ?? 'neutral').toLowerCase().includes('bear') || (p.direction ?? '').toLowerCase() === 'down' ? 'down' : 'neutral',
+      }));
+      const factors = Array.isArray(raw.factors) ? raw.factors.map((f: any) => typeof f === 'string' ? f : f.name ?? JSON.stringify(f)) : [];
+      return { symbol: raw.symbol ?? upper, currentPrice: raw.currentPrice ?? 0, predictions, factors, summary: raw.summary } as PredictionResult;
     },
   });
 
@@ -101,33 +112,33 @@ export default function PricePredictorScreen() {
           <>
             <View style={styles.headerCard}>
               <Text style={styles.headerSymbol}>{data.symbol}</Text>
-              <Text style={styles.headerPrice}>${data.currentPrice.toFixed(2)}</Text>
+              <Text style={styles.headerPrice}>${(data.currentPrice ?? 0).toFixed(2)}</Text>
               <Text style={styles.headerLabel}>Current Price</Text>
             </View>
 
             {(data.predictions ?? []).map((p) => {
               const dir = DIRECTION_CONFIG[p.direction] ?? DIRECTION_CONFIG.neutral;
-              const isPositive = p.changePercent >= 0;
+              const isPositive = (p.changePercent ?? 0) >= 0;
               return (
-                <View key={p.days} style={styles.predCard}>
+                <View key={p.period ?? p.days} style={styles.predCard}>
                   <View style={styles.predHeader}>
-                    <Text style={styles.predPeriod}>{p.period ?? `${p.days} Days`}</Text>
+                    <Text style={styles.predPeriod}>{p.period || `${p.days} Days`}</Text>
                     <View style={[styles.dirBadge, { backgroundColor: dir.color + '22' }]}>
                       <Ionicons name={dir.icon} size={14} color={dir.color} />
                       <Text style={[styles.dirText, { color: dir.color }]}>
-                        {p.direction.charAt(0).toUpperCase() + p.direction.slice(1)}
+                        {(p.direction ?? 'neutral').charAt(0).toUpperCase() + (p.direction ?? 'neutral').slice(1)}
                       </Text>
                     </View>
                   </View>
                   <View style={styles.predBody}>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.predLabel}>Predicted Price</Text>
-                      <Text style={styles.predPrice}>${p.predictedPrice.toFixed(2)}</Text>
+                      <Text style={styles.predPrice}>${(p.predictedPrice ?? 0).toFixed(2)}</Text>
                     </View>
                     <View style={{ alignItems: 'flex-end' }}>
                       <Text style={styles.predLabel}>Change</Text>
                       <Text style={[styles.predChange, { color: isPositive ? C.accent : C.danger }]}>
-                        {isPositive ? '+' : ''}{p.changePercent.toFixed(2)}%
+                        {isPositive ? '+' : ''}{(p.changePercent ?? 0).toFixed(2)}%
                       </Text>
                     </View>
                   </View>
@@ -138,13 +149,13 @@ export default function PricePredictorScreen() {
                         style={[
                           styles.confBarFill,
                           {
-                            width: `${Math.min(p.confidence, 100)}%`,
-                            backgroundColor: p.confidence >= 70 ? C.accent : p.confidence >= 40 ? C.warning : C.danger,
+                            width: `${Math.min(p.confidence ?? 0, 100)}%`,
+                            backgroundColor: (p.confidence ?? 0) >= 70 ? C.accent : (p.confidence ?? 0) >= 40 ? C.warning : C.danger,
                           },
                         ]}
                       />
                     </View>
-                    <Text style={styles.confValue}>{p.confidence}%</Text>
+                    <Text style={styles.confValue}>{p.confidence ?? 0}%</Text>
                   </View>
                 </View>
               );
