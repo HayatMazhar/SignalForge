@@ -159,6 +159,29 @@ SignalForge/
 └── SignalForge.slnx
 ```
 
+## Azure Deployment
+
+- **API**: Azure Container Apps at `https://signalforge-api.ambitiouscliff-f7080230.eastus.azurecontainerapps.io`
+- **Web**: Azure Static Web Apps at `https://nice-ground-055efc20f.1.azurestaticapps.net`
+
+### Database on Azure
+
+**The database was not deployed to Azure.** If the Container App has no `ConnectionStrings__DefaultConnection` set, the API uses an **in-memory database** (data is lost on restart). If `/health` or login times out, the Container App may have a connection string set to a non-existent or unreachable SQL server (so the app or health check hangs). Fix: remove `ConnectionStrings__DefaultConnection` from the Container App env so the API starts with in-memory DB, then add Azure SQL and set the env (see below).
+
+- **Liveness**: Use **`/live`** to check if the container is up (no DB/Redis). Example: `https://signalforge-api..../live`
+- **Health**: **`/health`** runs SQL/Redis checks with a 5s timeout; use it after the app is running.
+
+To use **Azure SQL** (persistent data):
+
+1. **Create Azure SQL**  
+   - Run `.\scripts\azure-sql-setup.ps1` (requires `az login` and resource group `SignalForge-RG`).  
+   - If you get **RegionDoesNotAllowProvisioning**, create the SQL server manually in [Azure Portal](https://portal.azure.com) → Create resource → Azure SQL Database → choose a region that allows creation (try e.g. **Central US**, **North Europe**). Set server name, admin login, and password. Then run:  
+     `.\scripts\azure-sql-database-only.ps1 -SqlServerName <your-server> -AdminLogin <user> -AdminPassword '<password>'`  
+     to create the database and firewall rule and get the connection string.
+2. **Set the connection string on the Container App**  
+   Use the `az containerapp update --set-env-vars "ConnectionStrings__DefaultConnection=..."` command printed by the script (or set the env in Portal).
+3. **Redeploy or restart** the Container App so the API runs migrations and connects to SQL.
+
 ## Configuration
 
 Copy `appsettings.Development.json` and add your API keys:

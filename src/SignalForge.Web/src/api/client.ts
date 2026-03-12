@@ -6,6 +6,7 @@ const API_BASE = import.meta.env.VITE_API_URL || 'https://signalforge-api.ambiti
 const api = axios.create({
   baseURL: API_BASE,
   headers: { 'Content-Type': 'application/json' },
+  timeout: 90000,
 });
 
 api.interceptors.request.use((config) => {

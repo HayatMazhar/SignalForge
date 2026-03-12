@@ -81,9 +81,10 @@ builder.Services.AddHangfire(config => config.UseInMemoryStorage());
 builder.Services.AddHangfireServer();
 
 var healthChecks = builder.Services.AddHealthChecks();
+var healthCheckTimeout = TimeSpan.FromSeconds(5);
 var sqlConn = builder.Configuration.GetConnectionString("DefaultConnection");
 if (!string.IsNullOrEmpty(sqlConn))
-    healthChecks.AddSqlServer(sqlConn, name: "sqlserver", tags: ["db"]);
+    healthChecks.AddSqlServer(sqlConn, name: "sqlserver", tags: ["db"], timeout: healthCheckTimeout);
 var redisConn = builder.Configuration.GetConnectionString("Redis");
 if (!string.IsNullOrEmpty(redisConn))
     healthChecks.AddRedis(redisConn, name: "redis", tags: ["cache"]);
@@ -107,17 +108,29 @@ builder.Services.AddCors(options =>
     var allowedOrigins = new List<string>
     {
         "http://localhost:5173", "http://localhost:8081", "http://localhost:8082",
-        "http://10.40.50.72:8081", "http://10.40.50.72:5173"
+        "http://10.40.50.72:8081", "http://10.40.50.72:5173",
+        "https://nice-ground-055efc20f.1.azurestaticapps.net",
+        "https://hayatmazhar.github.io"
     };
     var extraOrigins = builder.Configuration["Cors:Origins"];
     if (!string.IsNullOrEmpty(extraOrigins))
-        allowedOrigins.AddRange(extraOrigins.Split(',', StringSplitOptions.RemoveEmptyEntries));
+        allowedOrigins.AddRange(extraOrigins.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
 
     options.AddPolicy("AllowFrontend", policy =>
-        policy.WithOrigins(allowedOrigins.ToArray())
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials());
+    {
+        policy.SetIsOriginAllowed(origin =>
+        {
+            if (string.IsNullOrEmpty(origin)) return false;
+            if (allowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase)) return true;
+            if (origin.EndsWith(".azurestaticapps.net", StringComparison.OrdinalIgnoreCase)) return true;
+            if (origin.Equals("https://hayatmazhar.github.io", StringComparison.OrdinalIgnoreCase) ||
+                origin.StartsWith("https://hayatmazhar.github.io/", StringComparison.OrdinalIgnoreCase)) return true;
+            return false;
+        })
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+    });
 });
 
 var app = builder.Build();
@@ -133,12 +146,22 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
+app.Use(async (context, next) =>
+{
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.StatusCode = StatusCodes.Status204NoContent;
+        return;
+    }
+    await next();
+});
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<MarketHub>("/hubs/market");
+app.MapGet("/live", () => Results.Ok(new { status = "alive", timestamp = DateTime.UtcNow }));
 app.MapHealthChecks("/health", new HealthCheckOptions
 {
     ResponseWriter = async (context, report) =>
