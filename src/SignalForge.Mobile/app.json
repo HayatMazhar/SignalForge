@@ -21,7 +21,11 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundColor": "#06060B"
       },
-      "package": "com.signalforge.app"
+      "package": "com.signalforge.app",
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -38,6 +42,13 @@
           "color": "#00FF94"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "71d6571e-0488-41f1-b360-3cfe99f88b76"
+      }
+    },
+    "owner": "mazhar1785"
   }
 }
