@@ -1,10 +1,12 @@
 import { Platform } from 'react-native';
 
+const AZURE_API = 'https://signalforge-api.ambitiouscliff-f7080230.eastus.azurecontainerapps.io';
+
 export const API_BASE_URL = Platform.select({
-  android: 'http://10.40.50.72:5280',
-  ios: 'http://10.40.50.72:5280',
-  web: 'http://localhost:5280',
-  default: 'http://localhost:5280',
+  android: AZURE_API,
+  ios: AZURE_API,
+  web: AZURE_API,
+  default: AZURE_API,
 });
 
 export const COLORS = {
