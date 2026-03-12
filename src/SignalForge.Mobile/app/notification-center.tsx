@@ -100,12 +100,12 @@ export default function NotificationCenterScreen() {
     loadNotifications();
   }, [loadNotifications]);
 
-  const filtered = notifications.filter((n) =>
+  const filtered = (notifications ?? []).filter((n) =>
     filter === 'all' ? true : n.type === filter,
   );
 
   const markAllRead = () => {
-    const updated = notifications.map((n) => ({ ...n, unread: false }));
+    const updated = (notifications ?? []).map((n) => ({ ...n, unread: false }));
     saveNotifications(updated);
   };
 
@@ -117,7 +117,7 @@ export default function NotificationCenterScreen() {
   };
 
   const markAsRead = (id: string) => {
-    const updated = notifications.map((n) =>
+    const updated = (notifications ?? []).map((n) =>
       n.id === id ? { ...n, unread: false } : n,
     );
     saveNotifications(updated);

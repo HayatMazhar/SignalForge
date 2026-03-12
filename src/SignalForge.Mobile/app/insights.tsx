@@ -7,6 +7,7 @@ import {
   RefreshControl,
   StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { insightsApi } from '../src/api/stocks';
@@ -89,13 +90,14 @@ export default function InsightsScreen() {
   const indicators = data?.indicators ?? [];
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.accent} />
-      }
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.accent} />
+        }
+      >
       {/* Fear & Greed Gauge */}
       <View style={styles.gaugeCard}>
         <Text style={styles.gaugeTitle}>Fear & Greed Index</Text>
@@ -179,7 +181,8 @@ export default function InsightsScreen() {
               </View>
             </View>
           ))}
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

@@ -37,8 +37,8 @@ export default function MarketScreen() {
     setRefreshing(false);
   }, [refetch]);
 
-  const gainers = movers.filter((m) => m.changePercent > 0);
-  const losers = movers.filter((m) => m.changePercent < 0);
+  const gainers = movers.filter((m) => (m.changePercent ?? 0) > 0);
+  const losers = movers.filter((m) => (m.changePercent ?? 0) < 0);
 
   const MoverRow = ({ item }: { item: typeof movers[0] }) => (
     <TouchableOpacity
@@ -52,8 +52,8 @@ export default function MarketScreen() {
       </View>
       <View style={styles.moverRight}>
         <Text style={styles.moverPrice}>{formatPrice(item.price)}</Text>
-        <Text style={[styles.moverChange, { color: item.changePercent >= 0 ? COLORS.accent : COLORS.danger }]}>
-          {formatPercent(item.changePercent)}
+        <Text style={[styles.moverChange, { color: (item.changePercent ?? 0) >= 0 ? COLORS.accent : COLORS.danger }]}>
+          {formatPercent(item.changePercent ?? 0)}
         </Text>
       </View>
     </TouchableOpacity>

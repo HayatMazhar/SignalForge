@@ -113,7 +113,7 @@ export default function VoiceCommandScreen() {
           {history.length === 0 ? (
             <Text style={styles.emptyText}>No commands yet</Text>
           ) : (
-            history.map((cmd, i) => (
+            (history ?? []).map((cmd, i) => (
               <View key={i} style={styles.historyItem}>
                 <Ionicons name="chatbubble-outline" size={16} color={COLORS.textMuted} />
                 <Text style={styles.historyText}>{cmd}</Text>

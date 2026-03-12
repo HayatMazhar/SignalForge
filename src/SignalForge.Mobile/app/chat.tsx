@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
@@ -117,6 +118,7 @@ export default function ChatScreen() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -175,6 +177,7 @@ export default function ChatScreen() {
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 

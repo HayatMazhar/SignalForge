@@ -35,7 +35,7 @@ interface Signal {
 export default function AnalyticsScreen() {
   const { data: signals = [], isLoading } = useQuery<Signal[]>({
     queryKey: ['analytics-signals'],
-    queryFn: () => api.get('/signals?limit=200').then((r) => r.data),
+    queryFn: () => api.get('/signals?limit=200').then((r) => Array.isArray(r.data) ? r.data : []),
   });
 
   const stats = useMemo(() => {

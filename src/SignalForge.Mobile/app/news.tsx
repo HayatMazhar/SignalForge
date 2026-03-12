@@ -9,6 +9,7 @@ import {
   Linking,
   StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { newsApi } from '../src/api/stocks';
@@ -109,26 +110,28 @@ export default function NewsScreen() {
   }
 
   return (
-    <FlatList
-      style={styles.container}
-      contentContainerStyle={styles.list}
-      data={articles}
-      keyExtractor={(item) => item.id}
-      renderItem={renderArticle}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={C.accent}
-        />
-      }
-      ListEmptyComponent={
-        <View style={styles.centered}>
-          <Ionicons name="newspaper-outline" size={48} color={C.textMuted} />
-          <Text style={styles.emptyText}>No news articles available</Text>
-        </View>
-      }
-    />
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+      <FlatList
+        style={styles.container}
+        contentContainerStyle={styles.list}
+        data={articles}
+        keyExtractor={(item) => item.id}
+        renderItem={renderArticle}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={C.accent}
+          />
+        }
+        ListEmptyComponent={
+          <View style={styles.centered}>
+            <Ionicons name="newspaper-outline" size={48} color={C.textMuted} />
+            <Text style={styles.emptyText}>No news articles available</Text>
+          </View>
+        }
+      />
+    </SafeAreaView>
   );
 }
 

@@ -8,6 +8,7 @@ import {
   Alert,
   StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../src/stores/authStore';
@@ -51,6 +52,7 @@ export default function SettingsScreen() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Profile */}
       <View style={styles.card}>
@@ -158,6 +160,7 @@ export default function SettingsScreen() {
       {/* Version */}
       <Text style={styles.version}>SignalForge v{APP_VERSION}</Text>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 

@@ -101,7 +101,7 @@ export default function PricePredictorScreen() {
               <Text style={styles.headerLabel}>Current Price</Text>
             </View>
 
-            {data.predictions.map((p) => {
+            {(data.predictions ?? []).map((p) => {
               const dir = DIRECTION_CONFIG[p.direction] ?? DIRECTION_CONFIG.neutral;
               const isPositive = p.changePercent >= 0;
               return (
@@ -149,7 +149,7 @@ export default function PricePredictorScreen() {
             {data.factors && data.factors.length > 0 && (
               <View style={styles.factorsCard}>
                 <Text style={styles.factorsTitle}>Key Factors</Text>
-                {data.factors.map((f, i) => (
+                {(data.factors ?? []).map((f, i) => (
                   <View key={i} style={styles.factorRow}>
                     <Ionicons name="ellipse" size={6} color={C.purple} />
                     <Text style={styles.factorText}>{f}</Text>

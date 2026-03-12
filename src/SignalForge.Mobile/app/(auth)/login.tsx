@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, router } from 'expo-router';
 import { authApi } from '../../src/api/auth';
 import { useAuthStore } from '../../src/stores/authStore';
@@ -27,6 +28,7 @@ export default function Login() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['top', 'bottom']}>
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, backgroundColor: '#06060B' }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }}>
         <View style={{ alignItems: 'center', marginBottom: 32 }}>
@@ -64,5 +66,6 @@ export default function Login() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

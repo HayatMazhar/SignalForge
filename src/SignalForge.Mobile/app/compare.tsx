@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { stocksApi } from '../src/api/stocks';
@@ -153,6 +154,7 @@ export default function CompareScreen() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
     <View style={styles.container}>
       {/* Add symbol */}
       <View style={styles.addBar}>
@@ -192,6 +194,7 @@ export default function CompareScreen() {
         </ScrollView>
       )}
     </View>
+    </SafeAreaView>
   );
 }
 

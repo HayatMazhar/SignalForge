@@ -149,7 +149,7 @@ export default function NaturalQueryScreen() {
             <FlatList
               style={{ flex: 1 }}
               contentContainerStyle={styles.resultList}
-              data={data.results}
+              data={data.results ?? []}
               keyExtractor={(item, i) => `${item.symbol}-${i}`}
               renderItem={renderResult}
               ListEmptyComponent={

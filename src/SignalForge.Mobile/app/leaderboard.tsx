@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { socialApi } from '../src/api/stocks';
@@ -115,28 +116,30 @@ export default function LeaderboardScreen() {
   }
 
   return (
-    <FlatList
-      style={styles.container}
-      contentContainerStyle={styles.list}
-      data={traders}
-      keyExtractor={(item, index) => item.id ?? String(index)}
-      renderItem={renderTrader}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.accent} />
-      }
-      ListHeaderComponent={
-        <View style={styles.header}>
-          <Ionicons name="trophy" size={24} color={C.warning} />
-          <Text style={styles.headerTitle}>Top Traders</Text>
-        </View>
-      }
-      ListEmptyComponent={
-        <View style={styles.centered}>
-          <Ionicons name="people-outline" size={48} color={C.textMuted} />
-          <Text style={styles.emptyText}>Leaderboard data unavailable</Text>
-        </View>
-      }
-    />
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+      <FlatList
+        style={styles.container}
+        contentContainerStyle={styles.list}
+        data={traders}
+        keyExtractor={(item, index) => item.id ?? String(index)}
+        renderItem={renderTrader}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.accent} />
+        }
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <Ionicons name="trophy" size={24} color={C.warning} />
+            <Text style={styles.headerTitle}>Top Traders</Text>
+          </View>
+        }
+        ListEmptyComponent={
+          <View style={styles.centered}>
+            <Ionicons name="people-outline" size={48} color={C.textMuted} />
+            <Text style={styles.emptyText}>Leaderboard data unavailable</Text>
+          </View>
+        }
+      />
+    </SafeAreaView>
   );
 }
 

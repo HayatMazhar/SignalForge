@@ -92,6 +92,7 @@ export default function Dashboard() {
   }), [signals.length]);
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={['bottom']}>
     <ScrollView style={{ flex: 1, backgroundColor: C.bg }} contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.accent} />}>
 
@@ -404,7 +405,7 @@ export default function Dashboard() {
         <View style={st.secRow}><Text style={st.sec}>Market Pulse</Text><TouchableOpacity onPress={() => router.push('/insights')}><Text style={st.seeAll}>More →</Text></TouchableOpacity></View>
         <View style={st.pulseCard}>
           <View style={st.pulseLine} />
-          {(pulse as any[])?.slice(0, 5).map((e: any, i: number) => {
+          {((pulse as any[]) ?? []).slice(0, 5).map((e: any, i: number) => {
             const icon = e.type === 'Signal' ? 'flash' : e.type === 'Flow' ? 'bar-chart' : e.type === 'Alert' ? 'warning' : e.type === 'Economic' ? 'business' : 'newspaper';
             const iconBg = e.impact === 'Bullish' ? C.accent : e.impact === 'Bearish' ? C.danger : C.info;
             const mins = Math.floor(Math.random() * 120) + i * 15;
@@ -527,7 +528,7 @@ export default function Dashboard() {
             {gainers.map((m: any, i: number) => (
               <TouchableOpacity key={m.symbol} style={st.mR} onPress={() => router.push(`/stocks/${m.symbol}`)}>
                 <View style={st.mL}><Text style={st.mRk}>{i+1}</Text><Text style={st.mSym}>{m.symbol}</Text></View>
-                <Text style={[st.mCh, { color: C.accent }]}>+{m.changePercent.toFixed(1)}%</Text>
+                <Text style={[st.mCh, { color: C.accent }]}>+{(m.changePercent ?? 0).toFixed(1)}%</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -537,7 +538,7 @@ export default function Dashboard() {
             {losers.map((m: any, i: number) => (
               <TouchableOpacity key={m.symbol} style={st.mR} onPress={() => router.push(`/stocks/${m.symbol}`)}>
                 <View style={st.mL}><Text style={st.mRk}>{i+1}</Text><Text style={st.mSym}>{m.symbol}</Text></View>
-                <Text style={[st.mCh, { color: C.danger }]}>{m.changePercent.toFixed(1)}%</Text>
+                <Text style={[st.mCh, { color: C.danger }]}>{(m.changePercent ?? 0).toFixed(1)}%</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -588,7 +589,7 @@ export default function Dashboard() {
           <View style={st.secRow}><Text style={st.sec}>Market Pulse</Text><TouchableOpacity onPress={() => router.push('/insights')}><Text style={st.seeAll}>More →</Text></TouchableOpacity></View>
           <View style={st.pulseCard}>
             <View style={st.pulseLine} />
-            {(pulse as any[])?.slice(0, 5).map((e: any, i: number) => {
+            {((pulse as any[]) ?? []).slice(0, 5).map((e: any, i: number) => {
               const icon = e.type === 'Signal' ? 'flash' : e.type === 'Flow' ? 'bar-chart' : e.type === 'Alert' ? 'warning' : e.type === 'Economic' ? 'business' : 'newspaper';
               const iconBg = e.impact === 'Bullish' ? C.accent : e.impact === 'Bearish' ? C.danger : C.info;
               const mins = Math.floor(Math.random() * 120) + i * 15;
@@ -633,6 +634,7 @@ export default function Dashboard() {
         <View style={{ height: 20 }} />
       </>)}
     </ScrollView>
+    </SafeAreaView>
   );
 }
 

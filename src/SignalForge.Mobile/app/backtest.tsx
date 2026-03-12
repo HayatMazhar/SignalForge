@@ -9,6 +9,7 @@ import {
   StyleSheet,
   FlatList,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { backtestApi } from '../src/api/stocks';
@@ -74,6 +75,7 @@ export default function BacktestScreen() {
   const isPositiveReturn = (result?.returnPercent ?? 0) >= 0;
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Form */}
       <View style={styles.formCard}>
@@ -277,6 +279,7 @@ export default function BacktestScreen() {
         </>
       )}
     </ScrollView>
+    </SafeAreaView>
   );
 }
 

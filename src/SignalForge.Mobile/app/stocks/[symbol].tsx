@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
@@ -83,7 +84,8 @@ export default function StockDetailScreen() {
   return (
     <>
       <Stack.Screen options={{ headerTitle: symbol ?? '' }} />
-      <ScrollView
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+        <ScrollView
         style={styles.container}
         contentContainerStyle={styles.content}
         refreshControl={
@@ -234,7 +236,8 @@ export default function StockDetailScreen() {
         ) : (
           <Text style={styles.errorText}>Unable to load quote for {symbol}</Text>
         )}
-      </ScrollView>
+        </ScrollView>
+      </SafeAreaView>
     </>
   );
 }

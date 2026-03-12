@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useAuthStore } from '../../src/stores/authStore';
@@ -105,6 +106,7 @@ export default function MoreScreen() {
   const handleLogout = () => { logout(); router.replace('/(auth)/login'); };
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
     <ScrollView style={s.container} contentContainerStyle={s.content}>
       {/* Profile Card */}
       <TouchableOpacity style={s.profileCard} onPress={() => router.push('/settings')} activeOpacity={0.8}>
@@ -148,6 +150,7 @@ export default function MoreScreen() {
       <Text style={s.version}>SignalForge v1.0.0</Text>
       <View style={{ height: 100 }} />
     </ScrollView>
+    </SafeAreaView>
   );
 }
 

@@ -143,7 +143,7 @@ export default function PortfolioOptimizerScreen() {
             </View>
 
             <Text style={styles.sectionTitle}>Suggestions</Text>
-            {data.suggestions.map((s, i) => (
+            {(data.suggestions ?? []).map((s, i) => (
               <View key={`${s.symbol}-${i}`}>
                 {renderSuggestion({ item: s })}
               </View>

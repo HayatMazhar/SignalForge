@@ -26,7 +26,7 @@ const COLORS = {
   purple: '#A78BFA',
 };
 
-type FearGreed = { value?: number; classification?: string };
+type FearGreed = { score?: number; value?: number; label?: string; classification?: string };
 type TopMover = { symbol: string; name?: string; price?: number; changePercent?: number };
 type Signal = { id: string; symbol: string; type: string; confidenceScore?: number };
 type PulseEvent = { title?: string; description?: string; impact?: string };
@@ -51,7 +51,7 @@ export default function MorningBriefingScreen() {
       api.get<FearGreed>('/insights/fear-greed').then((r) => r.data).catch(() => null),
       api.get<TopMover[]>('/stocks/top-movers').then((r) => r.data).catch(() => []),
       api.get<Signal[]>('/signals', { params: { limit: 5 } }).then((r) => r.data).catch(() => []),
-      api.get<{ events?: PulseEvent[] }>('/insights/market-pulse').then((r) => r.data?.events ?? []).catch(() => []),
+      api.get<{ events?: PulseEvent[] }>('/insights/market-pulse').then((r) => Array.isArray(r.data) ? r.data : r.data?.events ?? []).catch(() => []),
     ])
       .then(([fg, movers, sig, pulse]) => {
         setFearGreed(fg);
@@ -64,7 +64,7 @@ export default function MorningBriefingScreen() {
 
   const aiInsight = AI_INSIGHTS[new Date().getDate() % AI_INSIGHTS.length];
   const today = format(new Date(), 'EEEE, MMMM d');
-  const score = fearGreed?.value ?? 50;
+  const score = fearGreed?.score ?? fearGreed?.value ?? 50;
   const status = score < 30 ? 'Fear' : score > 70 ? 'Greed' : 'Neutral';
 
   const handleShare = async () => {
@@ -110,7 +110,7 @@ export default function MorningBriefingScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Fear & Greed Index</Text>
           <Text style={styles.scoreNumber}>{score}</Text>
-          <Text style={styles.scoreLabel}>{fearGreed?.classification || 'Neutral'}</Text>
+          <Text style={styles.scoreLabel}>{fearGreed?.label ?? fearGreed?.classification ?? 'Neutral'}</Text>
           <View style={styles.scoreBar}>
             <View
               style={[

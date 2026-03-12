@@ -1,4 +1,5 @@
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { adminApi } from '../../src/api/admin';
@@ -24,12 +25,13 @@ export default function RoleManagement() {
     );
 
   return (
-    <FlatList
-      style={s.container}
-      contentContainerStyle={s.listContent}
-      data={roles as AdminRole[]}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+      <FlatList
+        style={s.container}
+        contentContainerStyle={s.listContent}
+        data={roles as AdminRole[]}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
         <View style={s.card}>
           <View style={s.cardHeader}>
             <Text style={s.roleName}>{item.name}</Text>
@@ -51,7 +53,8 @@ export default function RoleManagement() {
           ))}
         </View>
       )}
-    />
+      />
+    </SafeAreaView>
   );
 }
 

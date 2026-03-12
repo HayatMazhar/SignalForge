@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { adminApi } from '../../src/api/admin';
@@ -63,12 +64,13 @@ export default function UserManagement() {
     );
 
   return (
-    <FlatList
-      style={s.container}
-      contentContainerStyle={s.listContent}
-      data={users as AdminUser[]}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => {
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+      <FlatList
+        style={s.container}
+        contentContainerStyle={s.listContent}
+        data={users as AdminUser[]}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => {
         const isLocked = item.isLocked ?? !!item.lockoutEnd;
         return (
           <View style={s.card}>
@@ -104,7 +106,8 @@ export default function UserManagement() {
           </View>
         );
       }}
-    />
+      />
+    </SafeAreaView>
   );
 }
 

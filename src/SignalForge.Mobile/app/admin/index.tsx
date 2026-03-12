@@ -1,4 +1,5 @@
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,7 +12,8 @@ export default function AdminDashboard() {
   if (isLoading) return <View style={s.center}><ActivityIndicator color="#00FF94" size="large" /></View>;
 
   return (
-    <ScrollView style={s.container}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
+      <ScrollView style={s.container}>
       <View style={s.header}>
         <Ionicons name="shield" size={28} color="#A78BFA" />
         <Text style={s.title}>Admin Dashboard</Text>
@@ -43,7 +45,8 @@ export default function AdminDashboard() {
           </View>
         ))}
       </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

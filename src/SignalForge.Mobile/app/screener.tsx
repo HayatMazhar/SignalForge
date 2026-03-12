@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,6 +30,7 @@ export default function ScreenerScreen() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#06060B' }} edges={['bottom']}>
     <KeyboardAvoidingView
       style={s.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -87,6 +89,7 @@ export default function ScreenerScreen() {
         />
       )}
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
