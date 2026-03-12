@@ -92,10 +92,10 @@ export default function Alerts() {
             <div key={a.id} className="bg-surface border border-border rounded-xl p-4 flex items-center justify-between hover:bg-surface-light transition-colors">
               <div className="flex items-center gap-4">
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                  (a.alertType === 'Price' || a.alertType === 0) ? 'bg-blue-400/10' : (a.alertType === 'Signal' || a.alertType === 1) ? 'bg-accent/10' : 'bg-purple-400/10'
+                  (String(a.alertType) === 'Price' || Number(a.alertType) === 0) ? 'bg-blue-400/10' : (String(a.alertType) === 'Signal' || Number(a.alertType) === 1) ? 'bg-accent/10' : 'bg-purple-400/10'
                 }`}>
-                  {(a.alertType === 'Price' || a.alertType === 0) ? <TrendingUp className="w-5 h-5 text-blue-400" /> :
-                   (a.alertType === 'Signal' || a.alertType === 1) ? <Zap className="w-5 h-5 text-accent" /> :
+                  {(String(a.alertType) === 'Price' || Number(a.alertType) === 0) ? <TrendingUp className="w-5 h-5 text-blue-400" /> :
+                   (String(a.alertType) === 'Signal' || Number(a.alertType) === 1) ? <Zap className="w-5 h-5 text-accent" /> :
                    <Newspaper className="w-5 h-5 text-purple-400" />}
                 </div>
                 <div>

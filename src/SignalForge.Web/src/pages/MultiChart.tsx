@@ -186,8 +186,8 @@ export default function MultiChart() {
                         fontSize: 11,
                         color: '#F0F4F8',
                       }}
-                      formatter={(v: number) => [`$${v.toFixed(2)}`, 'Price']}
-                      labelFormatter={(label: string) => label}
+                      formatter={(v: number | undefined) => [`$${(v ?? 0).toFixed(2)}`, 'Price']}
+                      labelFormatter={(label) => String(label)}
                     />
                     <Area
                       type="monotone"

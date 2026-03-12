@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
-  ClipboardList, LogIn, Radar, Star, Bell, BookOpen, Settings, Filter,
-  Monitor, Smartphone, Globe, TrendingUp, Shield, Trash2, ChevronDown,
+  ClipboardList, LogIn, Radar, Star, Bell, Settings, Filter,
+  Monitor, Globe, TrendingUp, Shield, Trash2, ChevronDown,
 } from 'lucide-react';
 
 interface ActivityEntry {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Webhook, Plus, Trash2, X, Send, Check, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Webhook, Plus, Trash2, X, Send, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useToastStore } from '../components/common/Toast';
 
 interface WebhookConfig {

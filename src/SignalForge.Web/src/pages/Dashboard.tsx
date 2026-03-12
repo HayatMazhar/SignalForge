@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp, TrendingDown, Activity, Zap, Eye, BarChart3, ArrowRight, Clock, Globe, Flame, Shield, Target, Sparkles } from 'lucide-react';
-import { AreaChart, Area, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts';
+import { AreaChart, Area, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { stocksApi } from '../api/stocks';
 import { signalsApi } from '../api/signals';
 import { watchlistApi } from '../api/watchlist';
@@ -14,7 +14,7 @@ import { usePriceStore } from '../stores/priceStore';
 import { useAuthStore } from '../stores/authStore';
 import { getSignalLabel } from '../utils/signalType';
 import SignalCard from '../components/SignalCard';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+
 
 const MINI_CHART_DATA = (seed: number, trend: number) => Array.from({ length: 20 }, (_, i) => {
   const rng = ((seed * (i + 1) * 9301 + 49297) % 233280) / 233280;

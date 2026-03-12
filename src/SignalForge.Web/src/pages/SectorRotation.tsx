@@ -118,7 +118,7 @@ export default function SectorRotation() {
             />
             <Tooltip
               contentStyle={{ backgroundColor: '#0C0F1A', border: '1px solid #1A1F35', borderRadius: 8, fontSize: 11, color: '#F0F4F8' }}
-              formatter={(v: number) => [`${v >= 0 ? '+' : ''}${v.toFixed(2)}%`, 'Return']}
+              formatter={(v: number | undefined) => [`${(v ?? 0) >= 0 ? '+' : ''}${(v ?? 0).toFixed(2)}%`, 'Return']}
             />
             <Bar dataKey="return" radius={[0, 4, 4, 0]} barSize={20}>
               {chartData.map((entry, i) => (
@@ -213,7 +213,7 @@ export default function SectorRotation() {
               </Pie>
               <Tooltip
                 contentStyle={{ backgroundColor: '#0C0F1A', border: '1px solid #1A1F35', borderRadius: 8, fontSize: 11, color: '#F0F4F8' }}
-                formatter={(v: number) => [`${v}%`, 'Weight']}
+                formatter={(v: number | undefined) => [`${v ?? 0}%`, 'Weight']}
               />
             </PieChart>
           </ResponsiveContainer>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, User, Shield, Bell, CreditCard, Check, Sun, Moon, Monitor, Activity, TrendingUp, Zap, BarChart3, Star, Palette, Globe, Lock, Smartphone, Mail, Volume2, Clock, Eye, ChevronRight, LogOut } from 'lucide-react';
+import { User, Shield, Bell, CreditCard, Check, Sun, Moon, Activity, TrendingUp, Zap, BarChart3, Star, Palette, Globe, Lock, Smartphone, Mail, Volume2, Clock, Eye, ChevronRight, LogOut } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { useThemeStore } from '../stores/themeStore';
 import { useNavigate } from 'react-router-dom';
@@ -385,7 +385,7 @@ function PreferenceRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ThemeCard({ mode, active, onClick, preview, label, description }: { mode: ThemeMode; active: boolean; onClick: () => void; preview: React.ReactNode; label: string; description: string }) {
+function ThemeCard({ mode: _mode, active, onClick, preview, label, description }: { mode: ThemeMode; active: boolean; onClick: () => void; preview: React.ReactNode; label: string; description: string }) {
   return (
     <button onClick={onClick}
       className={`p-4 rounded-2xl border-2 transition-all text-left ${active ? 'border-accent bg-accent/5 shadow-lg' : 'border-border hover:border-text-muted'}`}>

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Trophy, Medal, TrendingUp, Users, Target } from 'lucide-react';
+import { Trophy, Medal, Users } from 'lucide-react';
 import { socialApi } from '../api/backtest';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 

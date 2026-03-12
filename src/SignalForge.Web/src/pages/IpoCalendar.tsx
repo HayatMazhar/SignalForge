@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Rocket, Calendar, Building2, DollarSign } from 'lucide-react';
+import { Rocket, Calendar, Building2 } from 'lucide-react';
 import api from '../api/client';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 

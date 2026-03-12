@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import { X, TrendingUp, TrendingDown, Bell, AlertTriangle } from 'lucide-react';
 import { create } from 'zustand';
 

@@ -136,8 +136,8 @@ export default function SentimentTrend() {
                   tickFormatter={(v: number) => v.toFixed(1)} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#0C0F1A', border: '1px solid #1A1F35', borderRadius: 8, fontSize: 11, color: '#F0F4F8' }}
-                  formatter={(v: number) => [v.toFixed(3), 'Sentiment']}
-                  labelFormatter={(l: string) => new Date(l).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                  formatter={(v: number | undefined) => [(v ?? 0).toFixed(3), 'Sentiment']}
+                  labelFormatter={(l) => new Date(String(l)).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                 />
                 <ReferenceLine y={0} stroke="#5B6378" strokeDasharray="4 4" />
                 <Area type="monotone" dataKey="score" stroke="#00FF94" fill="url(#sentPos)" strokeWidth={2}

@@ -195,7 +195,7 @@ export default function PricePredictor() {
                 <YAxis tick={{ fill: '#5B6378', fontSize: 10 }} axisLine={false} tickLine={false}
                   tickFormatter={(v: number) => `$${v.toFixed(0)}`} domain={['auto', 'auto']} />
                 <Tooltip contentStyle={{ backgroundColor: '#0C0F1A', border: '1px solid #1A1F35', borderRadius: 8, fontSize: 11, color: '#F0F4F8' }}
-                  formatter={(v: number) => [`$${v.toFixed(2)}`, 'Price']} />
+                  formatter={(v: number | undefined) => [`$${(v ?? 0).toFixed(2)}`, 'Price']} />
                 <ReferenceLine y={result.currentPrice} stroke="#5B6378" strokeDasharray="4 4" label={{ value: 'Current', fill: '#5B6378', fontSize: 9 }} />
                 <Area type="monotone" dataKey="price" stroke="#00FF94" fill="url(#predGrad)" strokeWidth={2} dot={{ fill: '#00FF94', r: 4 }} />
               </AreaChart>

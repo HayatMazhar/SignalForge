@@ -16,8 +16,6 @@ interface DiscussionData {
 
 const STORAGE_KEY = 'signalforge-discussions';
 
-const SEED_USERS = ['TraderJoe', 'AlphaHunter', 'DividendKing', 'SwingQueen', 'QuantBot'];
-
 const SEED_DATA: DiscussionData = {
   AAPL: [
     { id: '1', user: 'TraderJoe', message: 'Apple Services revenue keeps surprising to the upside. Long-term bull thesis is intact.', timestamp: '2026-02-28T14:30:00Z', likes: 12, likedByMe: false },

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { FlaskConical, Play, TrendingUp, TrendingDown, Target, Shield, BarChart3, Trophy } from 'lucide-react';
-import { backtestApi, type BacktestResult, type Strategy } from '../api/backtest';
+import { backtestApi } from '../api/backtest';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
 export default function Backtest() {
@@ -109,7 +109,7 @@ export default function Backtest() {
                 <YAxis tick={{ fill: '#5B6378', fontSize: 9 }} axisLine={false} tickLine={false}
                   tickFormatter={(v: number) => `$${(v / 1000).toFixed(1)}k`} />
                 <Tooltip contentStyle={{ backgroundColor: '#0C0F1A', border: '1px solid #1A1F35', borderRadius: 8, fontSize: 11, color: '#F0F4F8' }}
-                  formatter={(v: number) => [`$${v.toLocaleString()}`, 'Equity']} />
+                  formatter={(v: number | undefined) => [`$${(v ?? 0).toLocaleString()}`, 'Equity']} />
                 <Area type="monotone" dataKey="equity" stroke={result.totalReturn >= 0 ? '#00FF94' : '#FF3B5C'} fill="url(#eqGrad)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>

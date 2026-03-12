@@ -59,7 +59,7 @@ export default function PortfolioChart({ positions }: PortfolioChartProps) {
             tickFormatter={(v: number) => `$${(v / 1000).toFixed(1)}k`} />
           <Tooltip
             contentStyle={{ backgroundColor: '#0F172A', border: '1px solid #1E293B', borderRadius: '8px', color: '#F1F5F9', fontSize: 12 }}
-            formatter={(value: number) => [`$${value.toLocaleString()}`, 'Value']}
+            formatter={(value: number | undefined) => [`$${(value ?? 0).toLocaleString()}`, 'Value']}
           />
           <Area type="monotone" dataKey="value" stroke={change >= 0 ? '#00FF94' : '#EF4444'} fill="url(#portfolioGrad)" strokeWidth={2} />
         </AreaChart>
