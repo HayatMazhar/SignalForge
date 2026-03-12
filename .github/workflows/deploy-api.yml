@@ -45,4 +45,15 @@ jobs:
             az containerapp update \
               --name signalforge-api \
               --resource-group SignalForge-RG \
-              --image ${{ secrets.ACR_LOGIN_SERVER }}/signalforge-api:${{ github.sha }}
+              --image ${{ secrets.ACR_LOGIN_SERVER }}/signalforge-api:${{ github.sha }} \
+              --set-env-vars \
+                "TextAnalytics__Endpoint=${{ secrets.TEXT_ANALYTICS_ENDPOINT }}" \
+                "TextAnalytics__ApiKey=${{ secrets.TEXT_ANALYTICS_KEY }}" \
+                "AzureSearch__Endpoint=${{ secrets.AZURE_SEARCH_ENDPOINT }}" \
+                "AzureSearch__ApiKey=${{ secrets.AZURE_SEARCH_KEY }}" \
+                "Speech__ApiKey=${{ secrets.SPEECH_KEY }}" \
+                "Speech__Region=swedencentral" \
+                "ContentSafety__Endpoint=${{ secrets.CONTENT_SAFETY_ENDPOINT }}" \
+                "ContentSafety__ApiKey=${{ secrets.CONTENT_SAFETY_KEY }}" \
+                "Translator__ApiKey=${{ secrets.TRANSLATOR_KEY }}" \
+                "Translator__Region=swedencentral"
