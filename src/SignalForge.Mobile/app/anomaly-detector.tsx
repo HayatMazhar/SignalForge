@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,10 +8,12 @@ import {
   ActivityIndicator,
   StyleSheet,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../src/api/client';
 
 const COLORS = {
@@ -44,6 +46,15 @@ type AnomaliesResponse = {
 export default function AnomalyDetectorScreen() {
   const [symbol, setSymbol] = useState('');
   const [scanSymbol, setScanSymbol] = useState<string | null>(null);
+  const [scanHistory, setScanHistory] = useState<string[]>([]);
+  const [scanTime, setScanTime] = useState<Date | null>(null);
+  const HISTORY_KEY = 'sf-anomaly-history';
+
+  useEffect(() => {
+    AsyncStorage.getItem(HISTORY_KEY).then(raw => {
+      if (raw) setScanHistory(JSON.parse(raw));
+    }).catch(() => {});
+  }, []);
 
   const {
     data,
@@ -68,6 +79,10 @@ export default function AnomalyDetectorScreen() {
       return;
     }
     setScanSymbol(s);
+    setScanTime(new Date());
+    const newHistory = [s, ...scanHistory.filter(h => h !== s)].slice(0, 5);
+    setScanHistory(newHistory);
+    AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(newHistory)).catch(() => {});
   };
 
   const anomalies = data?.anomalies ?? [];
@@ -116,14 +131,39 @@ export default function AnomalyDetectorScreen() {
         </TouchableOpacity>
       </View>
 
+      {scanHistory.length > 0 && (
+        <View style={{ paddingHorizontal: 16, marginBottom: 12 }}>
+          <Text style={{ fontSize: 11, color: COLORS.textMuted, marginBottom: 6 }}>Recent Scans</Text>
+          <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
+            {scanHistory.map(h => (
+              <TouchableOpacity key={h} onPress={() => setSymbol(h)}
+                style={{ backgroundColor: COLORS.surface, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10, borderWidth: 1, borderColor: COLORS.border }}>
+                <Text style={{ fontSize: 12, color: COLORS.textPrimary, fontWeight: '600' }}>{h}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
+
       {scanSymbol && !isLoading && (
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={isFetching && !isLoading} onRefresh={() => refetch()} tintColor={COLORS.accent} />
+          }
         >
           {data && (
             <>
+              {scanTime && (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+                  <Ionicons name="time-outline" size={13} color={COLORS.textMuted} />
+                  <Text style={{ fontSize: 11, color: COLORS.textMuted }}>
+                    Scanned at {scanTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  </Text>
+                </View>
+              )}
               <View style={styles.riskCard}>
                 <Text style={styles.riskLabel}>Overall Risk</Text>
                 <View

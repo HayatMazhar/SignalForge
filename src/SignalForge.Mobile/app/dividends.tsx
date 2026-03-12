@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -39,6 +39,7 @@ type DividendItem = {
 
 export default function DividendsScreen() {
   const [refreshing, setRefreshing] = useState(false);
+  const [sortBy, setSortBy] = useState<'yield' | 'years' | 'symbol'>('yield');
 
   const { data = [], isLoading, refetch } = useQuery({
     queryKey: ['dividends'],
@@ -58,6 +59,18 @@ export default function DividendsScreen() {
     await refetch();
     setRefreshing(false);
   }, [refetch]);
+
+  const sortedData = useMemo(() => {
+    const items = Array.isArray(data) ? [...data] : [];
+    return items.sort((a: any, b: any) => {
+      if (sortBy === 'yield') return (b.yield ?? 0) - (a.yield ?? 0);
+      if (sortBy === 'years') return (b.consecutiveYears ?? 0) - (a.consecutiveYears ?? 0);
+      return (a.symbol ?? '').localeCompare(b.symbol ?? '');
+    });
+  }, [data, sortBy]);
+
+  const avgYield = sortedData.length > 0 ? (sortedData.reduce((sum: number, d: any) => sum + (d.yield ?? 0), 0) / sortedData.length).toFixed(1) : '0';
+  const topYieldSymbol = sortedData.length > 0 ? sortedData.reduce((best: any, d: any) => (d.yield ?? 0) > (best.yield ?? 0) ? d : best, sortedData[0]).symbol ?? '—' : '—';
 
   const renderItem = ({ item }: { item: DividendItem }) => (
     <TouchableOpacity
@@ -111,9 +124,39 @@ export default function DividendsScreen() {
       <FlatList
         style={{ flex: 1 }}
         contentContainerStyle={styles.list}
-        data={data}
+        data={sortedData}
         keyExtractor={(item, i) => `${item.symbol}-${i}`}
         renderItem={renderItem}
+        ListHeaderComponent={
+          <>
+            {sortedData.length > 0 && (
+              <View style={{ flexDirection: 'row', gap: 10, paddingHorizontal: 16, marginBottom: 12 }}>
+                <View style={{ flex: 1, backgroundColor: '#0C0F1A', borderRadius: 12, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#1A1F35' }}>
+                  <Text style={{ fontSize: 18, fontWeight: '900', color: '#F0F4F8' }}>{sortedData.length}</Text>
+                  <Text style={{ fontSize: 9, color: '#5B6378', textTransform: 'uppercase' }}>Stocks</Text>
+                </View>
+                <View style={{ flex: 1, backgroundColor: '#0C0F1A', borderRadius: 12, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#1A1F35' }}>
+                  <Text style={{ fontSize: 18, fontWeight: '900', color: '#00FF94' }}>{avgYield}%</Text>
+                  <Text style={{ fontSize: 9, color: '#5B6378', textTransform: 'uppercase' }}>Avg Yield</Text>
+                </View>
+                <View style={{ flex: 1, backgroundColor: '#0C0F1A', borderRadius: 12, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#1A1F35' }}>
+                  <Text style={{ fontSize: 18, fontWeight: '900', color: '#FFB020' }}>{topYieldSymbol}</Text>
+                  <Text style={{ fontSize: 9, color: '#5B6378', textTransform: 'uppercase' }}>Top Yield</Text>
+                </View>
+              </View>
+            )}
+            <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 16, marginBottom: 12 }}>
+              {(['yield', 'years', 'symbol'] as const).map(s => (
+                <TouchableOpacity key={s} onPress={() => setSortBy(s)}
+                  style={{ paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12, backgroundColor: sortBy === s ? '#00FF9420' : '#0C0F1A', borderWidth: 1, borderColor: sortBy === s ? '#00FF94' : '#1A1F35' }}>
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: sortBy === s ? '#00FF94' : '#5B6378' }}>
+                    {s === 'yield' ? 'By Yield' : s === 'years' ? 'By Streak' : 'By Symbol'}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </>
+        }
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.accent} />
         }

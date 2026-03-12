@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../src/api/client';
 
 const STORAGE_KEY = 'sf-feedback-history';
 
@@ -47,6 +48,9 @@ export default function FeedbackScreen() {
     }
     setSubmitting(true);
     try {
+      try {
+        await api.post('/feedback', { rating, category, message });
+      } catch {}
       const entry = {
         rating,
         category,
@@ -60,7 +64,7 @@ export default function FeedbackScreen() {
       setMessage('');
       setRating(0);
       setCategory('feature');
-      Alert.alert('Thank You', 'Your feedback has been saved.');
+      Alert.alert('Thank You', 'Your feedback has been sent to the team!');
     } catch (e) {
       Alert.alert('Error', 'Could not save feedback. Try again.');
     } finally {

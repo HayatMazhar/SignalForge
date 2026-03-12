@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
+  TextInput,
   FlatList,
   TouchableOpacity,
   RefreshControl,
@@ -40,6 +41,7 @@ type EarningsItem = {
 export default function EarningsScreen() {
   const [filter, setFilter] = useState<'upcoming' | 'past'>('upcoming');
   const [refreshing, setRefreshing] = useState(false);
+  const [search, setSearch] = useState('');
 
   const { data = [], isLoading, refetch } = useQuery({
     queryKey: ['earnings'],
@@ -56,10 +58,15 @@ export default function EarningsScreen() {
   }, [refetch]);
 
   const now = new Date();
+  const upcomingCount = data.filter(e => new Date(e.date) >= now).length;
+  const pastCount = data.filter(e => new Date(e.date) < now).length;
   const filtered = data.filter((e) => {
     const d = new Date(e.date);
     return filter === 'upcoming' ? d >= now : d < now;
   });
+  const searchFiltered = filtered.filter((e) =>
+    !search || e.symbol.toUpperCase().includes(search.toUpperCase())
+  );
 
   const isPast = (item: EarningsItem) => new Date(item.date) < now;
 
@@ -132,23 +139,41 @@ export default function EarningsScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
+      <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
+        <TextInput
+          style={{ backgroundColor: C.surface, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, color: C.textPrimary, borderWidth: 1, borderColor: C.border, marginBottom: 12 }}
+          placeholder="Search by symbol..."
+          placeholderTextColor={C.textMuted}
+          value={search}
+          onChangeText={setSearch}
+          autoCapitalize="characters"
+        />
+      </View>
       <View style={styles.filterRow}>
-        {(['upcoming', 'past'] as const).map((f) => (
-          <TouchableOpacity
-            key={f}
-            style={[styles.filterBtn, filter === f && styles.filterActive]}
-            onPress={() => setFilter(f)}
-          >
-            <Text style={[styles.filterText, filter === f && styles.filterTextActive]}>
-              {f === 'upcoming' ? 'Upcoming' : 'Past'}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        {(['upcoming', 'past'] as const).map((f) => {
+          const count = f === 'upcoming' ? upcomingCount : pastCount;
+          return (
+            <TouchableOpacity
+              key={f}
+              style={[styles.filterBtn, filter === f && styles.filterActive]}
+              onPress={() => setFilter(f)}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Text style={[styles.filterText, filter === f && styles.filterTextActive]}>
+                  {f === 'upcoming' ? 'Upcoming' : 'Past'}
+                </Text>
+                <View style={{ backgroundColor: filter === f ? C.accent + '30' : C.border, borderRadius: 10, paddingHorizontal: 7, paddingVertical: 1, minWidth: 22, alignItems: 'center' }}>
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: filter === f ? C.accent : C.textMuted }}>{count}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
       </View>
       <FlatList
         style={{ flex: 1 }}
         contentContainerStyle={styles.list}
-        data={filtered}
+        data={searchFiltered}
         keyExtractor={(item, i) => `${item.symbol}-${item.date}-${i}`}
         renderItem={renderItem}
         refreshControl={

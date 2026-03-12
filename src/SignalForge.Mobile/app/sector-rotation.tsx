@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
+  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
+import { marketApi } from '../src/api/stocks';
 
 const COLORS = {
   bg: '#06060B',
@@ -20,19 +24,6 @@ const COLORS = {
   info: '#38BDF8',
   purple: '#A78BFA',
 };
-
-const SECTORS = [
-  { name: 'Technology', w1: 2.1, m1: 5.2, m3: 12.4 },
-  { name: 'Healthcare', w1: -0.5, m1: 1.8, m3: 4.2 },
-  { name: 'Financials', w1: 1.2, m1: 3.1, m3: 8.9 },
-  { name: 'Consumer Disc', w1: -1.4, m1: 0.3, m3: 2.1 },
-  { name: 'Industrials', w1: 0.8, m1: 2.5, m3: 6.7 },
-  { name: 'Energy', w1: 3.2, m1: 6.8, m3: 15.2 },
-  { name: 'Utilities', w1: -0.2, m1: 1.1, m3: 3.5 },
-];
-
-const ROTATE_INTO = ['Energy', 'Technology'];
-const ROTATE_OUT = ['Consumer Disc'];
 
 function Bar({ value, max }: { value: number; max: number }) {
   const isPositive = value >= 0;
@@ -53,10 +44,27 @@ function Bar({ value, max }: { value: number; max: number }) {
 }
 
 export default function SectorRotationScreen() {
-  const maxAbs = Math.max(
-    ...SECTORS.flatMap((s) => [Math.abs(s.w1), Math.abs(s.m1), Math.abs(s.m3)]),
-    1
-  );
+  const [refreshing, setRefreshing] = useState(false);
+  const { data: sectors = [], isLoading, refetch } = useQuery({
+    queryKey: ['sectors'],
+    queryFn: () => marketApi.getSectors(),
+  });
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
+  const { rotateInto, rotateOut, maxAbs } = useMemo(() => {
+    if (sectors.length === 0) return { rotateInto: [], rotateOut: [], maxAbs: 1 };
+    const sorted = [...sectors].sort((a: any, b: any) => b.changePercent - a.changePercent);
+    return {
+      rotateInto: sorted.slice(0, 2).map((s: any) => s.name),
+      rotateOut: sorted.slice(-2).map((s: any) => s.name),
+      maxAbs: Math.max(...sectors.map((s: any) => Math.abs(s.changePercent)), 1),
+    };
+  }, [sectors]);
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -64,72 +72,58 @@ export default function SectorRotationScreen() {
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#00FF94" />
+        }
       >
-        {/* AI Recommendations */}
-        <View style={styles.recommendRow}>
-          <View style={[styles.recommendCard, styles.rotateIn]}>
-            <Ionicons name="arrow-up-circle" size={24} color={COLORS.accent} />
-            <Text style={styles.recommendTitle}>Rotate Into</Text>
-            {ROTATE_INTO.map((s) => (
-              <Text key={s} style={styles.recommendItem}>{s}</Text>
-            ))}
-          </View>
-          <View style={[styles.recommendCard, styles.rotateOut]}>
-            <Ionicons name="arrow-down-circle" size={24} color={COLORS.danger} />
-            <Text style={styles.recommendTitle}>Rotate Out Of</Text>
-            {ROTATE_OUT.map((s) => (
-              <Text key={s} style={styles.recommendItem}>{s}</Text>
-            ))}
-          </View>
-        </View>
-
-        <Text style={styles.sectionTitle}>Sector Performance</Text>
-        {SECTORS.map((s) => (
-          <View key={s.name} style={styles.sectorCard}>
-            <Text style={styles.sectorName}>{s.name}</Text>
-            <View style={styles.barsRow}>
-              <View style={styles.barBlock}>
-                <Text style={styles.barLabel}>1W</Text>
-                <Bar value={s.w1} max={maxAbs} />
-                <Text
-                  style={[
-                    styles.barValue,
-                    { color: s.w1 >= 0 ? COLORS.accent : COLORS.danger },
-                  ]}
-                >
-                  {s.w1 >= 0 ? '+' : ''}
-                  {s.w1.toFixed(1)}%
-                </Text>
+        {isLoading ? (
+          <ActivityIndicator size="large" color={COLORS.accent} style={{ marginTop: 48 }} />
+        ) : (
+          <>
+            {/* AI Recommendations */}
+            <View style={styles.recommendRow}>
+              <View style={[styles.recommendCard, styles.rotateIn]}>
+                <Ionicons name="arrow-up-circle" size={24} color={COLORS.accent} />
+                <Text style={styles.recommendTitle}>Rotate Into</Text>
+                {rotateInto.map((s: string) => (
+                  <Text key={s} style={styles.recommendItem}>{s}</Text>
+                ))}
               </View>
-              <View style={styles.barBlock}>
-                <Text style={styles.barLabel}>1M</Text>
-                <Bar value={s.m1} max={maxAbs} />
-                <Text
-                  style={[
-                    styles.barValue,
-                    { color: s.m1 >= 0 ? COLORS.accent : COLORS.danger },
-                  ]}
-                >
-                  {s.m1 >= 0 ? '+' : ''}
-                  {s.m1.toFixed(1)}%
-                </Text>
-              </View>
-              <View style={styles.barBlock}>
-                <Text style={styles.barLabel}>3M</Text>
-                <Bar value={s.m3} max={maxAbs} />
-                <Text
-                  style={[
-                    styles.barValue,
-                    { color: s.m3 >= 0 ? COLORS.accent : COLORS.danger },
-                  ]}
-                >
-                  {s.m3 >= 0 ? '+' : ''}
-                  {s.m3.toFixed(1)}%
-                </Text>
+              <View style={[styles.recommendCard, styles.rotateOut]}>
+                <Ionicons name="arrow-down-circle" size={24} color={COLORS.danger} />
+                <Text style={styles.recommendTitle}>Rotate Out Of</Text>
+                {rotateOut.map((s: string) => (
+                  <Text key={s} style={styles.recommendItem}>{s}</Text>
+                ))}
               </View>
             </View>
-          </View>
-        ))}
+
+            <Text style={styles.sectionTitle}>Sector Performance</Text>
+            {sectors.map((s: any) => {
+              const pct = s.changePercent ?? 0;
+              return (
+                <View key={s.name} style={styles.sectorCard}>
+                  <Text style={styles.sectorName}>{s.name}</Text>
+                  <View style={styles.barsRow}>
+                    <View style={styles.barBlock}>
+                      <Text style={styles.barLabel}>Current</Text>
+                      <Bar value={pct} max={maxAbs} />
+                      <Text
+                        style={[
+                          styles.barValue,
+                          { color: pct >= 0 ? COLORS.accent : COLORS.danger },
+                        ]}
+                      >
+                        {pct >= 0 ? '+' : ''}
+                        {pct.toFixed(1)}%
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              );
+            })}
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

@@ -133,7 +133,16 @@ export default function PricePredictorScreen() {
                   <View style={styles.predBody}>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.predLabel}>Predicted Price</Text>
-                      <Text style={styles.predPrice}>${(p.predictedPrice ?? 0).toFixed(2)}</Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                        <Ionicons
+                          name={isPositive ? 'trending-up' : 'trending-down'}
+                          size={20}
+                          color={isPositive ? C.accent : C.danger}
+                        />
+                        <Text style={[styles.predPrice, { color: isPositive ? C.accent : C.danger }]}>
+                          ${(p.predictedPrice ?? 0).toFixed(2)}
+                        </Text>
+                      </View>
                     </View>
                     <View style={{ alignItems: 'flex-end' }}>
                       <Text style={styles.predLabel}>Change</Text>

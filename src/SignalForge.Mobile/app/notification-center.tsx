@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -6,12 +6,15 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useQuery } from '@tanstack/react-query';
+import { signalsApi, alertsApi } from '../src/api/stocks';
 
-const STORAGE_KEY = 'sf-notifications';
+const READ_IDS_KEY = 'sf-notifications-read';
 
 const COLORS = {
   bg: '#06060B',
@@ -34,14 +37,6 @@ interface Notification {
   timestamp: string;
   unread: boolean;
 }
-
-const SAMPLE_NOTIFICATIONS: Notification[] = [
-  { id: '1', type: 'signal', title: 'New Buy Signal', message: 'AAPL hit a strong buy signal with 92% confidence.', timestamp: new Date(Date.now() - 5 * 60000).toISOString(), unread: true },
-  { id: '2', type: 'alert', title: 'Price Alert', message: 'TSLA crossed above $250 target.', timestamp: new Date(Date.now() - 15 * 60000).toISOString(), unread: true },
-  { id: '3', type: 'news', title: 'Market Update', message: 'Fed signals potential rate cut in Q2.', timestamp: new Date(Date.now() - 60 * 60000).toISOString(), unread: false },
-  { id: '4', type: 'signal', title: 'Sell Signal', message: 'NVDA triggered a sell signal based on RSI.', timestamp: new Date(Date.now() - 120 * 60000).toISOString(), unread: true },
-  { id: '5', type: 'news', title: 'Earnings Report', message: 'MSFT reported strong cloud revenue growth.', timestamp: new Date(Date.now() - 180 * 60000).toISOString(), unread: false },
-];
 
 type FilterType = 'all' | 'signal' | 'alert' | 'news';
 
@@ -73,54 +68,82 @@ function getColorForType(type: string): string {
 }
 
 export default function NotificationCenterScreen() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<FilterType>('all');
 
-  const loadNotifications = useCallback(async () => {
-    try {
-      const raw = await AsyncStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Notification[];
-        setNotifications(parsed);
-      } else {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(SAMPLE_NOTIFICATIONS));
-        setNotifications(SAMPLE_NOTIFICATIONS);
-      }
-    } catch {
-      setNotifications(SAMPLE_NOTIFICATIONS);
-    }
-  }, []);
+  const { data: signals, isLoading: signalsLoading } = useQuery({
+    queryKey: ['signals-notifications'],
+    queryFn: () => signalsApi.getSignals(undefined, 20),
+  });
 
-  const saveNotifications = useCallback(async (data: Notification[]) => {
-    setNotifications(data);
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, []);
+  const { data: alerts, isLoading: alertsLoading } = useQuery({
+    queryKey: ['alerts-notifications'],
+    queryFn: () => alertsApi.get(),
+  });
+
+  const isLoading = signalsLoading || alertsLoading;
 
   useEffect(() => {
-    loadNotifications();
-  }, [loadNotifications]);
+    AsyncStorage.getItem(READ_IDS_KEY).then((raw) => {
+      if (raw) setReadIds(new Set(JSON.parse(raw)));
+    }).catch(() => {});
+  }, []);
 
-  const filtered = (notifications ?? []).filter((n) =>
+  const persistReadIds = useCallback(async (ids: Set<string>) => {
+    setReadIds(ids);
+    await AsyncStorage.setItem(READ_IDS_KEY, JSON.stringify([...ids]));
+  }, []);
+
+  const notifications = useMemo<Notification[]>(() => {
+    const items: Notification[] = [];
+    if (signals) {
+      for (const s of signals) {
+        items.push({
+          id: `signal-${s.id}`,
+          type: 'signal',
+          title: `New ${s.type} Signal`,
+          message: `New ${s.type} signal for ${s.symbol} with ${Math.round(s.confidenceScore * 100)}% confidence`,
+          timestamp: s.generatedAt,
+          unread: !readIds.has(`signal-${s.id}`),
+        });
+      }
+    }
+    if (alerts) {
+      for (const a of alerts as any[]) {
+        items.push({
+          id: `alert-${a.id}`,
+          type: 'alert',
+          title: 'Price Alert',
+          message: `Alert active: ${a.symbol} ${a.alertType === 0 ? 'above' : 'below'} $${a.targetValue}`,
+          timestamp: a.createdAt ?? new Date().toISOString(),
+          unread: !readIds.has(`alert-${a.id}`),
+        });
+      }
+    }
+    items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    return items;
+  }, [signals, alerts, readIds]);
+
+  const filtered = notifications.filter((n) =>
     filter === 'all' ? true : n.type === filter,
   );
 
   const markAllRead = () => {
-    const updated = (notifications ?? []).map((n) => ({ ...n, unread: false }));
-    saveNotifications(updated);
+    const allIds = new Set(notifications.map((n) => n.id));
+    persistReadIds(allIds);
   };
 
   const clearAll = () => {
-    Alert.alert('Clear All', 'Remove all notifications?', [
+    Alert.alert('Clear All', 'Mark all notifications as read?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Clear', style: 'destructive', onPress: () => saveNotifications([]) },
+      { text: 'Clear', style: 'destructive', onPress: () => markAllRead() },
     ]);
   };
 
   const markAsRead = (id: string) => {
-    const updated = (notifications ?? []).map((n) =>
-      n.id === id ? { ...n, unread: false } : n,
-    );
-    saveNotifications(updated);
+    const next = new Set(readIds);
+    next.add(id);
+    persistReadIds(next);
   };
 
   const filters: { key: FilterType; label: string }[] = [
@@ -160,6 +183,12 @@ export default function NotificationCenterScreen() {
         ))}
       </View>
 
+      {isLoading ? (
+        <View style={styles.empty}>
+          <ActivityIndicator size="large" color={COLORS.accent} />
+          <Text style={styles.emptyText}>Loading notifications…</Text>
+        </View>
+      ) : (
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
@@ -190,6 +219,7 @@ export default function NotificationCenterScreen() {
           </View>
         }
       />
+      )}
     </SafeAreaView>
   );
 }

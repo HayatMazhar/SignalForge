@@ -1,8 +1,9 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
   FlatList,
+  TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
   StyleSheet,
@@ -51,6 +52,7 @@ function formatValuation(v: string | number): string {
 
 export default function IPOsScreen() {
   const [refreshing, setRefreshing] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('All');
 
   const { data = [], isLoading, refetch } = useQuery({
     queryKey: ['ipos'],
@@ -65,6 +67,12 @@ export default function IPOsScreen() {
     await refetch();
     setRefreshing(false);
   }, [refetch]);
+
+  const filteredIpos = useMemo(() => {
+    const items = Array.isArray(data) ? data : [];
+    if (statusFilter === 'All') return items;
+    return items.filter((ipo: any) => (ipo.status ?? '').toLowerCase() === statusFilter.toLowerCase());
+  }, [data, statusFilter]);
 
   const renderItem = ({ item }: { item: IPOItem }) => {
     const statusColor = STATUS_COLORS[item.status] ?? C.textMuted;
@@ -120,9 +128,24 @@ export default function IPOsScreen() {
       <FlatList
         style={{ flex: 1 }}
         contentContainerStyle={styles.list}
-        data={data}
+        data={filteredIpos}
         keyExtractor={(item, i) => item.id ?? `${item.symbol}-${i}`}
         renderItem={renderItem}
+        ListHeaderComponent={
+          <>
+            <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 16, marginBottom: 12 }}>
+              {['All', 'Upcoming', 'Filed', 'Expected'].map(f => (
+                <TouchableOpacity key={f} onPress={() => setStatusFilter(f)}
+                  style={{ paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12, backgroundColor: statusFilter === f ? '#00FF9420' : '#0C0F1A', borderWidth: 1, borderColor: statusFilter === f ? '#00FF94' : '#1A1F35' }}>
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: statusFilter === f ? '#00FF94' : '#5B6378' }}>{f}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <Text style={{ fontSize: 12, color: '#5B6378', paddingHorizontal: 16, marginBottom: 8 }}>
+              {filteredIpos.length} IPO{filteredIpos.length !== 1 ? 's' : ''} {statusFilter !== 'All' ? `(${statusFilter})` : ''}
+            </Text>
+          </>
+        }
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.accent} />
         }

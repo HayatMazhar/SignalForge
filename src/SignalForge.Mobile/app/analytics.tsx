@@ -1,10 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import {
   View,
   Text,
   ScrollView,
   ActivityIndicator,
   StyleSheet,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
@@ -33,10 +34,17 @@ interface Signal {
 }
 
 export default function AnalyticsScreen() {
-  const { data: signals = [], isLoading } = useQuery<Signal[]>({
+  const [refreshing, setRefreshing] = useState(false);
+  const { data: signals = [], isLoading, refetch } = useQuery<Signal[]>({
     queryKey: ['analytics-signals'],
     queryFn: () => api.get('/signals?limit=200').then((r) => Array.isArray(r.data) ? r.data : []),
   });
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
   const stats = useMemo(() => {
     const buy = signals.filter((s) => s.type?.toLowerCase() === 'buy');
@@ -77,7 +85,12 @@ export default function AnalyticsScreen() {
 
   return (
     <SafeAreaView style={s.container} edges={['bottom']}>
-      <ScrollView contentContainerStyle={s.scroll}>
+      <ScrollView
+        contentContainerStyle={s.scroll}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#00FF94" />
+        }
+      >
         <Text style={s.title}>Performance Analytics</Text>
 
         <View style={s.statsRow}>

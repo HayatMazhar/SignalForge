@@ -1,6 +1,9 @@
-import { ScrollView, View, Text, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { marketApi } from '../src/api/stocks';
 
 const C = {
   bg: '#06060B',
@@ -14,17 +17,6 @@ const C = {
   info: '#38BDF8',
   purple: '#A78BFA',
 };
-
-const SYMBOLS = ['AAPL', 'MSFT', 'GOOGL', 'NVDA', 'TSLA', 'META'];
-
-const CORRELATION: number[][] = [
-  [1.0,  0.82, 0.75, 0.61, 0.34, 0.68],
-  [0.82, 1.0,  0.80, 0.65, 0.29, 0.72],
-  [0.75, 0.80, 1.0,  0.58, 0.22, 0.76],
-  [0.61, 0.65, 0.58, 1.0,  0.42, 0.51],
-  [0.34, 0.29, 0.22, 0.42, 1.0, -0.05],
-  [0.68, 0.72, 0.76, 0.51, -0.05, 1.0],
-];
 
 function getCellColor(val: number): string {
   if (val === 1.0) return C.purple + '40';
@@ -44,12 +36,32 @@ function getTextColor(val: number): string {
 }
 
 export default function CorrelationScreen() {
+  const [refreshing, setRefreshing] = useState(false);
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['correlation'],
+    queryFn: () => marketApi.getCorrelation(),
+  });
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
+  const symbols: string[] = data?.symbols ?? [];
+  const correlation: number[][] = data?.matrix ?? [];
+
   const cellSize = 52;
   const labelWidth = 56;
 
   return (
     <SafeAreaView style={s.container} edges={['bottom']}>
-      <ScrollView contentContainerStyle={s.scroll}>
+      <ScrollView
+        contentContainerStyle={s.scroll}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#00FF94" />
+        }
+      >
         <View style={s.header}>
           <Ionicons name="grid-outline" size={22} color={C.purple} />
           <Text style={s.title}>Correlation Matrix</Text>
@@ -58,44 +70,48 @@ export default function CorrelationScreen() {
           30-day price correlation between major tech stocks
         </Text>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View>
-            {/* Column headers */}
-            <View style={{ flexDirection: 'row', marginLeft: labelWidth }}>
-              {SYMBOLS.map((sym) => (
-                <View key={sym} style={[s.colHeader, { width: cellSize }]}>
-                  <Text style={s.headerText}>{sym}</Text>
-                </View>
-              ))}
-            </View>
-
-            {/* Matrix rows */}
-            {SYMBOLS.map((rowSym, ri) => (
-              <View key={rowSym} style={{ flexDirection: 'row' }}>
-                <View style={[s.rowLabel, { width: labelWidth }]}>
-                  <Text style={s.rowLabelText}>{rowSym}</Text>
-                </View>
-                {CORRELATION[ri].map((val, ci) => (
-                  <View
-                    key={`${ri}-${ci}`}
-                    style={[
-                      s.cell,
-                      {
-                        width: cellSize,
-                        height: cellSize,
-                        backgroundColor: getCellColor(val),
-                      },
-                    ]}
-                  >
-                    <Text style={[s.cellText, { color: getTextColor(val) }]}>
-                      {val.toFixed(2)}
-                    </Text>
+        {isLoading ? (
+          <ActivityIndicator size="large" color={C.purple} style={{ marginTop: 48 }} />
+        ) : (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View>
+              {/* Column headers */}
+              <View style={{ flexDirection: 'row', marginLeft: labelWidth }}>
+                {symbols.map((sym) => (
+                  <View key={sym} style={[s.colHeader, { width: cellSize }]}>
+                    <Text style={s.headerText}>{sym}</Text>
                   </View>
                 ))}
               </View>
-            ))}
-          </View>
-        </ScrollView>
+
+              {/* Matrix rows */}
+              {symbols.map((rowSym, ri) => (
+                <View key={rowSym} style={{ flexDirection: 'row' }}>
+                  <View style={[s.rowLabel, { width: labelWidth }]}>
+                    <Text style={s.rowLabelText}>{rowSym}</Text>
+                  </View>
+                  {(correlation[ri] ?? []).map((val: number, ci: number) => (
+                    <View
+                      key={`${ri}-${ci}`}
+                      style={[
+                        s.cell,
+                        {
+                          width: cellSize,
+                          height: cellSize,
+                          backgroundColor: getCellColor(val),
+                        },
+                      ]}
+                    >
+                      <Text style={[s.cellText, { color: getTextColor(val) }]}>
+                        {val.toFixed(2)}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+        )}
 
         {/* Legend */}
         <View style={s.legendCard}>

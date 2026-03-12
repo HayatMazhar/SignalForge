@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
@@ -49,11 +50,18 @@ export default function SentimentTrendScreen() {
   const [input, setInput] = useState('');
   const [symbol, setSymbol] = useState('');
 
-  const { data, isLoading, isError } = useQuery<SentimentResponse>({
+  const [refreshing, setRefreshing] = useState(false);
+  const { data, isLoading, isError, refetch } = useQuery<SentimentResponse>({
     queryKey: ['sentiment-trend', symbol],
     queryFn: () => api.get(`/ai/sentiment-trend/${symbol}`).then((r) => r.data),
     enabled: symbol.length > 0,
   });
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
   const handleAnalyze = () => {
     const trimmed = input.trim().toUpperCase();
@@ -136,6 +144,9 @@ export default function SentimentTrendScreen() {
           keyExtractor={(_, i) => i.toString()}
           renderItem={renderDataPoint}
           contentContainerStyle={s.listContent}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#00FF94" />
+          }
           ListHeaderComponent={
             <View style={s.summaryCard}>
               <Text style={s.summarySymbol}>{data.symbol}</Text>

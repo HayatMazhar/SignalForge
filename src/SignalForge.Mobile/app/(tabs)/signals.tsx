@@ -55,6 +55,16 @@ export default function SignalsScreen() {
     setRefreshing(false);
   }, [refetch]);
 
+  const buyCount = signals.filter((s: any) => getSignalLabel(s.type) === 'Buy').length;
+  const sellCount = signals.filter((s: any) => getSignalLabel(s.type) === 'Sell').length;
+  const holdCount = signals.filter((s: any) => getSignalLabel(s.type) === 'Hold').length;
+  const avgConf = signals.length > 0
+    ? Math.round(signals.reduce((sum: number, s: any) => {
+        const raw = s.confidenceScore ?? 0;
+        return sum + (raw > 1 ? raw : raw * 100);
+      }, 0) / signals.length)
+    : 0;
+
   const getBadgeColor = (type: string) => {
     const label = getSignalLabel(type);
     if (label === 'Buy') return COLORS.accent;
@@ -98,6 +108,9 @@ export default function SignalsScreen() {
           ))}
         </View>
         <Text style={styles.reasoning} numberOfLines={2}>{signal.reasoning || '—'}</Text>
+        <Text style={{ fontSize: 10, color: COLORS.textMuted, marginTop: 6 }}>
+          {signal.generatedAt ? new Date(signal.generatedAt).toLocaleString() : ''}
+        </Text>
         <TouchableOpacity style={styles.viewStockBtn} onPress={() => router.push(`/stocks/${signal.symbol}`)}>
           <Text style={styles.viewStockText}>{mode === 'crypto' ? 'View Coin' : 'View Stock'}</Text>
         </TouchableOpacity>
@@ -124,6 +137,24 @@ export default function SignalsScreen() {
           </TouchableOpacity>
         ))}
       </ScrollView>
+      <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 16, marginBottom: 12 }}>
+        <View style={{ flex: 1, backgroundColor: COLORS.surface, borderRadius: 12, padding: 10, alignItems: 'center', borderWidth: 1, borderColor: COLORS.border }}>
+          <Text style={{ fontSize: 18, fontWeight: '900', color: COLORS.textPrimary }}>{signals.length}</Text>
+          <Text style={{ fontSize: 9, color: COLORS.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>Total</Text>
+        </View>
+        <View style={{ flex: 1, backgroundColor: COLORS.surface, borderRadius: 12, padding: 10, alignItems: 'center', borderWidth: 1, borderColor: COLORS.border }}>
+          <Text style={{ fontSize: 18, fontWeight: '900', color: COLORS.accent }}>{buyCount}</Text>
+          <Text style={{ fontSize: 9, color: COLORS.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>Buy</Text>
+        </View>
+        <View style={{ flex: 1, backgroundColor: COLORS.surface, borderRadius: 12, padding: 10, alignItems: 'center', borderWidth: 1, borderColor: COLORS.border }}>
+          <Text style={{ fontSize: 18, fontWeight: '900', color: COLORS.danger }}>{sellCount}</Text>
+          <Text style={{ fontSize: 9, color: COLORS.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>Sell</Text>
+        </View>
+        <View style={{ flex: 1, backgroundColor: COLORS.surface, borderRadius: 12, padding: 10, alignItems: 'center', borderWidth: 1, borderColor: COLORS.border }}>
+          <Text style={{ fontSize: 18, fontWeight: '900', color: '#38BDF8' }}>{avgConf}%</Text>
+          <Text style={{ fontSize: 9, color: COLORS.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>Avg Conf</Text>
+        </View>
+      </View>
       <FlatList
         data={signals}
         keyExtractor={(item) => item.id}

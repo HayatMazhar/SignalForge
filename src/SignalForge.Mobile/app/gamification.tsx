@@ -9,6 +9,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useQuery } from '@tanstack/react-query';
+import { signalsApi, watchlistApi } from '../src/api/stocks';
 
 const COLORS = {
   bg: '#06060B',
@@ -66,6 +68,9 @@ export default function GamificationScreen() {
     badges: [],
   });
 
+  const { data: signals = [] } = useQuery({ queryKey: ['gam-signals'], queryFn: () => signalsApi.getSignals(undefined, 50) });
+  const { data: watchlist = [] } = useQuery({ queryKey: ['gam-wl'], queryFn: () => watchlistApi.get() });
+
   useEffect(() => {
     const today = toDateKey(new Date());
     AsyncStorage.getItem(GAMIFICATION_KEY).then((raw) => {
@@ -75,7 +80,6 @@ export default function GamificationScreen() {
       const last = prev.lastLogin || '';
 
       if (last !== today) {
-        xp += 10;
         const lastDate = last ? new Date(last) : null;
         const todayDate = new Date();
         if (lastDate) {
@@ -86,6 +90,11 @@ export default function GamificationScreen() {
         }
       }
 
+      const signalXP = (signals as any[]).length * 5;
+      const watchlistXP = (Array.isArray(watchlist) ? watchlist : []).length * 8;
+      xp = Math.max(xp, prev.xp) + (last !== today ? 10 : 0);
+      xp = Math.max(xp, signalXP + watchlistXP + streak * 10);
+
       const next: GamificationState = {
         xp,
         streak,
@@ -95,11 +104,17 @@ export default function GamificationScreen() {
       setState(next);
       AsyncStorage.setItem(GAMIFICATION_KEY, JSON.stringify(next));
     });
-  }, []);
+  }, [signals, watchlist]);
 
   const level = Math.floor(state.xp / 100) + 1;
   const xpInLevel = state.xp % 100;
   const progress = xpInLevel / 100;
+
+  const realActions = [
+    { action: 'Daily login streak', xp: state.streak * 10, count: state.streak },
+    { action: 'Signals viewed', xp: (signals as any[]).length * 5, count: (signals as any[]).length },
+    { action: 'Watchlist items', xp: (Array.isArray(watchlist) ? watchlist : []).length * 8, count: (Array.isArray(watchlist) ? watchlist : []).length },
+  ];
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -145,7 +160,19 @@ export default function GamificationScreen() {
           })}
         </View>
 
-        <Text style={styles.sectionTitle}>Earn XP</Text>
+        <Text style={styles.sectionTitle}>Your XP Earned</Text>
+        <View style={styles.actionsCard}>
+          {realActions.map((a, i) => (
+            <View key={`real-${i}`} style={styles.actionRow}>
+              <Text style={styles.actionText}>{a.action} ({a.count})</Text>
+              <View style={styles.xpPill}>
+                <Text style={styles.xpPillText}>+{a.xp}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+
+        <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Earn XP</Text>
         <View style={styles.actionsCard}>
           {XP_ACTIONS.map((a, i) => (
             <View key={i} style={styles.actionRow}>

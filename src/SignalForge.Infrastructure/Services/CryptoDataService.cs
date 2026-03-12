@@ -211,41 +211,23 @@ public sealed class CryptoDataService : ICryptoDataService
         return ema;
     }
 
-    private static StockQuoteDto GetMockQuote(string symbol)
+    private static StockQuoteDto? GetMockQuote(string symbol)
     {
-        var rng = new Random(symbol.GetHashCode() + DateTime.UtcNow.DayOfYear);
-        var price = symbol switch { "BTC" => 65000 + rng.Next(-2000, 2000), "ETH" => 3500 + rng.Next(-200, 200), "SOL" => 150 + rng.Next(-20, 20), _ => 1 + rng.Next(1, 500) };
-        var change = (decimal)(rng.NextDouble() * 10 - 5);
-        return new StockQuoteDto(symbol, price, Math.Round(price * change / 100, 2), Math.Round(change, 2), price * 1.03m, price * 0.97m, price, rng.Next(100000, 5000000), DateTime.UtcNow);
+        return null;
     }
 
     private static List<OhlcBarDto> GetMockHistory(string symbol)
     {
-        var rng = new Random(symbol.GetHashCode());
-        var price = symbol switch { "BTC" => 65000m, "ETH" => 3500m, _ => 100m };
-        return Enumerable.Range(0, 30).Select(i =>
-        {
-            var d = DateTime.UtcNow.AddDays(-30 + i);
-            var change = (decimal)(rng.NextDouble() * 6 - 3) / 100;
-            price *= (1 + change);
-            return new OhlcBarDto(d, price * 0.99m, price * 1.02m, price * 0.97m, price, rng.Next(10000, 100000));
-        }).ToList();
+        return new List<OhlcBarDto>();
     }
 
-    private static TechnicalDataDto GetMockTechnicals(string symbol)
+    private static TechnicalDataDto? GetMockTechnicals(string symbol)
     {
-        var rng = new Random(symbol.GetHashCode() + DateTime.UtcNow.DayOfYear);
-        return new TechnicalDataDto(30 + rng.Next(40), (decimal)(rng.NextDouble() * 200 - 100), 0, 0, 0, 0, 0, 0, (decimal)(rng.NextDouble() * 1000), rng.Next(2) == 0 ? "Bullish" : "Bearish");
+        return null;
     }
 
     private static List<TopMoverDto> GetMockMovers(bool gainers)
     {
-        var rng = new Random(DateTime.UtcNow.DayOfYear + (gainers ? 1 : 2));
-        var symbols = new[] { ("BTC", "Bitcoin", 65000m), ("ETH", "Ethereum", 3500m), ("SOL", "Solana", 150m), ("XRP", "Ripple", 0.55m), ("DOGE", "Dogecoin", 0.12m), ("ADA", "Cardano", 0.45m), ("AVAX", "Avalanche", 35m), ("DOT", "Polkadot", 7m) };
-        return symbols.Select(s =>
-        {
-            var change = gainers ? (decimal)(rng.NextDouble() * 15 + 0.5) : -(decimal)(rng.NextDouble() * 15 + 0.5);
-            return new TopMoverDto(s.Item1, s.Item2, s.Item3, Math.Round(change, 2));
-        }).ToList();
+        return new List<TopMoverDto>();
     }
 }

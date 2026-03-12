@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { watchlistApi } from '../src/api/stocks';
 import api from '../src/api/client';
 import { useAssetModeStore } from '../src/stores/assetModeStore';
+import { usePriceStore } from '../src/stores/priceStore';
 
 const C = {
   bg: '#06060B',
@@ -104,34 +105,51 @@ export default function WatchlistScreen() {
     addMutation.mutate(sym);
   };
 
-  const renderItem = ({ item }: { item: WatchlistItem }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => router.push(`/stocks/${item.symbol}`)}
-      activeOpacity={0.7}
-    >
-      <View style={styles.cardLeft}>
-        <Text style={styles.symbol}>{item.symbol}</Text>
-        {item.addedAt && (
-          <Text style={styles.addedDate}>
-            Added {new Date(item.addedAt).toLocaleDateString()}
-          </Text>
-        )}
-      </View>
+  const renderItem = ({ item }: { item: WatchlistItem }) => {
+    const q = usePriceStore.getState().prices[item.symbol];
+    const price = q?.price;
+    const changePct = q?.changePercent;
+    const changeColor = changePct != null ? (changePct >= 0 ? C.accent : C.danger) : C.textMuted;
+
+    return (
       <TouchableOpacity
-        style={styles.deleteBtn}
-        onPress={() =>
-          Alert.alert('Remove', `Remove ${item.symbol} from watchlist?`, [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Remove', style: 'destructive', onPress: () => removeMutation.mutate(item.symbol) },
-          ])
-        }
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        style={styles.card}
+        onPress={() => router.push(`/stocks/${item.symbol}`)}
+        activeOpacity={0.7}
       >
-        <Ionicons name="trash-outline" size={18} color={C.danger} />
+        <View style={styles.cardLeft}>
+          <Text style={styles.symbol}>{item.symbol}</Text>
+          {item.addedAt && (
+            <Text style={styles.addedDate}>
+              Added {new Date(item.addedAt).toLocaleDateString()}
+            </Text>
+          )}
+        </View>
+        <View style={styles.cardRight}>
+          {price != null && (
+            <Text style={styles.priceText}>${price.toFixed(2)}</Text>
+          )}
+          {changePct != null && (
+            <Text style={[styles.changeText, { color: changeColor }]}>
+              {changePct >= 0 ? '+' : ''}{changePct.toFixed(2)}%
+            </Text>
+          )}
+        </View>
+        <TouchableOpacity
+          style={styles.deleteBtn}
+          onPress={() =>
+            Alert.alert('Remove', `Remove ${item.symbol} from watchlist?`, [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Remove', style: 'destructive', onPress: () => removeMutation.mutate(item.symbol) },
+            ])
+          }
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="trash-outline" size={18} color={C.danger} />
+        </TouchableOpacity>
       </TouchableOpacity>
-    </TouchableOpacity>
-  );
+    );
+  };
 
   const signalColor = (type: string) =>
     type === 'Buy' ? C.accent : type === 'Sell' ? C.danger : C.warning;
@@ -200,7 +218,7 @@ export default function WatchlistScreen() {
                   style={styles.addInput}
                   value={newSymbol}
                   onChangeText={setNewSymbol}
-                  placeholder={isCrypto ? "Symbol (e.g. BTC)" : "Symbol (e.g. AAPL)"}
+                  placeholder={isCrypto ? "Add coin (e.g. BTC)" : "Add stock (e.g. AAPL)"}
                   placeholderTextColor={C.textMuted}
                   autoCapitalize="characters"
                   autoFocus
@@ -221,7 +239,7 @@ export default function WatchlistScreen() {
             ) : (
               <TouchableOpacity style={styles.addToggle} onPress={() => setShowAdd(true)}>
                 <Ionicons name="add-circle" size={22} color={C.accent} />
-                <Text style={styles.addToggleText}>Add Symbol</Text>
+                <Text style={styles.addToggleText}>{isCrypto ? 'Add Coin' : 'Add Stock'}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -324,6 +342,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   cardLeft: { flex: 1 },
+  cardRight: { alignItems: 'flex-end' as const, marginRight: 12 },
+  priceText: { fontSize: 15, fontWeight: '600', color: C.textPrimary },
+  changeText: { fontSize: 12, fontWeight: '600', marginTop: 2 },
   symbol: { fontSize: 17, fontWeight: '700', color: C.textPrimary },
   addedDate: { fontSize: 12, color: C.textMuted, marginTop: 4 },
   deleteBtn: {

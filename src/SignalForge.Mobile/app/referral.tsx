@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
+import { useAuthStore } from '../src/stores/authStore';
 
 const COLORS = {
   bg: '#06060B',
@@ -25,26 +26,26 @@ const COLORS = {
   purple: '#A78BFA',
 };
 
-const REFERRAL_CODE = 'SGF7-X9K2';
-const STATS = { invited: 3, earned: 45 };
-
 const TIERS = [
-  { level: 1, label: 'Starter', reward: '$5', min: 0, max: 2, current: Math.min(STATS.invited, 2) },
-  { level: 2, label: 'Bronze', reward: '$15', min: 3, max: 5, current: Math.min(Math.max(STATS.invited - 2, 0), 3) },
-  { level: 3, label: 'Silver', reward: '$50', min: 6, max: 10, current: Math.min(Math.max(STATS.invited - 5, 0), 5) },
-  { level: 4, label: 'Gold', reward: '$150', min: 11, max: 20, current: 0 },
+  { level: 1, label: 'Starter', reward: '$5', required: 2 },
+  { level: 2, label: 'Bronze', reward: '$15', required: 5 },
+  { level: 3, label: 'Silver', reward: '$50', required: 10 },
+  { level: 4, label: 'Gold', reward: '$150', required: 20 },
 ];
 
 export default function ReferralScreen() {
+  const user = useAuthStore((s) => s.user);
+  const code = user?.id ? `SF-${user.id.substring(0, 8).toUpperCase()}` : 'SF-XXXXXX';
+
   const handleCopy = async () => {
-    await Clipboard.setStringAsync(REFERRAL_CODE);
+    await Clipboard.setStringAsync(code);
     Alert.alert('Copied!', 'Referral code copied to clipboard');
   };
 
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Join SignalForge with my referral code ${REFERRAL_CODE} and get exclusive benefits!`,
+        message: `Join SignalForge with my referral code ${code} and get exclusive benefits!`,
         title: 'Join SignalForge',
       });
     } catch (e) {
@@ -57,7 +58,7 @@ export default function ReferralScreen() {
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         <View style={styles.codeCard}>
           <Text style={styles.codeLabel}>Your Referral Code</Text>
-          <Text style={styles.codeValue}>{REFERRAL_CODE}</Text>
+          <Text style={styles.codeValue}>{code}</Text>
           <View style={styles.codeActions}>
             <TouchableOpacity style={styles.copyBtn} onPress={handleCopy} activeOpacity={0.7}>
               <Ionicons name="copy-outline" size={20} color={COLORS.bg} />
@@ -73,35 +74,33 @@ export default function ReferralScreen() {
         <View style={styles.statsRow}>
           <View style={styles.statCard}>
             <Ionicons name="people-outline" size={24} color={COLORS.accent} />
-            <Text style={styles.statValue}>{STATS.invited}</Text>
+            <Text style={styles.statValue}>0</Text>
             <Text style={styles.statLabel}>Invited</Text>
           </View>
           <View style={styles.statCard}>
             <Ionicons name="cash-outline" size={24} color={COLORS.accent} />
-            <Text style={styles.statValue}>${STATS.earned}</Text>
+            <Text style={styles.statValue}>$0</Text>
             <Text style={styles.statLabel}>Earned</Text>
           </View>
         </View>
 
-        <Text style={styles.sectionTitle}>Reward Tiers</Text>
-        {TIERS.map((tier) => {
-          const total = tier.max - tier.min;
-          const progress = tier.current / total;
-          return (
-            <View key={tier.level} style={styles.tierCard}>
-              <View style={styles.tierHeader}>
-                <Text style={styles.tierLabel}>{tier.label}</Text>
-                <Text style={styles.tierReward}>{tier.reward}</Text>
-              </View>
-              <View style={styles.progressBg}>
-                <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
-              </View>
-              <Text style={styles.tierMeta}>
-                {tier.current}/{total} referrals ({tier.min}-{tier.max})
-              </Text>
+        <Text style={styles.sharePrompt}>Share your code to start earning</Text>
+
+        <Text style={styles.sectionTitle}>Reward Goals</Text>
+        {TIERS.map((tier) => (
+          <View key={tier.level} style={styles.tierCard}>
+            <View style={styles.tierHeader}>
+              <Text style={styles.tierLabel}>{tier.label}</Text>
+              <Text style={styles.tierReward}>{tier.reward}</Text>
             </View>
-          );
-        })}
+            <View style={styles.progressBg}>
+              <View style={[styles.progressFill, { width: '0%' }]} />
+            </View>
+            <Text style={styles.tierMeta}>
+              0/{tier.required} referrals to unlock
+            </Text>
+          </View>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -157,6 +156,7 @@ const styles = StyleSheet.create({
   },
   statValue: { fontSize: 24, fontWeight: '700', color: COLORS.textPrimary, marginTop: 8 },
   statLabel: { fontSize: 13, color: COLORS.textMuted, marginTop: 4 },
+  sharePrompt: { fontSize: 13, color: COLORS.textMuted, textAlign: 'center', marginBottom: 20, fontStyle: 'italic' },
   sectionTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textMuted, marginBottom: 12, textTransform: 'uppercase' },
   tierCard: {
     backgroundColor: COLORS.surface,

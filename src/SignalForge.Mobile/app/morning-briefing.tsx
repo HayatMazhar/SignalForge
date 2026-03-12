@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Share,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -31,23 +32,17 @@ type TopMover = { symbol: string; name?: string; price?: number; changePercent?:
 type Signal = { id: string; symbol: string; type: string; confidenceScore?: number };
 type PulseEvent = { title?: string; description?: string; impact?: string };
 
-const AI_INSIGHTS = [
-  "Markets tend to overreact to earnings misses. Look for buying opportunities in quality stocks that dip.",
-  "Diversification protects against the unknown. Don't put all eggs in one sector.",
-  "Fear and greed drive short-term moves. Stay disciplined with your long-term plan.",
-  "The best time to buy is when others are fearful. Keep a watchlist ready.",
-  "Technical signals work best with fundamental confirmation. Combine both approaches.",
-];
-
 export default function MorningBriefingScreen() {
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [fearGreed, setFearGreed] = useState<FearGreed | null>(null);
   const [topMovers, setTopMovers] = useState<TopMover[]>([]);
   const [signals, setSignals] = useState<Signal[]>([]);
   const [marketPulse, setMarketPulse] = useState<PulseEvent[]>([]);
+  const [aiInsight, setAiInsight] = useState('');
 
-  useEffect(() => {
-    Promise.all([
+  const loadData = useCallback(() => {
+    return Promise.all([
       api.get<FearGreed>('/insights/fear-greed').then((r) => r.data).catch(() => null),
       api.get<TopMover[]>('/stocks/top-movers').then((r) => r.data).catch(() => []),
       api.get<Signal[]>('/signals', { params: { limit: 5 } }).then((r) => r.data).catch(() => []),
@@ -58,11 +53,41 @@ export default function MorningBriefingScreen() {
         setTopMovers(Array.isArray(movers) ? movers : []);
         setSignals(Array.isArray(sig) ? sig : []);
         setMarketPulse(Array.isArray(pulse) ? pulse : []);
-      })
-      .finally(() => setLoading(false));
+
+        const insightParts: string[] = [];
+        if (fg) {
+          const s = fg.score ?? fg.value ?? 50;
+          insightParts.push(`Market sentiment is ${s > 60 ? 'greedy' : s < 40 ? 'fearful' : 'neutral'} at ${s}/100.`);
+        }
+        if (Array.isArray(movers) && movers.length > 0) {
+          const topG = movers.filter((m: any) => (m.changePercent ?? 0) > 0).slice(0, 2);
+          if (topG.length > 0) insightParts.push(`Top gainers: ${topG.map((m: any) => `${m.symbol} +${(m.changePercent ?? 0).toFixed(1)}%`).join(', ')}.`);
+        }
+        if (Array.isArray(sig) && sig.length > 0) {
+          const buyCount = sig.filter((s: any) => s.type === 'Buy' || s.type === '0').length;
+          insightParts.push(`${buyCount} of ${sig.length} AI signals are bullish today.`);
+        }
+        setAiInsight(insightParts.join(' ') || 'Loading market insight...');
+
+        api.post('/chat', { message: `Give a 2-sentence morning market insight based on: ${insightParts.join(' ')}` })
+          .then(r => {
+            const msg = r.data?.response ?? r.data?.message;
+            if (msg) setAiInsight(msg);
+          })
+          .catch(() => {});
+      });
   }, []);
 
-  const aiInsight = AI_INSIGHTS[new Date().getDate() % AI_INSIGHTS.length];
+  useEffect(() => {
+    loadData().finally(() => setLoading(false));
+  }, [loadData]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  }, [loadData]);
+
   const today = format(new Date(), 'EEEE, MMMM d');
   const score = fearGreed?.score ?? fearGreed?.value ?? 50;
   const status = score < 30 ? 'Fear' : score > 70 ? 'Greed' : 'Neutral';
@@ -98,6 +123,9 @@ export default function MorningBriefingScreen() {
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#00FF94" />
+        }
       >
         <View style={styles.card}>
           <Text style={styles.greeting}>Good morning</Text>

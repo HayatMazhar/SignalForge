@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { chatApi } from '../src/api/stocks';
 import api from '../src/api/client';
 import { useAssetModeStore } from '../src/stores/assetModeStore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const C = {
   bg: '#06060B',
@@ -55,6 +56,20 @@ export default function ChatScreen() {
   ]);
   const flatListRef = useRef<FlatList>(null);
   const [translations, setTranslations] = useState<Record<number, string>>({});
+
+  const STORAGE_KEY = `sf-chat-${symbol ?? 'general'}`;
+
+  useEffect(() => {
+    AsyncStorage.getItem(STORAGE_KEY)
+      .then(raw => { if (raw) setMessages(JSON.parse(raw)); })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (messages.length > 1) {
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-50))).catch(() => {});
+    }
+  }, [messages]);
 
   const sendMutation = useMutation({
     mutationFn: (message: string) => chatApi.send(message, symbol),
@@ -174,6 +189,24 @@ export default function ChatScreen() {
           ) : null
         }
       />
+      {messages.length <= 1 && (
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, padding: 16 }}>
+          {[
+            symbol ? `Analyze ${symbol}` : 'Best stocks to buy today',
+            symbol ? `${symbol} price target` : 'Market outlook',
+            'Top trading opportunities',
+            symbol ? `${symbol} vs competitors` : 'Sector analysis',
+          ].map((prompt, i) => (
+            <TouchableOpacity
+              key={i}
+              style={{ backgroundColor: '#0C0F1A', borderRadius: 16, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1, borderColor: '#1A1F35' }}
+              onPress={() => { setInput(prompt); }}
+            >
+              <Text style={{ fontSize: 13, color: '#00FF94' }}>{prompt}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
       <View style={styles.inputBar}>
         <TextInput
           style={styles.textInput}
@@ -186,6 +219,15 @@ export default function ChatScreen() {
           multiline
           maxLength={1000}
         />
+        <TouchableOpacity
+          style={{ padding: 8, marginRight: 4 }}
+          onPress={() => {
+            setMessages([messages[0]]);
+            AsyncStorage.removeItem(STORAGE_KEY).catch(() => {});
+          }}
+        >
+          <Ionicons name="trash-outline" size={20} color="#5B6378" />
+        </TouchableOpacity>
         <TouchableOpacity
           style={[
             styles.sendBtn,

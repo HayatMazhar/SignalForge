@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -104,6 +104,16 @@ const SECTIONS = [
 export default function MoreScreen() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
+  const [search, setSearch] = useState('');
+
+  const filteredSections = useMemo(() => {
+    if (!search.trim()) return SECTIONS;
+    const q = search.toLowerCase();
+    return SECTIONS.map(section => ({
+      ...section,
+      items: section.items.filter(item => item.label.toLowerCase().includes(q)),
+    })).filter(section => section.items.length > 0);
+  }, [search]);
 
   const handleLogout = () => { logout(); router.replace('/(auth)/login'); };
 
@@ -126,8 +136,49 @@ export default function MoreScreen() {
         </View>
       </TouchableOpacity>
 
+      {/* Quick Actions */}
+      {!search && (
+        <View style={s.quickSection}>
+          <Text style={s.quickTitle}>Quick Actions</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
+            {[
+              { icon: 'chatbubble', label: 'AI Chat', route: '/chat', color: C.accent },
+              { icon: 'pulse', label: 'Signals', route: '/(tabs)/signals', color: C.info },
+              { icon: 'sunny', label: 'Briefing', route: '/morning-briefing', color: C.warning },
+              { icon: 'analytics', label: 'Predict', route: '/price-predictor', color: C.purple },
+              { icon: 'flask', label: 'Backtest', route: '/backtest', color: C.danger },
+              { icon: 'search', label: 'Screener', route: '/screener', color: C.accent },
+            ].map(item => (
+              <TouchableOpacity key={item.label} style={s.quickItem} onPress={() => router.push(item.route as any)} activeOpacity={0.7}>
+                <View style={[s.quickIcon, { backgroundColor: item.color + '15' }]}>
+                  <Ionicons name={item.icon as any} size={22} color={item.color} />
+                </View>
+                <Text style={s.quickLabel}>{item.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Search Bar */}
+      <View style={s.searchBar}>
+        <Ionicons name="search" size={18} color={C.textMuted} />
+        <TextInput
+          style={s.searchInput}
+          placeholder="Search features..."
+          placeholderTextColor={C.textMuted}
+          value={search}
+          onChangeText={setSearch}
+        />
+        {search.length > 0 && (
+          <TouchableOpacity onPress={() => setSearch('')}>
+            <Ionicons name="close-circle" size={18} color={C.textMuted} />
+          </TouchableOpacity>
+        )}
+      </View>
+
       {/* Menu Sections */}
-      {SECTIONS.map((section) => (
+      {filteredSections.map((section) => (
         <View key={section.title} style={s.section}>
           <Text style={s.sectionTitle}>{section.title}</Text>
           <View style={s.grid}>
@@ -177,6 +228,14 @@ const s = StyleSheet.create({
   gridItem: { width: ITEM_WIDTH, alignItems: 'center', paddingVertical: 12 },
   iconWrap: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginBottom: 6 },
   itemLabel: { fontSize: 10, fontWeight: '600', color: C.textMuted, textAlign: 'center' },
+
+  searchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.surface, borderRadius: 14, paddingHorizontal: 14, paddingVertical: 10, marginBottom: 16, borderWidth: 1, borderColor: C.border, gap: 10 },
+  searchInput: { flex: 1, fontSize: 14, color: C.textPrimary },
+  quickSection: { marginBottom: 16 },
+  quickTitle: { fontSize: 10, fontWeight: '800', color: C.textMuted, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 10, marginLeft: 4 },
+  quickItem: { alignItems: 'center', width: 72 },
+  quickIcon: { width: 50, height: 50, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginBottom: 6 },
+  quickLabel: { fontSize: 10, fontWeight: '600', color: C.textMuted, textAlign: 'center' },
 
   logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: C.danger + '10', borderRadius: 14, padding: 14, marginTop: 8, borderWidth: 1, borderColor: C.danger + '20' },
   logoutText: { fontSize: 13, fontWeight: '700', color: C.danger },

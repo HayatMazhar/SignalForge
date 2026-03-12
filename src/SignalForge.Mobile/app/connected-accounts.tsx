@@ -38,7 +38,7 @@ const SOCIAL = [
 
 export default function ConnectedAccountsScreen() {
   const [connected, setConnected] = useState<Record<string, boolean>>({
-    ibkr: true,
+    ibkr: false,
     td: false,
     schwab: false,
     etrade: false,
@@ -47,7 +47,7 @@ export default function ConnectedAccountsScreen() {
 
   const [socialConnected, setSocialConnected] = useState<Record<string, boolean>>({
     twitter: false,
-    discord: true,
+    discord: false,
   });
 
   const toggleBroker = (id: string) => {
@@ -69,6 +69,12 @@ export default function ConnectedAccountsScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.infoBanner}>
+          <Ionicons name="information-circle-outline" size={20} color={COLORS.info} />
+          <Text style={styles.infoBannerText}>
+            Connect your brokerage and social accounts to enable advanced features
+          </Text>
+        </View>
         <Text style={styles.sectionTitle}>Broker Connections</Text>
         {BROKERS.map((broker) => {
           const isConnected = connected[broker.id];
@@ -139,6 +145,18 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.bg },
   scroll: { flex: 1 },
   scrollContent: { padding: 16, paddingBottom: 40 },
+  infoBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: 14,
+    marginBottom: 20,
+    gap: 10,
+  },
+  infoBannerText: { flex: 1, fontSize: 13, color: COLORS.textMuted, lineHeight: 18 },
   sectionTitle: { fontSize: 14, fontWeight: '600', color: COLORS.textMuted, marginBottom: 12, textTransform: 'uppercase' },
   card: {
     flexDirection: 'row',

@@ -8,12 +8,13 @@ import {
   ActivityIndicator,
   StyleSheet,
   Alert,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Stack } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
-import { stocksApi, signalsApi, insightsApi } from '../../src/api/stocks';
+import { stocksApi, signalsApi, insightsApi, newsApi, watchlistApi } from '../../src/api/stocks';
 import { formatPrice, formatPercent, formatVolume } from '../../src/utils/format';
 import { getSignalLabel } from '../../src/utils/signalType';
 
@@ -58,6 +59,30 @@ export default function StockDetailScreen() {
     (s) => s.symbol?.toUpperCase() === symbol?.toUpperCase(),
   );
 
+  const { data: technicals } = useQuery({
+    queryKey: ['technicals', symbol],
+    queryFn: () => stocksApi.getIndicators(symbol!),
+    enabled: !!symbol,
+  });
+
+  const { data: newsItems = [] } = useQuery({
+    queryKey: ['stockNews', symbol],
+    queryFn: () => newsApi.getNews(symbol!, 5),
+    enabled: !!symbol,
+  });
+
+  const { data: watchlist = [] } = useQuery({
+    queryKey: ['watchlist'],
+    queryFn: () => watchlistApi.get(),
+  });
+  const isWatched = (Array.isArray(watchlist) ? watchlist : []).some(
+    (w: any) => (typeof w === 'string' ? w : w?.symbol) === symbol?.toUpperCase()
+  );
+  const watchlistMutation = useMutation({
+    mutationFn: () => isWatched ? watchlistApi.remove(symbol!) : watchlistApi.add(symbol!),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['watchlist'] }),
+  });
+
   const generateMutation = useMutation({
     mutationFn: () => signalsApi.generateSignal(symbol!),
     onSuccess: () => {
@@ -80,6 +105,22 @@ export default function StockDetailScreen() {
   };
 
   const isPositive = (quote?.change ?? 0) >= 0;
+
+  const timeAgo = (dateStr: string) => {
+    const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+    if (seconds < 60) return 'just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return `${Math.floor(hours / 24)}d ago`;
+  };
+
+  const getRsiColor = (rsi: number) => {
+    if (rsi < 30) return C.accent;
+    if (rsi > 70) return C.danger;
+    return C.warning;
+  };
 
   return (
     <>
@@ -120,6 +161,17 @@ export default function StockDetailScreen() {
                   ({formatPercent(quote.changePercent)})
                 </Text>
               </View>
+              <TouchableOpacity
+                onPress={() => watchlistMutation.mutate()}
+                style={styles.watchlistBtn}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name={isWatched ? 'star' : 'star-outline'}
+                  size={24}
+                  color={isWatched ? C.warning : C.textMuted}
+                />
+              </TouchableOpacity>
             </View>
 
             {/* Stats */}
@@ -141,6 +193,61 @@ export default function StockDetailScreen() {
                 <Text style={styles.statValue}>{formatVolume(quote.volume)}</Text>
               </View>
             </View>
+
+            {/* Technical Indicators */}
+            {technicals && (
+              <View style={styles.techCard}>
+                <Text style={styles.sectionTitle}>Technical Indicators</Text>
+                <View style={styles.techRow}>
+                  <View style={styles.techItem}>
+                    <Text style={styles.techLabel}>RSI (14)</Text>
+                    <Text style={[styles.techValue, { color: getRsiColor(technicals.rsi) }]}>
+                      {technicals.rsi?.toFixed(1)}
+                    </Text>
+                    <Text style={[styles.techSubLabel, { color: getRsiColor(technicals.rsi) }]}>
+                      {technicals.rsi < 30 ? 'Oversold' : technicals.rsi > 70 ? 'Overbought' : 'Neutral'}
+                    </Text>
+                  </View>
+                  <View style={styles.techItem}>
+                    <Text style={styles.techLabel}>MACD</Text>
+                    <Text style={[styles.techValue, { color: technicals.macd >= 0 ? C.accent : C.danger }]}>
+                      {technicals.macd?.toFixed(2)}
+                    </Text>
+                    <Text style={[styles.techSubLabel, { color: technicals.macd >= 0 ? C.accent : C.danger }]}>
+                      {technicals.macd >= 0 ? 'Bullish' : 'Bearish'}
+                    </Text>
+                  </View>
+                  <View style={styles.techItem}>
+                    <Text style={styles.techLabel}>Trend</Text>
+                    <View style={[
+                      styles.trendBadge,
+                      { backgroundColor: (technicals.trend === 'Bullish' ? C.accent : C.danger) + '22' },
+                    ]}>
+                      <Text style={[
+                        styles.trendBadgeText,
+                        { color: technicals.trend === 'Bullish' ? C.accent : C.danger },
+                      ]}>
+                        {technicals.trend}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.smaRow}>
+                  <View style={styles.smaItem}>
+                    <Text style={styles.smaLabel}>SMA 20</Text>
+                    <Text style={styles.smaValue}>{formatPrice(technicals.sma20)}</Text>
+                  </View>
+                  <View style={styles.smaItem}>
+                    <Text style={styles.smaLabel}>SMA 50</Text>
+                    <Text style={styles.smaValue}>{formatPrice(technicals.sma50)}</Text>
+                  </View>
+                  <View style={styles.smaItem}>
+                    <Text style={styles.smaLabel}>SMA 200</Text>
+                    <Text style={styles.smaValue}>{formatPrice(technicals.sma200)}</Text>
+                  </View>
+                </View>
+              </View>
+            )}
 
             {/* Actions */}
             <View style={styles.actionsRow}>
@@ -231,6 +338,59 @@ export default function StockDetailScreen() {
                   </View>
                 );
               })
+            )}
+
+            {/* Latest News */}
+            {newsItems.length > 0 && (
+              <>
+                <Text style={[styles.sectionTitle, { marginTop: 12 }]}>Latest News</Text>
+                {newsItems.slice(0, 3).map((article: any, idx: number) => (
+                  <TouchableOpacity
+                    key={article.id ?? idx}
+                    style={styles.newsCard}
+                    onPress={() => article.url && Linking.openURL(article.url)}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.newsHeader}>
+                      <Text style={styles.newsSource}>{article.source}</Text>
+                      <Text style={styles.newsTime}>{timeAgo(article.publishedAt)}</Text>
+                    </View>
+                    <Text style={styles.newsTitle} numberOfLines={2}>
+                      {article.title}
+                    </Text>
+                    {article.sentiment && (
+                      <View style={[
+                        styles.sentimentBadge,
+                        {
+                          backgroundColor:
+                            (article.sentiment === 'Positive' ? C.accent
+                              : article.sentiment === 'Negative' ? C.danger
+                              : C.warning) + '22',
+                        },
+                      ]}>
+                        <Text style={[
+                          styles.sentimentText,
+                          {
+                            color:
+                              article.sentiment === 'Positive' ? C.accent
+                                : article.sentiment === 'Negative' ? C.danger
+                                : C.warning,
+                          },
+                        ]}>
+                          {article.sentiment}
+                        </Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </>
+            )}
+
+            {/* Last Updated */}
+            {quote.timestamp && (
+              <Text style={styles.lastUpdated}>
+                Last updated {timeAgo(quote.timestamp)}
+              </Text>
             )}
           </>
         ) : (
@@ -334,4 +494,45 @@ const styles = StyleSheet.create({
   scoreValue: { fontSize: 14, fontWeight: '700', color: C.info, marginTop: 2 },
   signalDate: { fontSize: 11, color: C.textMuted },
   errorText: { fontSize: 16, color: C.danger, textAlign: 'center', marginTop: 40 },
+  watchlistBtn: { marginTop: 12, padding: 8 },
+  techCard: {
+    backgroundColor: C.surface,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: C.border,
+    padding: 16,
+    marginBottom: 20,
+  },
+  techRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
+  techItem: { alignItems: 'center', flex: 1 },
+  techLabel: { fontSize: 11, color: C.textMuted, textTransform: 'uppercase', marginBottom: 6 },
+  techValue: { fontSize: 18, fontWeight: '700' },
+  techSubLabel: { fontSize: 10, fontWeight: '600', marginTop: 4 },
+  trendBadge: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12, marginTop: 4 },
+  trendBadgeText: { fontSize: 13, fontWeight: '700' },
+  smaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: C.bg,
+    borderRadius: 10,
+    padding: 12,
+  },
+  smaItem: { alignItems: 'center', flex: 1 },
+  smaLabel: { fontSize: 10, color: C.textMuted, textTransform: 'uppercase', marginBottom: 4 },
+  smaValue: { fontSize: 14, fontWeight: '600', color: C.textPrimary },
+  newsCard: {
+    backgroundColor: C.surface,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: C.border,
+    padding: 16,
+    marginBottom: 12,
+  },
+  newsHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
+  newsSource: { fontSize: 12, fontWeight: '600', color: C.info },
+  newsTime: { fontSize: 11, color: C.textMuted },
+  newsTitle: { fontSize: 14, fontWeight: '600', color: C.textPrimary, lineHeight: 20, marginBottom: 8 },
+  sentimentBadge: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 },
+  sentimentText: { fontSize: 11, fontWeight: '700' },
+  lastUpdated: { fontSize: 11, color: C.textMuted, textAlign: 'center', marginTop: 16 },
 });

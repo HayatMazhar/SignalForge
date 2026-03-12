@@ -204,20 +204,83 @@ public class CryptoController : ControllerBase
     [HttpGet("news")]
     public async Task<IActionResult> CryptoNews(CancellationToken ct)
     {
-        var cryptoNews = new List<object>
+        var newsSymbols = new[] { "BTC", "ETH", "SOL", "XRP", "DOGE" };
+        var quotes = new List<(string Symbol, StockQuoteDto Quote)>();
+
+        foreach (var sym in newsSymbols)
         {
-            new { id = Guid.NewGuid().ToString(), title = "Bitcoin Surges Past Key Resistance Level", symbol = "BTC", summary = "Bitcoin breaks above significant resistance, with analysts eyeing the next target as institutional demand continues.", source = "CryptoInsights", sentimentScore = 0.7, publishedAt = DateTime.UtcNow.AddHours(-1).ToString("o") },
-            new { id = Guid.NewGuid().ToString(), title = "Ethereum Layer 2 Adoption Hits Record High", symbol = "ETH", summary = "Ethereum L2 solutions see unprecedented transaction volumes, reducing gas fees and improving scalability.", source = "DeFi Daily", sentimentScore = 0.6, publishedAt = DateTime.UtcNow.AddHours(-2).ToString("o") },
-            new { id = Guid.NewGuid().ToString(), title = "Solana DeFi TVL Grows 40% in Q1", symbol = "SOL", summary = "Solana's DeFi ecosystem continues rapid expansion with new protocols and increasing total value locked.", source = "BlockchainBeat", sentimentScore = 0.8, publishedAt = DateTime.UtcNow.AddHours(-3).ToString("o") },
-            new { id = Guid.NewGuid().ToString(), title = "SEC Delays Decision on Spot Ethereum ETF", symbol = "ETH", summary = "The Securities and Exchange Commission extends review period for multiple spot Ethereum ETF applications.", source = "CoinDesk", sentimentScore = -0.2, publishedAt = DateTime.UtcNow.AddHours(-4).ToString("o") },
-            new { id = Guid.NewGuid().ToString(), title = "XRP Sees Massive Whale Accumulation", symbol = "XRP", summary = "Large XRP holders increase positions significantly, suggesting confidence in upcoming price movement.", source = "Whale Alert", sentimentScore = 0.5, publishedAt = DateTime.UtcNow.AddHours(-5).ToString("o") },
-            new { id = Guid.NewGuid().ToString(), title = "Dogecoin Community Proposes Major Network Upgrade", symbol = "DOGE", summary = "The Dogecoin development team outlines plans for a significant protocol upgrade to improve transaction speed.", source = "DogeDaily", sentimentScore = 0.4, publishedAt = DateTime.UtcNow.AddHours(-6).ToString("o") },
-            new { id = Guid.NewGuid().ToString(), title = "Cardano Smart Contract Activity Surges", symbol = "ADA", summary = "Cardano blockchain sees record smart contract deployments as DeFi ecosystem gains momentum.", source = "CryptoWatch", sentimentScore = 0.6, publishedAt = DateTime.UtcNow.AddHours(-7).ToString("o") },
-            new { id = Guid.NewGuid().ToString(), title = "Global Crypto Regulation Framework Takes Shape", symbol = "BTC", summary = "Major economies align on cryptocurrency regulation standards, bringing clarity for institutional investors.", source = "Reuters Crypto", sentimentScore = 0.3, publishedAt = DateTime.UtcNow.AddHours(-8).ToString("o") },
-            new { id = Guid.NewGuid().ToString(), title = "Avalanche Subnet Technology Attracts Enterprise Interest", symbol = "AVAX", summary = "Major enterprises explore Avalanche subnets for private blockchain solutions and tokenization.", source = "Enterprise Crypto", sentimentScore = 0.5, publishedAt = DateTime.UtcNow.AddHours(-9).ToString("o") },
-            new { id = Guid.NewGuid().ToString(), title = "DeFi Lending Protocols See $10B Inflow", symbol = "AAVE", summary = "Decentralized lending platforms attract significant capital as yields become competitive with traditional finance.", source = "DeFi Pulse", sentimentScore = 0.7, publishedAt = DateTime.UtcNow.AddHours(-10).ToString("o") },
-        };
-        return Ok(cryptoNews);
+            var q = await _crypto.GetQuote(sym, ct);
+            if (q is not null)
+                quotes.Add((sym, q));
+        }
+
+        if (quotes.Count == 0)
+            return Ok(Array.Empty<object>());
+
+        try
+        {
+            var priceLines = string.Join("\n", quotes.Select(q =>
+                $"- {q.Symbol}: ${q.Quote.Price:F2}, 24h change: {q.Quote.ChangePercent:F2}%, volume: {q.Quote.Volume:N0}"));
+
+            var prompt = $"Based on these REAL crypto prices right now:\n{priceLines}\n\n"
+                + "Generate exactly 10 crypto news headlines with analysis. Return JSON array with objects: "
+                + "{ \"title\": string, \"symbol\": string, \"summary\": string (1-2 sentences), \"source\": string (realistic outlet name), \"sentimentScore\": number (-1.0 to 1.0) }\n"
+                + "Make headlines reflect the actual price movements shown. Return ONLY the JSON array.";
+
+            var aiJson = await _ai.ChatAsync("You are a crypto news analyst.", [("user", prompt)], ct);
+            var parsed = JsonSerializer.Deserialize<JsonElement>(aiJson);
+
+            var news = new List<object>();
+            var hourOffset = 0;
+            foreach (var item in parsed.EnumerateArray())
+            {
+                news.Add(new
+                {
+                    id = Guid.NewGuid().ToString(),
+                    title = item.GetProperty("title").GetString(),
+                    symbol = item.GetProperty("symbol").GetString(),
+                    summary = item.GetProperty("summary").GetString(),
+                    source = item.GetProperty("source").GetString(),
+                    sentimentScore = item.GetProperty("sentimentScore").GetDouble(),
+                    publishedAt = DateTime.UtcNow.AddHours(-(++hourOffset)).ToString("o"),
+                });
+            }
+
+            return Ok(news);
+        }
+        catch
+        {
+            var fallbackNews = quotes.SelectMany((q, i) =>
+            {
+                var direction = q.Quote.ChangePercent >= 0 ? "up" : "down";
+                var sentiment = q.Quote.ChangePercent >= 0 ? "Bullish momentum continues" : "Bears maintain pressure";
+                return new[]
+                {
+                    new
+                    {
+                        id = Guid.NewGuid().ToString(),
+                        title = $"{q.Symbol} {direction} {Math.Abs(q.Quote.ChangePercent):F1}% to ${q.Quote.Price:F2} - {sentiment}",
+                        symbol = q.Symbol,
+                        summary = $"{q.Symbol} is trading at ${q.Quote.Price:F2} with a {q.Quote.ChangePercent:F2}% change in the last 24 hours on volume of {q.Quote.Volume:N0}.",
+                        source = "SignalForge Analytics",
+                        sentimentScore = (double)Math.Clamp(q.Quote.ChangePercent / 10m, -1m, 1m),
+                        publishedAt = DateTime.UtcNow.AddHours(-(i + 1)).ToString("o"),
+                    },
+                    new
+                    {
+                        id = Guid.NewGuid().ToString(),
+                        title = $"{q.Symbol} Volume {(q.Quote.Volume > 1_000_000_000 ? "Surges" : "Steady")} at {q.Quote.Volume:N0}",
+                        symbol = q.Symbol,
+                        summary = $"Trading volume for {q.Symbol} at {q.Quote.Volume:N0} as price sits at ${q.Quote.Price:F2}.",
+                        source = "SignalForge Analytics",
+                        sentimentScore = (double)Math.Clamp(q.Quote.ChangePercent / 15m, -1m, 1m),
+                        publishedAt = DateTime.UtcNow.AddHours(-(i + 6)).ToString("o"),
+                    },
+                };
+            }).Take(10).ToList();
+
+            return Ok(fallbackNews);
+        }
     }
 
     [HttpGet("market-pulse")]
@@ -236,7 +299,15 @@ public class CryptoController : ControllerBase
             events.Add(new { id = Guid.NewGuid().ToString(), type = "Alert", symbol = l.Symbol, title = $"{l.Symbol} Down {l.ChangePercent:F1}%", description = $"{l.Name} dropped {Math.Abs(l.ChangePercent):F1}% to ${l.Price:F2}", impact = "Bearish", timestamp = DateTime.UtcNow.AddMinutes(-20).ToString("o") });
         }
 
-        events.Add(new { id = Guid.NewGuid().ToString(), type = "Economic", symbol = "BTC", title = "Bitcoin Dominance Shifts", description = "BTC dominance changes reflect broader crypto market rotation patterns", impact = "Neutral", timestamp = DateTime.UtcNow.AddHours(-1).ToString("o") });
+        var btcQ = await _crypto.GetQuote("BTC", ct);
+        if (btcQ is not null)
+        {
+            var btcDir = btcQ.ChangePercent >= 0 ? "Bullish" : "Bearish";
+            events.Add(new { id = Guid.NewGuid().ToString(), type = "Economic", symbol = "BTC",
+                title = $"BTC at ${btcQ.Price:F0} ({(btcQ.ChangePercent >= 0 ? "+" : "")}{btcQ.ChangePercent:F1}%)",
+                description = $"Bitcoin trading at ${btcQ.Price:F2} with {btcQ.ChangePercent:F2}% change on volume {btcQ.Volume:N0}",
+                impact = btcDir, timestamp = DateTime.UtcNow.AddHours(-1).ToString("o") });
+        }
 
         return Ok(events.OrderByDescending(e => ((dynamic)e).timestamp));
     }
@@ -245,19 +316,76 @@ public class CryptoController : ControllerBase
     public async Task<IActionResult> CryptoSmartMoney(CancellationToken ct)
     {
         var symbols = new[] { "BTC", "ETH", "SOL", "XRP", "DOGE", "ADA", "AVAX", "DOT", "LINK", "MATIC" };
-        var rng = new Random(DateTime.UtcNow.DayOfYear + 100);
+        var quotes = new List<(string Symbol, StockQuoteDto Quote)>();
 
-        var flows = symbols.Select(sym =>
+        foreach (var sym in symbols)
         {
-            var whaleBuy = rng.Next(10, 200) * 1000000m;
-            var whaleSell = rng.Next(5, 150) * 1000000m;
-            var retailBuy = rng.Next(5, 80) * 1000000m;
-            var retailSell = rng.Next(3, 70) * 1000000m;
-            var netFlow = (whaleBuy - whaleSell) + (retailBuy - retailSell);
-            var signal = netFlow > 50000000 ? "Strong Accumulation" : netFlow > 0 ? "Accumulation" : netFlow < -50000000 ? "Strong Distribution" : "Distribution";
-            return new { symbol = sym, institutionalBuy = whaleBuy, institutionalSell = whaleSell, retailBuy, retailSell, netFlow, signal, darkPoolPercent = 0 };
-        }).OrderByDescending(f => f.netFlow).ToList();
+            var q = await _crypto.GetQuote(sym, ct);
+            if (q is not null)
+                quotes.Add((sym, q));
+        }
 
-        return Ok(flows);
+        if (quotes.Count == 0)
+            return Ok(Array.Empty<object>());
+
+        try
+        {
+            var priceLines = string.Join("\n", quotes.Select(q =>
+                $"- {q.Symbol}: ${q.Quote.Price:F2}, 24h change: {q.Quote.ChangePercent:F2}%, volume: {q.Quote.Volume:N0}"));
+
+            var prompt = $"Based on these REAL crypto prices and volumes:\n{priceLines}\n\n"
+                + "Estimate smart money / whale flows for each coin. Return a JSON array with objects: "
+                + "{ \"symbol\": string, \"institutionalBuy\": number, \"institutionalSell\": number, "
+                + "\"retailBuy\": number, \"retailSell\": number, \"signal\": \"Strong Accumulation\"|\"Accumulation\"|\"Distribution\"|\"Strong Distribution\", "
+                + "\"darkPoolPercent\": number (0-100) }\n"
+                + "Base estimates on price movements: strong gains suggest accumulation, losses suggest distribution. "
+                + "Scale flow values proportionally to volume. Return ONLY the JSON array.";
+
+            var aiJson = await _ai.ChatAsync("You are a crypto whale-flow analyst.", [("user", prompt)], ct);
+            var parsed = JsonSerializer.Deserialize<JsonElement>(aiJson);
+
+            var flows = new List<object>();
+            foreach (var item in parsed.EnumerateArray())
+            {
+                var instBuy = item.GetProperty("institutionalBuy").GetDecimal();
+                var instSell = item.GetProperty("institutionalSell").GetDecimal();
+                var retBuy = item.GetProperty("retailBuy").GetDecimal();
+                var retSell = item.GetProperty("retailSell").GetDecimal();
+                flows.Add(new
+                {
+                    symbol = item.GetProperty("symbol").GetString(),
+                    institutionalBuy = instBuy,
+                    institutionalSell = instSell,
+                    retailBuy = retBuy,
+                    retailSell = retSell,
+                    netFlow = (instBuy - instSell) + (retBuy - retSell),
+                    signal = item.GetProperty("signal").GetString(),
+                    darkPoolPercent = item.GetProperty("darkPoolPercent").GetInt32(),
+                });
+            }
+
+            return Ok(flows.OrderByDescending(f => ((dynamic)f).netFlow).ToList());
+        }
+        catch
+        {
+            var fallbackFlows = quotes.Select(q =>
+            {
+                var volumeScale = q.Quote.Volume / 1_000_000m;
+                var changeFactor = q.Quote.ChangePercent / 100m;
+                var instBuy = volumeScale * (0.4m + Math.Max(changeFactor, 0)) * 1_000_000m;
+                var instSell = volumeScale * (0.4m - Math.Min(changeFactor, 0)) * 1_000_000m;
+                var retBuy = volumeScale * (0.2m + Math.Max(changeFactor * 0.5m, 0)) * 1_000_000m;
+                var retSell = volumeScale * (0.2m - Math.Min(changeFactor * 0.5m, 0)) * 1_000_000m;
+                var netFlow = (instBuy - instSell) + (retBuy - retSell);
+                var signal = netFlow > 50_000_000 ? "Strong Accumulation"
+                    : netFlow > 0 ? "Accumulation"
+                    : netFlow < -50_000_000 ? "Strong Distribution"
+                    : "Distribution";
+
+                return new { symbol = q.Symbol, institutionalBuy = instBuy, institutionalSell = instSell, retailBuy = retBuy, retailSell = retSell, netFlow, signal, darkPoolPercent = 0 };
+            }).OrderByDescending(f => f.netFlow).ToList();
+
+            return Ok(fallbackFlows);
+        }
     }
 }

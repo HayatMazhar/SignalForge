@@ -222,6 +222,19 @@ export default function BacktestScreen() {
             </View>
           )}
 
+          {result && result.winRate != null && (
+            <View style={{ marginBottom: 16 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+                <Text style={{ fontSize: 12, color: '#00FF94' }}>Wins {Math.round(result.winRate * 100)}%</Text>
+                <Text style={{ fontSize: 12, color: '#FF3B5C' }}>Losses {Math.round((1 - result.winRate) * 100)}%</Text>
+              </View>
+              <View style={{ height: 8, backgroundColor: '#1A1F35', borderRadius: 4, overflow: 'hidden', flexDirection: 'row' }}>
+                <View style={{ width: `${Math.round(result.winRate * 100)}%`, backgroundColor: '#00FF94', borderRadius: 4 }} />
+                <View style={{ flex: 1, backgroundColor: '#FF3B5C33' }} />
+              </View>
+            </View>
+          )}
+
           {/* Trade list */}
           {result.trades && result.trades.length > 0 && (
             <>

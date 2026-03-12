@@ -143,16 +143,15 @@ public class InsightsController : ControllerBase
         }
         catch
         {
-            var rng = new Random(DateTime.UtcNow.DayOfYear);
-            var momentum = 40 + rng.Next(40);
-            var breadth = 35 + rng.Next(45);
-            var putCall = 30 + rng.Next(50);
-            var volatility = 25 + rng.Next(55);
-            var safeHaven = 35 + rng.Next(40);
-            var junkBond = 40 + rng.Next(35);
-            var composite = (int)(momentum * 0.2 + breadth * 0.2 + putCall * 0.15 + volatility * 0.2 + safeHaven * 0.15 + junkBond * 0.1);
+            var momentum = (int)Math.Clamp(50 + avgChange * 5, 0, 100);
+            var breadthScore = gainers + losers > 0 ? (int)((double)gainers / (gainers + losers) * 100) : 50;
+            var putCallScore = 50;
+            var volatilityScore = (int)Math.Clamp(50 - Math.Abs(avgChange) * 3, 0, 100);
+            var safeHavenScore = avgChange >= 0 ? 60 : 40;
+            var junkBondScore = 50;
+            var composite = (int)(momentum * 0.2 + breadthScore * 0.2 + putCallScore * 0.15 + volatilityScore * 0.2 + safeHavenScore * 0.15 + junkBondScore * 0.1);
             var label = composite >= 75 ? "Extreme Greed" : composite >= 60 ? "Greed" : composite >= 45 ? "Neutral" : composite >= 25 ? "Fear" : "Extreme Fear";
-            return Ok(new FearGreedDto(composite, label, momentum, breadth, putCall, volatility, safeHaven, junkBond, DateTime.UtcNow.ToString("o")));
+            return Ok(new FearGreedDto(composite, label, momentum, breadthScore, putCallScore, volatilityScore, safeHavenScore, junkBondScore, DateTime.UtcNow.ToString("o")));
         }
     }
 
@@ -182,11 +181,19 @@ public class InsightsController : ControllerBase
 
         if (events.Count < 5)
         {
-            events.AddRange([
-                new(Guid.NewGuid().ToString(), "Signal", "NVDA", "AI Buy Signal Generated", "NVDA triggered a strong buy signal with 78% confidence based on technical breakout and bullish options flow", "Bullish", DateTime.UtcNow.AddMinutes(-12).ToString("o")),
-                new(Guid.NewGuid().ToString(), "Alert", "SPY", "S&P 500 New Intraday High", "The S&P 500 index reached a new intraday high, breaking above the 5,250 resistance level", "Bullish", DateTime.UtcNow.AddMinutes(-28).ToString("o")),
-                new(Guid.NewGuid().ToString(), "Economic", "FED", "FOMC Minutes Released", "Fed officials signaled patience on rate cuts, maintaining current policy stance through mid-2026", "Neutral", DateTime.UtcNow.AddHours(-2).ToString("o")),
-            ]);
+            try
+            {
+                var extraMovers = await _marketData.GetTopMovers(ct);
+                foreach (var m in extraMovers.Take(5 - events.Count))
+                {
+                    var impact = m.ChangePercent > 0 ? "Bullish" : "Bearish";
+                    events.Add(new(Guid.NewGuid().ToString(), "Signal", m.Symbol,
+                        $"{m.Symbol} {(m.ChangePercent > 0 ? "Gains" : "Drops")} {Math.Abs(m.ChangePercent):F1}%",
+                        $"{m.Name} moved {(m.ChangePercent > 0 ? "+" : "")}{m.ChangePercent:F1}% to ${m.Price:F2}",
+                        impact, DateTime.UtcNow.AddMinutes(-10 * (events.Count + 1)).ToString("o")));
+                }
+            }
+            catch { }
         }
 
         return Ok(events.OrderByDescending(e => e.Timestamp).Take(25));
@@ -247,19 +254,27 @@ public class InsightsController : ControllerBase
         }
         catch { }
 
-        var rng = new Random(DateTime.UtcNow.DayOfYear + 42);
-        var fallbackFlows = symbols.Select(s =>
+        var fallbackFlows = new List<SmartMoneyFlowDto>();
+        foreach (var s in symbols.Take(8))
         {
-            var instBuy = rng.Next(50, 500) * 100000m;
-            var instSell = rng.Next(30, 400) * 100000m;
-            var retBuy = rng.Next(20, 200) * 100000m;
-            var retSell = rng.Next(15, 180) * 100000m;
-            var netFlow = (instBuy - instSell) + (retBuy - retSell);
-            var darkPool = 30 + rng.Next(25);
-            var signal = netFlow > 10000000 ? "Strong Accumulation" : netFlow > 0 ? "Accumulation" : netFlow < -10000000 ? "Strong Distribution" : "Distribution";
-            return new SmartMoneyFlowDto(s, instBuy, instSell, retBuy, retSell, netFlow, signal, darkPool);
-        }).OrderByDescending(f => f.NetFlow).ToList();
-        return Ok(fallbackFlows);
+            try
+            {
+                var q = await _marketData.GetQuote(s, ct);
+                if (q is null) continue;
+                var volumeScale = q.Volume / 1_000_000m;
+                var changeFactor = q.ChangePercent / 100m;
+                var instBuy = volumeScale * (0.4m + Math.Max(changeFactor, 0)) * 1_000_000m;
+                var instSell = volumeScale * (0.4m - Math.Min(changeFactor, 0)) * 1_000_000m;
+                var retBuy = volumeScale * (0.2m + Math.Max(changeFactor * 0.5m, 0)) * 1_000_000m;
+                var retSell = volumeScale * (0.2m - Math.Min(changeFactor * 0.5m, 0)) * 1_000_000m;
+                var netFlow = (instBuy - instSell) + (retBuy - retSell);
+                var darkPool = (int)Math.Clamp(35 + changeFactor * 100, 25, 55);
+                var signal = netFlow > 10_000_000 ? "Strong Accumulation" : netFlow > 0 ? "Accumulation" : netFlow < -10_000_000 ? "Strong Distribution" : "Distribution";
+                fallbackFlows.Add(new SmartMoneyFlowDto(s, instBuy, instSell, retBuy, retSell, netFlow, signal, darkPool));
+            }
+            catch { }
+        }
+        return Ok(fallbackFlows.OrderByDescending(f => f.NetFlow));
     }
 
     private static decimal CalculateScore(decimal rsi, string trend)

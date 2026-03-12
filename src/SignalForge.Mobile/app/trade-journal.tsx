@@ -100,6 +100,12 @@ export default function TradeJournalScreen() {
   const totalPnL = trades.reduce((s, t) => s + calcPnL(t), 0);
   const wins = trades.filter((t) => calcPnL(t) > 0).length;
   const winRate = trades.length > 0 ? ((wins / trades.length) * 100).toFixed(1) : '0';
+  const winCount = trades.filter((t) => calcPnL(t) >= 0).length;
+  const lossCount = trades.length - winCount;
+  const plValues = trades.map((t) => calcPnL(t));
+  const bestTrade = plValues.length > 0 ? Math.max(...plValues) : null;
+  const worstTrade = plValues.length > 0 ? Math.min(...plValues) : null;
+  const avgPL = plValues.length > 0 ? plValues.reduce((a, b) => a + b, 0) / plValues.length : 0;
 
   const renderTrade = ({ item }: { item: Trade }) => {
     const pnl = calcPnL(item);
@@ -164,6 +170,44 @@ export default function TradeJournalScreen() {
             </Text>
           </View>
         </View>
+
+        {trades.length >= 2 && (
+          <View style={styles.analyticsSection}>
+            <Text style={styles.analyticsSectionTitle}>Performance Analytics</Text>
+
+            <View style={{ marginBottom: 16 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+                <Text style={{ fontSize: 12, color: C.accent }}>Wins {winCount}</Text>
+                <Text style={{ fontSize: 12, color: C.danger }}>Losses {lossCount}</Text>
+              </View>
+              <View style={{ height: 8, backgroundColor: C.border, borderRadius: 4, overflow: 'hidden', flexDirection: 'row' }}>
+                <View style={{ width: `${trades.length > 0 ? (winCount / trades.length * 100) : 0}%`, backgroundColor: C.accent, borderRadius: 4 }} />
+              </View>
+            </View>
+
+            <View style={{ flexDirection: 'row', gap: 12 }}>
+              <View style={{ flex: 1, backgroundColor: C.bg, borderRadius: 12, padding: 12, alignItems: 'center' }}>
+                <Text style={{ fontSize: 10, color: C.textMuted, textTransform: 'uppercase', marginBottom: 4 }}>Best Trade</Text>
+                <Text style={{ fontSize: 16, fontWeight: '800', color: C.accent }}>
+                  {bestTrade !== null ? `+$${bestTrade.toFixed(2)}` : '—'}
+                </Text>
+              </View>
+              <View style={{ flex: 1, backgroundColor: C.bg, borderRadius: 12, padding: 12, alignItems: 'center' }}>
+                <Text style={{ fontSize: 10, color: C.textMuted, textTransform: 'uppercase', marginBottom: 4 }}>Worst Trade</Text>
+                <Text style={{ fontSize: 16, fontWeight: '800', color: C.danger }}>
+                  {worstTrade !== null ? `$${worstTrade.toFixed(2)}` : '—'}
+                </Text>
+              </View>
+            </View>
+
+            <View style={{ backgroundColor: C.bg, borderRadius: 12, padding: 12, alignItems: 'center', marginTop: 12 }}>
+              <Text style={{ fontSize: 10, color: C.textMuted, textTransform: 'uppercase', marginBottom: 4 }}>Avg P&L per Trade</Text>
+              <Text style={{ fontSize: 18, fontWeight: '800', color: avgPL >= 0 ? C.accent : C.danger }}>
+                {avgPL >= 0 ? '+' : ''}${avgPL.toFixed(2)}
+              </Text>
+            </View>
+          </View>
+        )}
 
         {showForm && (
           <View style={styles.form}>
@@ -341,4 +385,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
   },
   emptyText: { fontSize: 14, color: C.textMuted, marginTop: 12 },
+  analyticsSection: {
+    margin: 16,
+    marginBottom: 0,
+    backgroundColor: C.surface,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: C.border,
+    padding: 16,
+  },
+  analyticsSectionTitle: { fontSize: 15, fontWeight: '700', color: C.textPrimary, marginBottom: 12 },
 });

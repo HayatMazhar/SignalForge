@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Speech from 'expo-speech';
+import * as Clipboard from 'expo-clipboard';
 import api from '../src/api/client';
 
 const COLORS = {
@@ -289,6 +290,16 @@ export default function VoiceCommandScreen() {
                   </View>
                   <Text style={styles.interpretText}>{response.interpretation}</Text>
                 </View>
+              ) : null}
+
+              {response.interpretation ? (
+                <TouchableOpacity
+                  style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: COLORS.surface, borderRadius: 12, padding: 10, marginBottom: 14, borderWidth: 1, borderColor: COLORS.border }}
+                  onPress={() => Clipboard.setStringAsync(response.interpretation)}
+                >
+                  <Ionicons name="copy-outline" size={16} color={COLORS.textMuted} />
+                  <Text style={{ fontSize: 12, color: COLORS.textMuted }}>Copy Response</Text>
+                </TouchableOpacity>
               ) : null}
 
               {(response.results ?? []).length > 0 && (

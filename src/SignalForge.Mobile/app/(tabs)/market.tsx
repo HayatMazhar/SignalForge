@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   StyleSheet,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@tanstack/react-query';
@@ -28,6 +29,7 @@ const COLORS = {
 export default function MarketScreen() {
   const { mode } = useAssetModeStore();
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { data: movers = [], refetch, isFetching } = useQuery({
     queryKey: ['topMovers', mode],
@@ -51,8 +53,20 @@ export default function MarketScreen() {
     setRefreshing(false);
   }, [refetch]);
 
-  const gainers = movers.filter((m) => (m.changePercent ?? 0) > 0);
-  const moversLosers = movers.filter((m) => (m.changePercent ?? 0) < 0);
+  const totalFetched = movers.length + (losers ?? []).length;
+  const bestGainerPct = movers.length > 0 ? Math.max(...movers.map((m: any) => m.changePercent ?? 0)) : 0;
+  const allLosersRaw = [...movers.filter((m: any) => (m.changePercent ?? 0) < 0), ...(losers ?? [])];
+  const worstLoserPct = allLosersRaw.length > 0 ? Math.min(...allLosersRaw.map((m: any) => m.changePercent ?? 0)) : 0;
+
+  const sq = searchQuery.toLowerCase();
+  const filteredMovers = searchQuery
+    ? movers.filter((m: any) => m.symbol?.toLowerCase().includes(sq) || m.name?.toLowerCase().includes(sq))
+    : movers;
+  const gainers = filteredMovers.filter((m: any) => (m.changePercent ?? 0) > 0);
+  const moversLosers = filteredMovers.filter((m: any) => (m.changePercent ?? 0) < 0);
+  const filteredLosers = searchQuery
+    ? (losers ?? []).filter((m: any) => m.symbol?.toLowerCase().includes(sq) || m.name?.toLowerCase().includes(sq))
+    : (losers ?? []);
 
   const MoverRow = ({ item }: { item: typeof movers[0] }) => (
     <TouchableOpacity
@@ -80,6 +94,31 @@ export default function MarketScreen() {
         contentContainerStyle={styles.scrollContent}
         refreshControl={<RefreshControl refreshing={refreshing || isFetching} onRefresh={onRefresh} tintColor={COLORS.accent} />}
       >
+        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
+          <View style={{ flex: 1, backgroundColor: COLORS.surface, borderRadius: 12, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: COLORS.border }}>
+            <Text style={{ fontSize: 20, fontWeight: '900', color: COLORS.textPrimary }}>{totalFetched}</Text>
+            <Text style={{ fontSize: 9, color: COLORS.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>Total</Text>
+          </View>
+          <View style={{ flex: 1, backgroundColor: COLORS.surface, borderRadius: 12, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: COLORS.border }}>
+            <Text style={{ fontSize: 20, fontWeight: '900', color: COLORS.accent }}>{formatPercent(bestGainerPct)}</Text>
+            <Text style={{ fontSize: 9, color: COLORS.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>Best</Text>
+          </View>
+          <View style={{ flex: 1, backgroundColor: COLORS.surface, borderRadius: 12, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: COLORS.border }}>
+            <Text style={{ fontSize: 20, fontWeight: '900', color: COLORS.danger }}>{formatPercent(worstLoserPct)}</Text>
+            <Text style={{ fontSize: 9, color: COLORS.textMuted, textTransform: 'uppercase', letterSpacing: 1 }}>Worst</Text>
+          </View>
+        </View>
+
+        <TextInput
+          style={{ backgroundColor: COLORS.surface, borderRadius: 12, padding: 12, fontSize: 14, color: COLORS.textPrimary, borderWidth: 1, borderColor: COLORS.border, marginBottom: 16 }}
+          placeholder="Search by symbol or name..."
+          placeholderTextColor={COLORS.textMuted}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
+
         <Text style={styles.sectionTitle}>{mode === 'crypto' ? 'Crypto Movers' : 'Top Movers'}</Text>
 
         <Text style={styles.subsectionTitle}>Gainers</Text>
@@ -97,10 +136,10 @@ export default function MarketScreen() {
         )}
 
         <Text style={styles.sectionTitle}>{mode === 'crypto' ? 'Crypto Losers' : 'Top Losers'}</Text>
-        {(losers ?? []).length === 0 ? (
+        {filteredLosers.length === 0 ? (
           <Text style={styles.emptyText}>No losers</Text>
         ) : (
-          (losers ?? []).map((item) => (
+          filteredLosers.map((item: any) => (
             <TouchableOpacity
               key={item.symbol}
               style={styles.moverRow}

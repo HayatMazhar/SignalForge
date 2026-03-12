@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import api from '../src/api/client';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const C = {
   bg: '#06060B',
@@ -50,6 +51,14 @@ const SUGGESTIONS = [
 
 export default function NaturalQueryScreen() {
   const [query, setQuery] = useState('');
+  const [history, setHistory] = useState<string[]>([]);
+  const HISTORY_KEY = 'sf-natural-query-history';
+
+  useEffect(() => {
+    AsyncStorage.getItem(HISTORY_KEY).then(raw => {
+      if (raw) setHistory(JSON.parse(raw));
+    }).catch(() => {});
+  }, []);
 
   const { mutate, data, isPending, reset } = useMutation({
     mutationFn: async (q: string) => {
@@ -62,6 +71,9 @@ export default function NaturalQueryScreen() {
     const searchQuery = q ?? query;
     if (!searchQuery.trim()) return;
     if (q) setQuery(q);
+    const newHistory = [searchQuery, ...history.filter(h => h !== searchQuery)].slice(0, 10);
+    setHistory(newHistory);
+    AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(newHistory)).catch(() => {});
     mutate(searchQuery);
   };
 
@@ -135,6 +147,25 @@ export default function NaturalQueryScreen() {
                 </TouchableOpacity>
               ))}
             </View>
+          </View>
+        )}
+
+        {history.length > 0 && !data && (
+          <View style={{ marginBottom: 16 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <Text style={{ fontSize: 13, fontWeight: '700', color: C.textMuted }}>Recent Queries</Text>
+              <TouchableOpacity onPress={() => { setHistory([]); AsyncStorage.removeItem(HISTORY_KEY).catch(() => {}); }}>
+                <Text style={{ fontSize: 11, color: C.textMuted }}>Clear</Text>
+              </TouchableOpacity>
+            </View>
+            {history.map((h, i) => (
+              <TouchableOpacity key={i} onPress={() => setQuery(h)}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: C.border }}>
+                <Ionicons name="time-outline" size={16} color={C.textMuted} />
+                <Text style={{ fontSize: 14, color: C.textPrimary, flex: 1 }} numberOfLines={1}>{h}</Text>
+                <Ionicons name="arrow-forward" size={14} color={C.textMuted} />
+              </TouchableOpacity>
+            ))}
           </View>
         )}
 

@@ -172,7 +172,7 @@ public class PolygonMarketDataService : IMarketDataService
         _quotesCache ??= MockDataProvider.LoadJson<Dictionary<string, MockQuote>>("quotes.json", _logger);
         if (_quotesCache is null || !_quotesCache.TryGetValue(symbol.ToUpperInvariant(), out var q))
         {
-            return new StockQuoteDto(symbol, 100, 1.5m, 1.52m, 102, 98, 99, 5000000, DateTime.UtcNow);
+            return null;
         }
         return new StockQuoteDto(q.Symbol, q.Price, q.Change, q.ChangePercent, q.High, q.Low, q.Open, q.Volume, DateTime.UtcNow);
     }
@@ -267,11 +267,9 @@ public class PolygonMarketDataService : IMarketDataService
             .ToList();
     }
 
-    private static TechnicalDataDto GetFallbackTechnicals(string symbol)
+    private static TechnicalDataDto? GetFallbackTechnicals(string symbol)
     {
-        var rng = new Random(symbol.GetHashCode());
-        var rsi = 30 + rng.Next(40);
-        return new TechnicalDataDto(rsi, rng.Next(-5, 5), rng.Next(-3, 3), 200, 195, 190, 210, 185, 3.5m, rsi > 50 ? "Bullish" : "Bearish");
+        return null;
     }
 
     #endregion

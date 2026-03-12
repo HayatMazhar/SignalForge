@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
+import { signalsApi, watchlistApi, alertsApi } from '../src/api/stocks';
 
 const COLORS = {
   bg: '#06060B',
@@ -30,19 +33,6 @@ interface ActivityEntry {
   action: string;
   timestamp: string;
 }
-
-const ACTIVITIES: ActivityEntry[] = [
-  { id: '1', type: 'login', action: 'Logged in', timestamp: '2025-03-03T14:32:00Z' },
-  { id: '2', type: 'signal', action: 'Generated signal for AAPL', timestamp: '2025-03-03T14:15:00Z' },
-  { id: '3', type: 'watchlist', action: 'Added NVDA to watchlist', timestamp: '2025-03-03T13:50:00Z' },
-  { id: '4', type: 'alert', action: 'Created price alert for TSLA above $250', timestamp: '2025-03-03T13:20:00Z' },
-  { id: '5', type: 'settings', action: 'Updated notification preferences', timestamp: '2025-03-03T12:00:00Z' },
-  { id: '6', type: 'login', action: 'Logged in', timestamp: '2025-03-02T09:10:00Z' },
-  { id: '7', type: 'signal', action: 'Generated signal for MSFT', timestamp: '2025-03-02T09:05:00Z' },
-  { id: '8', type: 'watchlist', action: 'Removed META from watchlist', timestamp: '2025-03-02T08:45:00Z' },
-  { id: '9', type: 'alert', action: 'Deleted alert for GOOGL', timestamp: '2025-03-01T16:30:00Z' },
-  { id: '10', type: 'settings', action: 'Enabled push notifications', timestamp: '2025-03-01T10:00:00Z' },
-];
 
 function formatTime(iso: string): string {
   const d = new Date(iso);
@@ -88,7 +78,29 @@ const FILTERS: { key: ActivityType; label: string }[] = [
 export default function ActivityLogScreen() {
   const [filter, setFilter] = useState<ActivityType>('all');
 
-  const filtered = ACTIVITIES.filter((a) =>
+  const { data: signals = [], isLoading: sigLoading } = useQuery({ queryKey: ['act-signals'], queryFn: () => signalsApi.getSignals(undefined, 20) });
+  const { data: watchlist = [], isLoading: wlLoading } = useQuery({ queryKey: ['act-wl'], queryFn: () => watchlistApi.get() });
+  const { data: alerts = [], isLoading: alLoading } = useQuery({ queryKey: ['act-alerts'], queryFn: () => alertsApi.get() });
+
+  const activities: ActivityEntry[] = useMemo(() => {
+    const items: ActivityEntry[] = [];
+    (signals as any[]).forEach((s: any, i: number) => {
+      items.push({ id: `sig-${i}`, type: 'signal', action: `Generated ${s.type ?? 'Hold'} signal for ${s.symbol} (${Math.round(s.confidenceScore ?? 0)}%)`, timestamp: s.generatedAt ?? new Date().toISOString() });
+    });
+    const wlArr = Array.isArray(watchlist) ? watchlist : [];
+    wlArr.forEach((w: any, i: number) => {
+      const sym = typeof w === 'string' ? w : w?.symbol ?? '';
+      items.push({ id: `wl-${i}`, type: 'watchlist', action: `${sym} on watchlist`, timestamp: w?.createdAt ?? new Date().toISOString() });
+    });
+    (alerts as any[]).forEach((a: any, i: number) => {
+      items.push({ id: `al-${i}`, type: 'alert', action: `Alert: ${a.symbol ?? ''} ${a.alertType === 0 ? 'above' : a.alertType === 1 ? 'below' : 'change'} ${a.targetValue ?? ''}`, timestamp: a.createdAt ?? new Date().toISOString() });
+    });
+    items.push({ id: 'login-now', type: 'login', action: 'Current session', timestamp: new Date().toISOString() });
+    return items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }, [signals, watchlist, alerts]);
+
+  const isLoading = sigLoading || wlLoading || alLoading;
+  const filtered = activities.filter((a) =>
     filter === 'all' ? true : a.type === filter,
   );
 
@@ -109,6 +121,8 @@ export default function ActivityLogScreen() {
       </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        {isLoading && <ActivityIndicator color={COLORS.accent} size="large" style={{ marginTop: 32 }} />}
+        {!isLoading && filtered.length === 0 && <Text style={{ color: COLORS.textMuted, textAlign: 'center', marginTop: 32, fontSize: 14 }}>No activity yet</Text>}
         {filtered.map((entry, index) => (
           <View key={entry.id} style={styles.row}>
             <View style={styles.timeline}>

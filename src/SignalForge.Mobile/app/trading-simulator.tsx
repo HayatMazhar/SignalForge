@@ -13,7 +13,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useQuery } from '@tanstack/react-query';
 import api from '../src/api/client';
+import { stocksApi } from '../src/api/stocks';
 
 const C = {
   bg: '#06060B',
@@ -76,6 +78,25 @@ export default function TradingSimulatorScreen() {
   useEffect(() => {
     load();
   }, [load]);
+
+  const positionSymbols = data.positions.map(p => p.symbol);
+  const { data: liveQuotes = {} } = useQuery({
+    queryKey: ['sim-quotes', positionSymbols.join(',')],
+    queryFn: async () => {
+      const quotes: Record<string, number> = {};
+      await Promise.all(
+        positionSymbols.map(async (sym) => {
+          try {
+            const q = await stocksApi.getQuote(sym);
+            quotes[sym] = q.price;
+          } catch {}
+        })
+      );
+      return quotes;
+    },
+    enabled: positionSymbols.length > 0,
+    refetchInterval: 30000,
+  });
 
   const save = async (d: PaperData) => {
     setData(d);
@@ -156,7 +177,7 @@ export default function TradingSimulatorScreen() {
   };
 
   const totalPositionsValue = data.positions.reduce(
-    (sum, p) => sum + p.qty * p.avgCost,
+    (sum, p) => sum + p.qty * (liveQuotes[p.symbol] ?? p.avgCost),
     0
   );
   const totalValue = data.cash + totalPositionsValue;
@@ -205,6 +226,9 @@ export default function TradingSimulatorScreen() {
             <Text style={s.statValue}>{data.history.length}</Text>
           </View>
         </View>
+        <Text style={{ color: C.textMuted, fontSize: 10, textAlign: 'center', marginBottom: 8 }}>
+          Prices refresh every 30s • {positionSymbols.length} position{positionSymbols.length !== 1 ? 's' : ''} tracked
+        </Text>
 
         <View style={s.formSection}>
           <Text style={s.sectionTitle}>Buy</Text>
@@ -277,15 +301,22 @@ export default function TradingSimulatorScreen() {
             <Text style={s.emptyText}>No positions</Text>
           ) : (
             data.positions.map((p) => {
-              const value = p.qty * p.avgCost;
+              const currentPrice = liveQuotes[p.symbol] ?? p.avgCost;
+              const value = p.qty * currentPrice;
               const pl = value - p.qty * p.avgCost;
+              const plPercent = p.avgCost > 0 ? ((currentPrice - p.avgCost) / p.avgCost * 100) : 0;
               return (
                 <View key={p.symbol} style={s.positionCard}>
                   <View style={s.positionHeader}>
                     <Text style={s.posSymbol}>{p.symbol}</Text>
                     <Text style={s.posValue}>${value.toLocaleString(undefined, { minimumFractionDigits: 2 })}</Text>
                   </View>
-                  <Text style={s.posMeta}>Qty: {p.qty} @ ${p.avgCost.toFixed(2)} • P&L: ${pl.toFixed(2)}</Text>
+                  <Text style={s.posMeta}>
+                    Qty: {p.qty} @ ${p.avgCost.toFixed(2)} • Current: ${currentPrice.toFixed(2)}
+                  </Text>
+                  <Text style={[s.posMeta, { color: pl >= 0 ? C.accent : C.danger, fontWeight: '700', marginTop: 2 }]}>
+                    P&L: {pl >= 0 ? '+' : ''}${pl.toFixed(2)} ({plPercent >= 0 ? '+' : ''}{plPercent.toFixed(1)}%)
+                  </Text>
                 </View>
               );
             })
@@ -313,6 +344,16 @@ export default function TradingSimulatorScreen() {
               ))
           )}
         </View>
+
+        <TouchableOpacity
+          style={[s.btn, { backgroundColor: C.danger + '30', borderWidth: 1, borderColor: C.danger, marginTop: 20 }]}
+          onPress={() => Alert.alert('Reset Portfolio', 'Reset to $100,000 and clear all positions?', [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Reset', style: 'destructive', onPress: async () => { await save(DEFAULT_DATA); } },
+          ])}
+        >
+          <Text style={[s.btnText, { color: C.danger }]}>Reset Portfolio</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );

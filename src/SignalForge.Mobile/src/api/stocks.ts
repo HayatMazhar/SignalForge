@@ -1,4 +1,5 @@
 import api from './client';
+import { getCached, setCache } from '../hooks/useOfflineCache';
 
 export interface StockQuote {
   symbol: string; price: number; change: number; changePercent: number;
@@ -27,20 +28,63 @@ export interface NewsArticle {
 
 export const stocksApi = {
   search: (q: string) => api.get<Stock[]>('/stocks/search', { params: { q } }).then(r => r.data),
-  getQuote: (symbol: string) => api.get<StockQuote>(`/stocks/${symbol}/quote`).then(r => r.data),
-  getTopMovers: () => api.get<TopMover[]>('/stocks/top-movers').then(r => r.data),
+  getQuote: async (symbol: string) => {
+    const cacheKey = `quote-${symbol}`;
+    try {
+      const data = await api.get<StockQuote>(`/stocks/${symbol}/quote`).then(r => r.data);
+      await setCache(cacheKey, data, 60000);
+      return data;
+    } catch {
+      const cached = await getCached<StockQuote>(cacheKey);
+      if (cached) return cached;
+      throw new Error(`No data for ${symbol}`);
+    }
+  },
+  getTopMovers: async () => {
+    const cacheKey = 'top-movers';
+    try {
+      const data = await api.get<TopMover[]>('/stocks/top-movers').then(r => r.data);
+      await setCache(cacheKey, data, 120000);
+      return data;
+    } catch {
+      const cached = await getCached<TopMover[]>(cacheKey);
+      if (cached) return cached;
+      throw new Error('No movers data');
+    }
+  },
   getIndicators: (symbol: string) => api.get(`/stocks/${symbol}/indicators`).then(r => r.data),
 };
 
 export const signalsApi = {
-  getSignals: (type?: string, limit = 50) =>
-    api.get<Signal[]>('/signals', { params: { type, limit } }).then(r => r.data),
+  getSignals: async (type?: string, limit = 50) => {
+    const cacheKey = `signals-${type ?? 'all'}-${limit}`;
+    try {
+      const data = await api.get<Signal[]>('/signals', { params: { type, limit } }).then(r => r.data);
+      await setCache(cacheKey, data, 120000);
+      return data;
+    } catch {
+      const cached = await getCached<Signal[]>(cacheKey);
+      if (cached) return cached;
+      throw new Error('No signals data');
+    }
+  },
   generateSignal: (symbol: string) =>
     api.post<Signal>('/signals/generate', { symbol }).then(r => r.data),
 };
 
 export const newsApi = {
-  getMarketNews: (limit = 20) => api.get<NewsArticle[]>('/news/market', { params: { limit } }).then(r => r.data),
+  getMarketNews: async (limit = 20) => {
+    const cacheKey = `market-news-${limit}`;
+    try {
+      const data = await api.get<NewsArticle[]>('/news/market', { params: { limit } }).then(r => r.data);
+      await setCache(cacheKey, data, 300000);
+      return data;
+    } catch {
+      const cached = await getCached<NewsArticle[]>(cacheKey);
+      if (cached) return cached;
+      throw new Error('No news data');
+    }
+  },
   getNews: (symbol: string, limit = 10) => api.get<NewsArticle[]>(`/news/${symbol}`, { params: { limit } }).then(r => r.data),
 };
 
@@ -83,4 +127,13 @@ export const chatApi = {
 
 export const socialApi = {
   getLeaderboard: () => api.get('/social/leaderboard').then(r => r.data),
+};
+
+export const marketApi = {
+  getIndices: () => api.get('/market/indices').then(r => r.data),
+  getBreadth: () => api.get('/market/breadth').then(r => r.data),
+  getSectors: () => api.get('/market/sectors').then(r => r.data),
+  getHeatmap: () => api.get('/market/heatmap').then(r => r.data),
+  getCorrelation: (symbols?: string) =>
+    api.get('/market/correlation', { params: symbols ? { symbols } : undefined }).then(r => r.data),
 };
