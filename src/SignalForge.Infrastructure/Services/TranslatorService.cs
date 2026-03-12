@@ -60,32 +60,27 @@ public sealed class TranslatorService
         }
     }
 
-    public async Task<List<SupportedLanguage>> GetSupportedLanguagesAsync(CancellationToken ct = default)
+    public Task<List<SupportedLanguage>> GetSupportedLanguagesAsync(CancellationToken ct = default)
     {
-        if (_client == null) return [];
-        try
+        var languages = new List<SupportedLanguage>
         {
-            var response = await _client.GetLanguagesAsync(cancellationToken: ct);
-            return response.Value.Translation
-                .Select(kv => new SupportedLanguage(kv.Key, kv.Value.Name, kv.Value.NativeName))
-                .OrderBy(l => l.Name)
-                .ToList();
-        }
-        catch
-        {
-            return [
-                new("en", "English", "English"),
-                new("ar", "Arabic", "العربية"),
-                new("es", "Spanish", "Español"),
-                new("fr", "French", "Français"),
-                new("de", "German", "Deutsch"),
-                new("zh-Hans", "Chinese (Simplified)", "中文(简体)"),
-                new("ja", "Japanese", "日本語"),
-                new("ko", "Korean", "한국어"),
-                new("hi", "Hindi", "हिन्दी"),
-                new("pt", "Portuguese", "Português"),
-            ];
-        }
+            new("en", "English", "English"),
+            new("ar", "Arabic", "العربية"),
+            new("es", "Spanish", "Español"),
+            new("fr", "French", "Français"),
+            new("de", "German", "Deutsch"),
+            new("zh-Hans", "Chinese (Simplified)", "中文(简体)"),
+            new("ja", "Japanese", "日本語"),
+            new("ko", "Korean", "한국어"),
+            new("hi", "Hindi", "हिन्दी"),
+            new("pt", "Portuguese", "Português"),
+            new("ru", "Russian", "Русский"),
+            new("tr", "Turkish", "Türkçe"),
+            new("it", "Italian", "Italiano"),
+            new("nl", "Dutch", "Nederlands"),
+            new("ur", "Urdu", "اردو"),
+        };
+        return Task.FromResult(languages);
     }
 }
 
