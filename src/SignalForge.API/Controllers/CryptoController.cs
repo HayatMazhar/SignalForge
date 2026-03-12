@@ -188,7 +188,7 @@ public class CryptoController : ControllerBase
                 id = Guid.NewGuid().ToString(),
                 symbol = sym,
                 type,
-                confidenceScore = Math.Round(techScore, 1),
+                confidenceScore = Math.Round((decimal)techScore, 1),
                 reasoning = $"{sym} shows {tech.Trend.ToLower()} momentum with RSI at {tech.Rsi:F0}. MACD is {(tech.Macd > 0 ? "positive" : "negative")} suggesting {(tech.Macd > 0 ? "upward" : "downward")} pressure.",
                 technicalScore = (int)tech.Rsi,
                 sentimentScore = 50,
