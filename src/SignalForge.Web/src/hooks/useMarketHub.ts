@@ -19,8 +19,11 @@ export function useMarketHub(symbols: string[]) {
 
     let cancelled = false;
 
+    const apiBase = import.meta.env.VITE_API_URL || 'https://signalforge-api.ambitiouscliff-f7080230.eastus.azurecontainerapps.io/api';
+    const hubUrl = apiBase.replace(/\/api\/?$/, '') + '/hubs/market';
+
     const connection = new HubConnectionBuilder()
-      .withUrl('/hubs/market', { accessTokenFactory: () => token })
+      .withUrl(hubUrl, { accessTokenFactory: () => token })
       .withAutomaticReconnect()
       .configureLogging(LogLevel.Warning)
       .build();

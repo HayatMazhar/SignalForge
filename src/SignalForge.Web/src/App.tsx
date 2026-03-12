@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Layout from './components/Layout';
+import ErrorBoundary from './components/ErrorBoundary';
 import { useThemeStore } from './stores/themeStore';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
@@ -79,10 +80,12 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route
+            <Route
             element={
               <ProtectedRoute>
-                <Layout />
+                <ErrorBoundary>
+                  <Layout />
+                </ErrorBoundary>
               </ProtectedRoute>
             }
           >
